@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { services } from '@/data/services';
+import { features } from '@/data/features';
 
 /**
  * Home Page Component
@@ -119,7 +120,7 @@ export default function Home() {
       {/* Hero Section */}
       <main className="relative isolate w-full overflow-hidden px-20 py-20 sm:px-20">
         <div
-          className="absolute inset-0 bg-cover bg-center blur-[0.5px]"
+          className="absolute inset-0 bg-cover bg-center blur-[0.05px]"
           style={{
             backgroundImage: "url('/nile%202.jpg')",
           }}
@@ -315,16 +316,7 @@ export default function Home() {
               }}
             >
               {/* First set of features */}
-              {[
-                { id: 1, title: 'AI-Powered Recommendations', description: 'Get personalized course suggestions based on your academic history and career goals.', icon: '🤖' },
-                { id: 2, title: 'Semester Planning', description: 'Plan your entire semester with ease and optimize your course schedule.', icon: '📅' },
-                { id: 3, title: 'Progress Tracking', description: 'Monitor your academic progress with real-time dashboards and analytics.', icon: '📊' },
-                { id: 4, title: 'Advisor Connection', description: 'Connect seamlessly with academic advisors for expert guidance.', icon: '👥' },
-                { id: 5, title: 'Course Analytics', description: 'Analyze course difficulty and success rates to make informed decisions.', icon: '📈' },
-                { id: 6, title: 'Degree Planning', description: 'Track your degree requirements and plan your path to graduation.', icon: '🎓' },
-                { id: 7, title: 'Smart Scheduling', description: 'Automatically generate optimal class schedules based on your preferences.', icon: '⏰' },
-                { id: 8, title: 'Academic Insights', description: 'Get detailed insights into your academic performance and areas for improvement.', icon: '💡' },
-              ].map((feature) => (
+              {features.map((feature) => (
                 <div
                   key={feature.id}
                   className="flex-shrink-0 w-[320px] rounded-2xl border border-slate-200 bg-white p-6 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
@@ -341,16 +333,7 @@ export default function Home() {
                 </div>
               ))}
               {/* Duplicate set for seamless loop */}
-              {[
-                { id: 1, title: 'AI-Powered Recommendations', description: 'Get personalized course suggestions based on your academic history and career goals.', icon: '🤖' },
-                { id: 2, title: 'Semester Planning', description: 'Plan your entire semester with ease and optimize your course schedule.', icon: '📅' },
-                { id: 3, title: 'Progress Tracking', description: 'Monitor your academic progress with real-time dashboards and analytics.', icon: '📊' },
-                { id: 4, title: 'Advisor Connection', description: 'Connect seamlessly with academic advisors for expert guidance.', icon: '👥' },
-                { id: 5, title: 'Course Analytics', description: 'Analyze course difficulty and success rates to make informed decisions.', icon: '📈' },
-                { id: 6, title: 'Degree Planning', description: 'Track your degree requirements and plan your path to graduation.', icon: '🎓' },
-                { id: 7, title: 'Smart Scheduling', description: 'Automatically generate optimal class schedules based on your preferences.', icon: '⏰' },
-                { id: 8, title: 'Academic Insights', description: 'Get detailed insights into your academic performance and areas for improvement.', icon: '💡' },
-              ].map((feature) => (
+              {features.map((feature) => (
                 <div
                   key={`duplicate-${feature.id}`}
                   className="flex-shrink-0 w-[320px] rounded-2xl border border-slate-200 bg-white p-6 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
