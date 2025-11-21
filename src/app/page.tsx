@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-white">
-      <main className="relative isolate w-full overflow-hidden px-6 py-20 sm:px-10">
+      <main className="relative isolate w-full overflow-hidden px-20 py-20 sm:px-20">
         <div
           className="absolute inset-0 bg-cover bg-center blur-[0.5px]"
           style={{
