@@ -33,6 +33,10 @@ export function Navbar() {
     return () => window.removeEventListener('hashchange', checkHash);
   }, []);
 
+  if (pathname === '/login') {
+    return null;
+  }
+
   return (
     <header
       className={`sticky top-0 z-50 border-b backdrop-blur-sm transition-colors duration-300 ${
@@ -119,9 +123,12 @@ export function Navbar() {
           })}
         </nav>
 
-        <button className="rounded-lg bg-blue-600 px-6 py-2 text-sm font-semibold uppercase text-white transition-colors duration-200 hover:bg-blue-700">
+        <Link
+          href="/login"
+          className="rounded-lg bg-blue-400 px-6 py-2 text-sm font-semibold uppercase text-white transition-colors duration-200 hover:bg-blue-500"
+        >
           LOGIN
-        </button>
+        </Link>
       </div>
     </header>
   );

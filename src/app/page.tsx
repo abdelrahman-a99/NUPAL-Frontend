@@ -131,7 +131,7 @@ export default function Home() {
           <div className="max-w-3xl space-y-8 text-left">
             <h1 className="text-4xl font-bold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
               Your Academic Journey,{" "}
-              <span className="text-blue-600">
+              <span className="text-blue-400">
                 Simplified
               </span>
             </h1>
@@ -140,10 +140,10 @@ export default function Home() {
               your educational goals with confidence.
             </p>
             <div className="flex flex-col gap-4 sm:flex-row">
-              <button className="rounded-lg bg-blue-600 px-10 py-3 text-base font-semibold uppercase text-white transition-colors duration-200 hover:bg-blue-700">
+              <button className="rounded-lg bg-blue-400 px-10 py-3 text-base font-semibold uppercase text-white transition-colors duration-200 hover:bg-blue-500">
                 GET STARTED
               </button>
-              <button className="rounded-2xl border-2 border-blue-600 bg-white/80 px-10 py-3 text-base font-semibold text-blue-600 backdrop-blur transition-colors duration-200 hover:bg-blue-50">
+              <button className="rounded-2xl border-2 border-blue-400 bg-white/80 px-10 py-3 text-base font-semibold text-blue-400 backdrop-blur transition-colors duration-200 hover:bg-blue-50">
                 Learn More
               </button>
             </div>
@@ -163,8 +163,8 @@ export default function Home() {
                   onClick={() => handleServiceChange(service.id)}
                   className={`rounded-full px-6 py-2.5 text-sm font-semibold uppercase transition-all duration-200 ${
                     activeService === service.id
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
-                      : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                      ? 'bg-blue-400 text-white shadow-md shadow-blue-500/30'
+                      : 'bg-blue-50 text-blue-400 hover:bg-blue-100'
                   }`}
                 >
                   {service.title}
@@ -189,7 +189,7 @@ export default function Home() {
                     >
                       <div className="flex items-center gap-4">
                         <div className={`h-1 w-1 rounded-full transition-all duration-300 ${
-                          isOpen ? 'h-12 w-1 bg-blue-600' : 'bg-blue-300'
+                          isOpen ? 'h-12 w-1 bg-blue-400' : 'bg-blue-300'
                         }`} />
                         <h3 className="text-xl font-bold text-slate-900">
                           {service.title}
@@ -217,7 +217,7 @@ export default function Home() {
                         </p>
                         <a
                           href="#"
-                          className="text-sm font-semibold text-indigo-600 underline hover:text-indigo-700"
+                          className="text-sm font-semibold text-indigo-600 underline hover:text-BLUE-500"
                         >
                           Take a guided tour
                         </a>
@@ -370,10 +370,10 @@ export default function Home() {
           {/* Header */}
           <div className="mb-20">
             <div className="inline-block mb-6">
-              <span className="text-sm font-semibold uppercase tracking-wider text-blue-600">
+              <span className="text-sm font-semibold uppercase tracking-wider text-blue-400">
                 About Us
               </span>
-              <div className="mt-2 h-1 w-16 bg-gradient-to-r from-blue-600 to-indigo-600" />
+              <div className="mt-2 h-1 w-16 bg-gradient-to-r from-blue-400 to-indigo-600" />
             </div>
             <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl max-w-3xl leading-tight">
               NU PAL empowers everyone to build their academic success
@@ -385,7 +385,7 @@ export default function Home() {
             <div className="relative">
               <div className="relative overflow-hidden">
                 {/* Gradient accent line */}
-                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-600 via-indigo-600 to-purple-600 rounded-full" />
+                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 via-indigo-600 to-purple-600 rounded-full" />
                 
                 <div className="relative ml-8">
                   <div className="relative overflow-hidden rounded-3xl">
@@ -407,7 +407,7 @@ export default function Home() {
               {/* First Paragraph */}
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="mt-2 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-blue-600" />
+                  <div className="mt-2 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-blue-400" />
                   <p className="text-lg leading-relaxed text-slate-700">
                     NU PAL is a cutting-edge academic advising platform that leverages artificial intelligence to transform how students navigate their educational journey. Our platform combines advanced machine learning algorithms with proven academic advising principles to deliver personalized, data-driven guidance that adapts to each student's unique goals and circumstances.
                   </p>
@@ -429,7 +429,7 @@ export default function Home() {
                 <div className="flex flex-wrap gap-6">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                      <span className="text-blue-600 text-sm font-bold">AI</span>
+                      <span className="text-blue-400 text-sm font-bold">AI</span>
                     </div>
                     <span className="text-sm font-semibold text-slate-700">AI-Powered</span>
                   </div>
@@ -447,7 +447,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                      <span className="text-blue-600 text-sm font-bold">I</span>
+                      <span className="text-blue-400 text-sm font-bold">I</span>
                     </div>
                     <span className="text-sm font-semibold text-slate-700">Intuitive</span>
                   </div>
@@ -472,22 +472,22 @@ export default function Home() {
             {/* First Wave Layer */}
             <path
               d="M0,200L60,190C120,180,240,160,360,150C480,140,600,140,720,155C840,170,960,200,1080,210C1200,220,1320,210,1380,205L1440,200L1440,700L1380,700C1320,700,1200,700,1080,700C960,700,840,700,720,700C600,700,480,700,360,700C240,700,120,700,60,700L0,700Z"
-              fill="url(#gradient1-home)"
+              fill="url(#gradient1-home)" style={{ animation: 'waveFloat 9s ease-in-out infinite' }}
             />
             {/* Second Wave Layer */}
             <path
               d="M0,250L40,245C80,240,160,230,240,225C320,220,400,220,480,230C560,240,640,260,720,270C800,280,880,280,960,275C1040,270,1120,260,1200,255C1280,250,1360,250,1400,250L1440,250L1440,700L1400,700C1360,700,1280,700,1200,700C1120,700,1040,700,960,700C880,700,800,700,720,700C640,700,560,700,480,700C400,700,320,700,240,700C160,700,80,700,40,700L0,700Z"
-              fill="url(#gradient2-home)"
+              fill="url(#gradient2-home)" style={{ animation: 'waveFloat 11s ease-in-out infinite', animationDelay: '0.8s' }}
             />
             {/* Third Wave Layer */}
             <path
               d="M0,300L50,295C100,290,200,280,300,275C400,270,500,270,600,280C700,290,800,310,900,320C1000,330,1100,330,1200,325C1300,320,1400,310,1450,305L1500,300L1500,700L1450,700C1400,700,1300,700,1200,700C1100,700,1000,700,900,700C800,700,700,700,600,700C500,700,400,700,300,700C200,700,100,700,50,700L0,700Z"
-              fill="url(#gradient3-home)"
+              fill="url(#gradient3-home)" style={{ animation: 'waveFloat 13s ease-in-out infinite', animationDelay: '1.6s' }}
             />
             {/* Fourth Wave Layer */}
             <path
               d="M0,350L30,348C60,346,120,342,180,340C240,338,300,338,360,342C420,346,480,354,540,358C600,362,660,362,720,360C780,358,840,354,900,352C960,350,1020,350,1080,352C1140,354,1200,358,1260,360C1320,362,1380,362,1410,362L1440,362L1440,700L1410,700C1380,700,1320,700,1260,700C1200,700,1140,700,1080,700C1020,700,960,700,900,700C840,700,780,700,720,700C660,700,600,700,540,700C480,700,420,700,360,700C300,700,240,700,180,700C120,700,60,700,30,700L0,700Z"
-              fill="url(#gradient4-home)"
+              fill="url(#gradient4-home)" style={{ animation: 'waveFloat 15s ease-in-out infinite', animationDelay: '2.4s' }}
             />
             <defs>
               <linearGradient id="gradient1-home" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -599,7 +599,7 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="rounded-lg bg-blue-600 px-8 py-3 text-base font-semibold uppercase text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-lg bg-blue-400 px-8 py-3 text-base font-semibold uppercase text-white transition-colors duration-200 hover:bg-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isSubmitting ? 'SUBMITTING...' : 'SEND MESSAGE'}
                 </button>
