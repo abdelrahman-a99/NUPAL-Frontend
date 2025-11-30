@@ -25,17 +25,17 @@ export function Footer() {
             <h3 className="mb-4 text-sm font-semibold text-slate-900">Platform</h3>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600">
+                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-blue-400">
                   Features
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600">
+                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-blue-400">
                   Pricing
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600">
+                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-blue-400">
                   Support
                 </a>
               </li>
@@ -47,17 +47,17 @@ export function Footer() {
             <h3 className="mb-4 text-sm font-semibold text-slate-900">Company</h3>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600">
+                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-blue-400">
                   About
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600">
+                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-blue-400">
                   Contact
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-indigo-600">
+                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-blue-400">
                   Privacy Policy
                 </a>
               </li>
@@ -70,7 +70,7 @@ export function Footer() {
             <div className="flex gap-4">
               <a
                 href="#"
-                className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:bg-gradient-to-br hover:from-indigo-500 hover:to-purple-600 hover:text-white"
+                className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:bg-gradient-to-br hover:from-indigo-500 hover:to-blue-400 hover:text-white"
                 aria-label="Facebook"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -79,7 +79,7 @@ export function Footer() {
               </a>
               <a
                 href="#"
-                className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:bg-gradient-to-br hover:from-indigo-500 hover:to-purple-600 hover:text-white"
+                className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:bg-gradient-to-br hover:from-indigo-500 hover:to-blue-400 hover:text-white"
                 aria-label="Twitter"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -88,7 +88,7 @@ export function Footer() {
               </a>
               <a
                 href="#"
-                className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:bg-gradient-to-br hover:from-indigo-500 hover:to-purple-600 hover:text-white"
+                className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:bg-gradient-to-br hover:from-indigo-500 hover:to-blue-400 hover:text-white"
                 aria-label="LinkedIn"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -97,7 +97,7 @@ export function Footer() {
               </a>
               <a
                 href="#"
-                className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:bg-gradient-to-br hover:from-indigo-500 hover:to-purple-600 hover:text-white"
+                className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:bg-gradient-to-br hover:from-indigo-500 hover:to-blue-400 hover:text-white"
                 aria-label="Instagram"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">

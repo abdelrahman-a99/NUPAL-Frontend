@@ -3,12 +3,12 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-export function LoginPageContent() {
+export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [out, setOut] = useState('');
+  
   const [err, setErr] = useState('');
 
   useEffect(() => {
@@ -23,7 +23,6 @@ export function LoginPageContent() {
     e.preventDefault();
     setIsSubmitting(true);
     setErr('');
-    setOut('');
     try {
       const res = await fetch('http://localhost:5009/api/students/login', {
         method: 'POST',
@@ -34,10 +33,11 @@ export function LoginPageContent() {
       if (!res.ok) {
         setErr(data.error || 'Login failed');
       } else {
-        setOut(JSON.stringify(data.student, null, 2));
+        
       }
-    } catch (e: any) {
-      setErr(e?.message || 'Network error');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Network error';
+      setErr(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -106,7 +106,6 @@ export function LoginPageContent() {
             </svg>
           </Link>
         </div>
-        {/* <h1 className="mb-6 text-xl font-semibold text-slate-900">Sign in</h1> */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label htmlFor="email" className="mb-2 block text-sm font-semibold text-slate-700">
@@ -155,14 +154,8 @@ export function LoginPageContent() {
             {isSubmitting ? 'LOGGING IN...' : 'LOGIN'}
           </button>
         </form>
-        <div className="mt-4">
-          {err && <div className="text-red-600 text-sm mb-2">{err}</div>}
-          {out && (
-            <pre className="text-xs bg-slate-50 border border-slate-200 rounded p-3 overflow-auto max-h-64">{out}</pre>
-          )}
-        </div>
+        <div className="mt-4">{err && <div className="text-red-600 text-sm mb-2">{err}</div>}</div>
       </div>
     </div>
   );
 }
-

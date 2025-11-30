@@ -80,8 +80,8 @@ export function Navbar() {
                       }, 100);
                     }
                   }}
-                  className={`transition-colors duration-200 hover:text-indigo-600 ${
-                    isActive ? "text-indigo-600" : ""
+                  className={`transition-colors duration-200 hover:text-blue-400 ${
+                    isActive ? "text-blue-400" : ""
                   }`}
                 >
                   {link.name}
@@ -100,8 +100,8 @@ export function Navbar() {
                     window.location.hash = '';
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className={`transition-colors duration-200 hover:text-indigo-600 ${
-                    isActive ? "text-indigo-600" : ""
+                  className={`transition-colors duration-200 hover:text-blue-400 ${
+                    isActive ? "text-blue-400" : ""
                   }`}
                 >
                   {link.name}
@@ -113,8 +113,8 @@ export function Navbar() {
               <Link
                 key={link.path}
                 href={link.path}
-                className={`transition-colors duration-200 hover:text-indigo-600 ${
-                  pathname === link.path ? "text-indigo-600" : ""
+                className={`transition-colors duration-200 hover:text-blue-400 ${
+                  pathname === link.path ? "text-blue-400" : ""
                 }`}
               >
                 {link.name}
