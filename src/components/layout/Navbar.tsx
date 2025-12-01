@@ -33,7 +33,7 @@ export function Navbar() {
     return () => window.removeEventListener('hashchange', checkHash);
   }, []);
 
-  if (pathname === '/login') {
+  if (pathname === '/login' || pathname === '/chat') {
     return null;
   }
 
