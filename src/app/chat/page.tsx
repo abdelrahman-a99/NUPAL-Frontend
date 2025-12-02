@@ -31,7 +31,7 @@ export default function ChatPage() {
   // Generate a simple bot response (frontend only - replace with API call later)
   const generateBotResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase();
-    
+
     if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
       return 'Hello! I\'m here to help you with your academic journey. How can I assist you today?';
     }
@@ -47,7 +47,7 @@ export default function ChatPage() {
     if (lowerMessage.includes('advisor')) {
       return 'I can help you connect with academic advisors. Would you like to schedule a meeting or get advisor contact information?';
     }
-    
+
     return 'Thank you for your message! I\'m here to help with your academic planning. Could you provide more details about what you need assistance with?';
   };
 
@@ -57,8 +57,8 @@ export default function ChatPage() {
     if (trimmed.length === 0) return 'New Chat';
     // Take first 30 characters or first sentence
     const firstSentence = trimmed.split(/[.!?]/)[0];
-    const title = firstSentence.length > 30 
-      ? trimmed.substring(0, 30) + '...' 
+    const title = firstSentence.length > 30
+      ? trimmed.substring(0, 30) + '...'
       : firstSentence || trimmed.substring(0, 30);
     return title || 'New Chat';
   };
@@ -141,11 +141,11 @@ export default function ChatPage() {
           prevChats.map((chat) =>
             chat.id === currentChatId
               ? {
-                  ...chat,
-                  messages: [...chat.messages, botResponse],
-                  lastMessage: botResponse.text,
-                  timestamp: 'Just now',
-                }
+                ...chat,
+                messages: [...chat.messages, botResponse],
+                lastMessage: botResponse.text,
+                timestamp: 'Just now',
+              }
               : chat
           )
         );
@@ -165,13 +165,23 @@ export default function ChatPage() {
     // This callback can be used for additional search logic if needed
   }, []);
 
+  const handleDeleteChat = useCallback((chatId: string) => {
+    setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
+
+    // If the deleted chat was active, clear the active chat
+    if (activeChatId === chatId) {
+      setActiveChatId(null);
+    }
+  }, [activeChatId]);
+
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-white">
+    <div className="flex h-[calc(99vh-64px)] w-full overflow-hidden bg-white">
       <ChatSidebar
         chats={chats}
         activeChatId={activeChatId}
         onNewChat={handleNewChat}
         onSelectChat={handleSelectChat}
+        onDeleteChat={handleDeleteChat}
         onSearchChange={handleSearchChange}
       />
       <ChatInterface

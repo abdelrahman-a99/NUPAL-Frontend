@@ -3,7 +3,7 @@ import { usePathname } from 'next/navigation';
 
 export function Footer() {
   const pathname = usePathname();
-  if (pathname === '/login' || pathname === '/chat') {
+  if (pathname === '/login' || pathname === '/chat' || pathname.startsWith('/dashboard')) {
     return null;
   }
   return (

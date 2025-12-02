@@ -8,7 +8,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const [err, setErr] = useState('');
 
   useEffect(() => {
@@ -33,7 +33,14 @@ export default function LoginForm() {
       if (!res.ok) {
         setErr(data.error || 'Login failed');
       } else {
-        
+        if (data.token) {
+          // Dynamically import to avoid SSR issues with localStorage if needed, 
+          // but here we are in a 'use client' component so it is fine.
+          const { setToken } = await import('@/lib/auth');
+          setToken(data.token);
+          // Force a hard navigation or router push
+          window.location.href = '/dashboard';
+        }
       }
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Network error';
@@ -101,7 +108,7 @@ export default function LoginForm() {
             className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/80 backdrop-blur ring-1 ring-slate-200 text-slate-700 hover:text-blue-700 hover:bg-white transition"
             aria-label="Back to home"
           > */}
-            {/* <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {/* <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
             </svg> */}
           {/* </Link> */}

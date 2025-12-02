@@ -60,7 +60,7 @@ export default function ChatInterface({
   };
 
   return (
-    <div className="flex h-screen flex-1 flex-col bg-white">
+    <div className="flex h-[calc(100vh-64px)] flex-1 flex-col bg-white">
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-6 py-6">
         {messages.length === 0 ? (

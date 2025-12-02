@@ -14,6 +14,7 @@ interface ChatSidebarProps {
   activeChatId: string | null;
   onNewChat: () => void;
   onSelectChat: (chatId: string) => void;
+  onDeleteChat: (chatId: string) => void;
   onSearchChange: (query: string) => void;
 }
 
@@ -22,6 +23,7 @@ export default function ChatSidebar({
   activeChatId,
   onNewChat,
   onSelectChat,
+  onDeleteChat,
   onSearchChange,
 }: ChatSidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,17 +34,22 @@ export default function ChatSidebar({
     onSearchChange(query);
   };
 
+  const handleDeleteChat = (e: React.MouseEvent, chatId: string) => {
+    e.stopPropagation(); // Prevent chat selection when clicking delete
+    onDeleteChat(chatId);
+  };
+
   const filteredChats = chats.filter((chat) =>
     chat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="flex h-screen w-80 flex-col border-r border-slate-200 bg-white">
+    <div className="flex h-[calc(100vh-64px)] w-80 flex-col border-r border-slate-100 bg-white">
       {/* Logo Section */}
-      <div className="px-6 py-4">
+      {/* <div className="px-6 py-4">
         <span className="text-xl font-bold text-slate-900">NU PAL</span>
-      </div>
+      </div> */}
 
       {/* New Chat Button */}
       <div className="px-4 py-4">
@@ -95,22 +102,44 @@ export default function ChatSidebar({
               </div>
             ) : (
               filteredChats.map((chat) => (
-                <button
+                <div
                   key={chat.id}
-                  onClick={() => onSelectChat(chat.id)}
-                  className={`w-full rounded-lg px-3 py-2.5 text-left transition-colors duration-200 ${
-                    activeChatId === chat.id
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-slate-700 hover:bg-slate-50'
-                  }`}
+                  className="group relative"
                 >
-                  <div className="mb-1 truncate text-sm font-semibold">
-                    {chat.title}
-                  </div>
-                  <div className="truncate text-xs text-slate-500">
-                    {chat.lastMessage}
-                  </div>
-                </button>
+                  <button
+                    onClick={() => onSelectChat(chat.id)}
+                    className={`w-full rounded-lg px-3 py-2.5 pr-10 text-left transition-colors duration-200 ${activeChatId === chat.id
+                        ? 'bg-blue-50 text-blue-600'
+                        : 'text-slate-700 hover:bg-slate-50'
+                      }`}
+                  >
+                    <div className="mb-1 truncate text-sm font-semibold">
+                      {chat.title}
+                    </div>
+                    <div className="truncate text-xs text-slate-500">
+                      {chat.lastMessage}
+                    </div>
+                  </button>
+                  <button
+                    onClick={(e) => handleDeleteChat(e, chat.id)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-slate-400 opacity-0 transition-all duration-200 hover:bg-red-50 hover:text-red-600 group-hover:opacity-100"
+                    title="Delete chat"
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
               ))
             )}
           </div>

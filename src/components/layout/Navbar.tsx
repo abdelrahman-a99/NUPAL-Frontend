@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { getToken, parseJwt, removeToken } from "@/lib/auth";
+import { User, Settings, LogOut } from "lucide-react";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -11,9 +13,16 @@ const navLinks = [
   { name: "Contact", path: "/contact" },
 ];
 
+const dashboardLinks = [
+  { name: "Dashboard", path: "/dashboard" },
+  { name: "Chatbot", path: "/chat" },
+];
+
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeHash, setActiveHash] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
   const pathname = usePathname() || '';
 
   useEffect(() => {
@@ -33,9 +42,23 @@ export function Navbar() {
     return () => window.removeEventListener('hashchange', checkHash);
   }, []);
 
-  if (pathname === '/login' || pathname === '/chat') {
+  useEffect(() => {
+    try {
+      const token = getToken();
+      const name = token ? (parseJwt(token)?.name ?? null) : null;
+      setUserName(name);
+    } catch {
+      setUserName(null);
+    }
+  }, []);
+
+  if (pathname === '/login') {
     return null;
   }
+
+  const initial = (userName?.trim()?.charAt(0)?.toUpperCase() ?? 'N');
+
+  const links = (pathname.startsWith('/dashboard') || pathname === '/chat') ? dashboardLinks : navLinks;
 
   return (
     <header
@@ -53,7 +76,7 @@ export function Navbar() {
         <nav
           className={`absolute left-1/2 flex -translate-x-1/2 items-center gap-10 text-sm font-semibold text-slate-600`}
         >
-          {navLinks.map((link) => {
+          {links.map((link) => {
             // For Services link on home page - scroll to section
             if (link.path === '/services' && pathname === '/') {
               const isActive = activeHash === '#services';
@@ -123,14 +146,68 @@ export function Navbar() {
           })}
         </nav>
 
-        <Link
-          href="/login"
-          className="rounded-lg bg-blue-400 px-6 py-2 text-sm font-semibold uppercase text-white transition-colors duration-200 hover:bg-blue-500"
-        >
-          LOGIN
-        </Link>
+        {(pathname.startsWith('/dashboard') || pathname === '/chat') ? (
+          <div className="relative">
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="Open profile menu"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition-all duration-200 hover:bg-slate-50 hover:shadow"
+            >
+              <span className="text-sm font-semibold">{initial}</span>
+            </button>
+            {menuOpen && (
+              <div role="menu" aria-label="Profile menu" className="absolute right-0 mt-2 w-64 rounded-xl border border-slate-200 bg-white/95 p-2 shadow-xl backdrop-blur-sm">
+                <div className="flex items-center gap-3 rounded-lg bg-slate-50/70 px-3 py-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-700">
+                    <span className="text-sm font-semibold">{initial}</span>
+                  </div>
+                  <div className="min-w-0">
+                    <div className="truncate text-sm font-semibold text-slate-900">{userName ?? 'NU Pal User'}</div>
+                    <div className="truncate text-xs text-slate-500">Account</div>
+                  </div>
+                </div>
+                <div className="my-2 h-px bg-slate-200" />
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-700 transition-all duration-200 hover:bg-slate-50"
+                  onClick={() => setMenuOpen(false)}
+                  role="menuitem"
+                >
+                  <User size={16} />
+                  <span>Profile</span>
+                </Link>
+                <button
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-slate-700 transition-all duration-200 hover:bg-slate-50"
+                  onClick={() => setMenuOpen(false)}
+                  role="menuitem"
+                >
+                  <Settings size={16} />
+                  <span>Settings</span>
+                </button>
+                <div className="my-2 h-px bg-slate-200" />
+                <button
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium text-red-600 transition-all duration-200 hover:bg-red-50"
+                  onClick={() => {
+                    removeToken();
+                    window.location.href = '/login';
+                  }}
+                  role="menuitem"
+                >
+                  <LogOut size={16} />
+                  <span>Logout</span>
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link
+            href="/login"
+            className="rounded-lg bg-blue-400 px-6 py-2 text-sm font-semibold uppercase text-white transition-colors duration-200 hover:bg-blue-500"
+          >
+            LOGIN
+          </Link>
+        )}
       </div>
     </header>
   );
 }
-
