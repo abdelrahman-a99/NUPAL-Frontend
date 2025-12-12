@@ -16,6 +16,7 @@ const navLinks = [
 const dashboardLinks = [
   { name: "Dashboard", path: "/dashboard" },
   { name: "Chatbot", path: "/chat" },
+  { name: "Career Hub", path: "/career-hub" },
 ];
 
 export function Navbar() {
@@ -58,15 +59,14 @@ export function Navbar() {
 
   const initial = (userName?.trim()?.charAt(0)?.toUpperCase() ?? 'N');
 
-  const links = (pathname.startsWith('/dashboard') || pathname === '/chat') ? dashboardLinks : navLinks;
+  const links = (pathname.startsWith('/dashboard') || pathname === '/chat' || pathname === '/career-hub') ? dashboardLinks : navLinks;
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b backdrop-blur-sm transition-colors duration-300 ${
-        isScrolled
-          ? "border-slate-200 bg-white/20 text-slate-900 shadow-md"
-          : "border-slate-100 bg-white/20 text-slate-900 shadow-sm"
-      }`}
+      className={`sticky top-0 z-50 border-b backdrop-blur-sm transition-colors duration-300 ${isScrolled
+        ? "border-slate-200 bg-white/20 text-slate-900 shadow-md"
+        : "border-slate-100 bg-white/20 text-slate-900 shadow-sm"
+        }`}
     >
       <div className="relative flex w-full items-center justify-between px-20 py-3">
         <div className="flex items-center gap-3">
@@ -91,21 +91,20 @@ export function Navbar() {
                       const offset = 100;
                       const elementPosition = servicesSection.getBoundingClientRect().top;
                       const offsetPosition = elementPosition + window.pageYOffset - offset;
-                      
+
                       window.scrollTo({
                         top: offsetPosition,
                         behavior: 'smooth'
                       });
-                      
+
                       // Trigger hash change to open accordion
                       setTimeout(() => {
                         window.location.hash = '#services';
                       }, 100);
                     }
                   }}
-                  className={`transition-colors duration-200 hover:text-blue-400 ${
-                    isActive ? "text-blue-400" : ""
-                  }`}
+                  className={`transition-colors duration-200 hover:text-blue-400 ${isActive ? "text-blue-400" : ""
+                    }`}
                 >
                   {link.name}
                 </a>
@@ -123,9 +122,8 @@ export function Navbar() {
                     window.location.hash = '';
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className={`transition-colors duration-200 hover:text-blue-400 ${
-                    isActive ? "text-blue-400" : ""
-                  }`}
+                  className={`transition-colors duration-200 hover:text-blue-400 ${isActive ? "text-blue-400" : ""
+                    }`}
                 >
                   {link.name}
                 </a>
@@ -136,9 +134,8 @@ export function Navbar() {
               <Link
                 key={link.path}
                 href={link.path}
-                className={`transition-colors duration-200 hover:text-blue-400 ${
-                  pathname === link.path ? "text-blue-400" : ""
-                }`}
+                className={`transition-colors duration-200 hover:text-blue-400 ${pathname === link.path ? "text-blue-400" : ""
+                  }`}
               >
                 {link.name}
               </Link>
@@ -146,7 +143,7 @@ export function Navbar() {
           })}
         </nav>
 
-        {(pathname.startsWith('/dashboard') || pathname === '/chat') ? (
+        {(pathname.startsWith('/dashboard') || pathname === '/chat' || pathname === '/career-hub') ? (
           <div className="relative">
             <button
               onClick={() => setMenuOpen((v) => !v)}
@@ -189,7 +186,7 @@ export function Navbar() {
                   className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium text-red-600 transition-all duration-200 hover:bg-red-50"
                   onClick={() => {
                     removeToken();
-                    window.location.href = '/login';
+                    window.location.href = '/';
                   }}
                   role="menuitem"
                 >
