@@ -19,7 +19,17 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
+        sans: ["Poppins", "Inter", "sans-serif"],
+      },
+      colors: {
+        nupal: {
+          50: '#F0F9FF',
+          100: '#E6F4FF',
+          300: '#7FC7FF',
+          400: '#4EC1FF',
+          500: '#2F80ED',
+          600: '#1F5FB6',
+        }
       },
       borderRadius: {
         lg: "0.5rem",

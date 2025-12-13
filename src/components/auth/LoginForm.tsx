@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -102,7 +103,11 @@ export default function LoginForm() {
       </div>
       <div className="relative z-10 w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
-          <span className="text-2xl font-semibold text-slate-900">NUPAL</span>
+          <div className="flex items-center gap-3">
+            <Link href="/" aria-label="Home" className="inline-block">
+              <Image src="/logo.svg" alt="NUPAL" width={130} height={34} priority className="cursor-pointer" />
+            </Link>
+          </div>
           {/* <Link
             href="/"
             className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/80 backdrop-blur ring-1 ring-slate-200 text-slate-700 hover:text-blue-700 hover:bg-white transition"
