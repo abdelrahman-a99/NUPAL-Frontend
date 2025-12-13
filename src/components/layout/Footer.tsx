@@ -1,4 +1,5 @@
-'use client';
+ 'use client';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 export function Footer() {
@@ -13,8 +14,8 @@ export function Footer() {
           {/* Brand Column */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-xl font-bold text-slate-900">NU PAL</span>
-            </div>
+                <Image src="/logo.svg" alt="NUPAL" width={130} height={34} priority />
+              </div>
             <p className="text-sm leading-relaxed text-slate-600">
               Empowering students to make informed academic decisions and achieve their educational goals.
             </p>
@@ -70,7 +71,7 @@ export function Footer() {
             <div className="flex gap-4">
               <a
                 href="#"
-                className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:bg-gradient-to-br hover:from-indigo-500 hover:to-blue-400 hover:text-white"
+                              className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:bg-gradient-to-br hover:from-indigo-500 hover:to-blue-400 hover:text-white"
                 aria-label="Facebook"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">

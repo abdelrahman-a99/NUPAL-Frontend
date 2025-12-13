@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { getToken, parseJwt, removeToken } from "@/lib/auth";
 import { User, Settings, LogOut } from "lucide-react";
@@ -43,6 +44,20 @@ export function Navbar() {
     return () => window.removeEventListener('hashchange', checkHash);
   }, []);
 
+  // If we land on the home page with the #services hash, scroll to the services section with offset
+  useEffect(() => {
+    if (pathname === '/' && activeHash === '#services') {
+      const servicesSection = document.getElementById('services');
+      if (servicesSection) {
+        const offset = 100;
+        const elementPosition = servicesSection.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+      }
+    }
+  }, [pathname, activeHash]);
+
   useEffect(() => {
     try {
       const token = getToken();
@@ -70,7 +85,7 @@ export function Navbar() {
     >
       <div className="relative flex w-full items-center justify-between px-20 py-3">
         <div className="flex items-center gap-3">
-          <span className="text-xl font-bold text-slate-900">NU PAL</span>
+          <Image src="/logo.svg" alt="NUPAL" width={130} height={34} priority />
         </div>
 
         <nav
@@ -129,13 +144,24 @@ export function Navbar() {
                 </a>
               );
             }
+            // If the services link is clicked from another page, navigate to home with a #services hash
+            if (link.path === '/services' && pathname !== '/') {
+              return (
+                <Link
+                  key={link.path}
+                  href={'/#services'}
+                  className={`transition-colors duration-200 hover:text-blue-400 ${pathname === link.path ? "text-blue-400" : ""}`}
+                >
+                  {link.name}
+                </Link>
+              );
+            }
             // For all other links, use Link component to navigate to separate pages
             return (
               <Link
                 key={link.path}
                 href={link.path}
-                className={`transition-colors duration-200 hover:text-blue-400 ${pathname === link.path ? "text-blue-400" : ""
-                  }`}
+                className={`transition-colors duration-200 hover:text-blue-400 ${pathname === link.path ? "text-blue-400" : ""}`}
               >
                 {link.name}
               </Link>
