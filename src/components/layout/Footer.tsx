@@ -1,10 +1,15 @@
- 'use client';
+'use client';
+import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 export function Footer() {
   const pathname = usePathname();
-  if (pathname === '/login' || pathname === '/chat' || pathname.startsWith('/dashboard')) {
+
+  // Hide footer on specialized full-screen pages or by user request
+  const isHidden = pathname === '/login' || pathname === '/chat' || pathname === '/contact';
+
+  if (isHidden) {
     return null;
   }
   return (
@@ -14,8 +19,8 @@ export function Footer() {
           {/* Brand Column */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-                <Image src="/logo.svg" alt="NUPAL" width={130} height={34} priority />
-              </div>
+              <Image src="/logo.svg" alt="NUPAL" width={130} height={34} priority />
+            </div>
             <p className="text-sm leading-relaxed text-slate-600">
               Empowering students to make informed academic decisions and achieve their educational goals.
             </p>
@@ -24,21 +29,21 @@ export function Footer() {
           {/* Platform Column */}
           <div>
             <h3 className="mb-4 text-sm font-semibold text-slate-900">Platform</h3>
-            <ul className="space-y-3">
+            <ul className="space-y-3 text-sm">
               <li>
-                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-blue-400">
-                  Features
-                </a>
+                <Link href="/dashboard" className="text-slate-600 transition hover:text-slate-900">
+                  Dashboard
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-blue-400">
-                  Pricing
-                </a>
+                <Link href="/career-hub" className="text-slate-600 transition hover:text-slate-900">
+                  Career Hub
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-slate-600 transition-colors hover:text-blue-400">
-                  Support
-                </a>
+                <Link href="/dashboard" className="text-slate-600 transition hover:text-slate-900">
+                  Chatbot
+                </Link>
               </li>
             </ul>
           </div>
@@ -71,7 +76,7 @@ export function Footer() {
             <div className="flex gap-4">
               <a
                 href="#"
-                              className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:bg-gradient-to-br hover:from-indigo-500 hover:to-blue-400 hover:text-white"
+                className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:bg-gradient-to-br hover:from-indigo-500 hover:to-blue-400 hover:text-white"
                 aria-label="Facebook"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
