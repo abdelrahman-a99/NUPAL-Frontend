@@ -50,8 +50,8 @@ export const features: Feature[] = [
   },
   {
     id: 8,
-    title: 'Academic Insights',
-    description: 'Get detailed insights into your academic performance and areas for improvement.',
+    title: 'Academic Map',
+    description: 'Get a visual map of your academic performance and areas for improvement.',
     icon: '💡',
   },
 ];
