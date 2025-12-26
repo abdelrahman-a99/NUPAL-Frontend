@@ -31,7 +31,7 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" className="bg-slate-0 py-20 relative overflow-hidden">
+    <section id="contact" className="bg-white py-20 relative overflow-hidden">
       <div className="absolute bottom-0 left-0 right-0 h-[700px] overflow-hidden">
         <svg className="absolute bottom-0 w-full h-full" viewBox="0 0 1440 700" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0,200L60,190C120,180,240,160,360,150C480,140,600,140,720,155C840,170,960,200,1080,210C1200,220,1320,210,1380,205L1440,200L1440,700L1380,700C1320,700,1200,700,1080,700C960,700,840,700,720,700C600,700,480,700,360,700C240,700,120,700,60,700L0,700Z" fill="url(#gradient1-home)" style={{ animation: 'waveFloat 9s ease-in-out infinite' }} />
