@@ -2,7 +2,7 @@
 
 export default function Hero() {
   return (
-    <main className="relative isolate w-full overflow-hidden px-20 py-20 sm:px-20">
+    <main id="home" className="relative isolate w-full overflow-hidden px-20 py-20 sm:px-20">
       <div
         className="absolute inset-0 bg-cover bg-center blur-[0.05px]"
         style={{ backgroundImage: "url('/nile%202.jpg')" }}

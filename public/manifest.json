@@ -1,0 +1,16 @@
+{
+  "name": "NU PAL - Academic Advising Simplified",
+  "short_name": "NU PAL",
+  "description": "AI-powered academic advising platform for Nile University students.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2F80ED",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

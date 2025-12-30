@@ -3,18 +3,24 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getToken, parseJwt, removeToken } from "@/lib/auth";
 import { User, Settings, LogOut } from "lucide-react";
 
-const navLinks = [
-  { name: "Home", path: "/" },
-  { name: "Services", path: "/services" },
-  { name: "About", path: "/about" },
-  { name: "Contact", path: "/contact" },
+interface NavLinkItem {
+  name: string;
+  path: string;
+  id?: string;
+}
+
+const navLinks: NavLinkItem[] = [
+  { name: "Home", path: "/#home", id: "home" },
+  { name: "Services", path: "/#services", id: "services" },
+  { name: "About", path: "/#about", id: "about" },
+  { name: "Contact", path: "/#contact", id: "contact" },
 ];
 
-const dashboardLinks = [
+const dashboardLinks: NavLinkItem[] = [
   { name: "Dashboard", path: "/dashboard" },
   { name: "Chatbot", path: "/chat" },
   { name: "Career Hub", path: "/career-hub" },
@@ -22,11 +28,12 @@ const dashboardLinks = [
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeHash, setActiveHash] = useState('');
+  const [activeSection, setActiveSection] = useState('home');
   const [menuOpen, setMenuOpen] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname() || '';
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -35,29 +42,34 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Intersection Observer for Scroll Spy
   useEffect(() => {
-    // Check hash on mount and when it changes
-    const checkHash = () => {
-      setActiveHash(window.location.hash);
+    if (pathname !== '/') return;
+
+    const options = {
+      root: null,
+      rootMargin: '-100px 0px -40% 0px',
+      threshold: 0,
     };
-    checkHash();
-    window.addEventListener('hashchange', checkHash);
-    return () => window.removeEventListener('hashchange', checkHash);
-  }, []);
 
-  // If we land on the home page with the #services hash, scroll to the services section with offset
-  useEffect(() => {
-    if (pathname === '/' && activeHash === '#services') {
-      const servicesSection = document.getElementById('services');
-      if (servicesSection) {
-        const offset = 100;
-        const elementPosition = servicesSection.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - offset;
+    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
 
-        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-      }
-    }
-  }, [pathname, activeHash]);
+    const observer = new IntersectionObserver(handleIntersect, options);
+
+    const sections = navLinks
+      .filter(link => !!link.id)
+      .map(link => document.getElementById(link.id!))
+      .filter(Boolean);
+    sections.forEach(section => observer.observe(section!));
+
+    return () => observer.disconnect();
+  }, [pathname]);
 
   // Click outside listener for profile menu
   useEffect(() => {
@@ -94,6 +106,26 @@ export function Navbar() {
 
   const links = (pathname.startsWith('/dashboard') || pathname === '/chat' || pathname === '/career-hub') ? dashboardLinks : navLinks;
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string, id?: string) => {
+    if (pathname === '/' && id) {
+      e.preventDefault();
+      const element = document.getElementById(id);
+      if (element) {
+        const offset = 100;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+
+        // Update URL hash without jumping
+        window.history.pushState(null, '', `/#${id}`);
+      }
+    }
+  };
+
   return (
     <header
       className={`sticky top-0 z-50 border-b backdrop-blur-sm transition-colors duration-300 ${isScrolled
@@ -103,83 +135,30 @@ export function Navbar() {
     >
       <div className="relative flex w-full items-center justify-between px-20 py-3">
         <div className="flex items-center gap-3">
-          <Image src="/logo.svg" alt="NUPAL" width={130} height={34} priority />
+          <Link href="/">
+            <Image src="/logo.svg" alt="NUPAL" width={130} height={34} priority />
+          </Link>
         </div>
 
         <nav
           className={`absolute left-1/2 flex -translate-x-1/2 items-center gap-10 text-sm font-semibold text-slate-600`}
         >
           {links.map((link) => {
-            // For Services link on home page - scroll to section
-            if (link.path === '/services' && pathname === '/') {
-              const isActive = activeHash === '#services';
-              return (
-                <a
-                  key={link.path}
-                  href="#services"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const servicesSection = document.getElementById('services');
-                    if (servicesSection) {
-                      const offset = 100;
-                      const elementPosition = servicesSection.getBoundingClientRect().top;
-                      const offsetPosition = elementPosition + window.pageYOffset - offset;
+            const isActive = link.id
+              ? (pathname === '/' && activeSection === link.id)
+              : pathname === link.path;
 
-                      window.scrollTo({
-                        top: offsetPosition,
-                        behavior: 'smooth'
-                      });
-
-                      // Trigger hash change to open accordion
-                      setTimeout(() => {
-                        window.location.hash = '#services';
-                      }, 100);
-                    }
-                  }}
-                  className={`transition-colors duration-200 hover:text-blue-400 ${isActive ? "text-blue-400" : ""
-                    }`}
-                >
-                  {link.name}
-                </a>
-              );
-            }
-            // For Home link on home page
-            if (link.path === '/' && pathname === '/') {
-              const isActive = !activeHash || (activeHash !== '#services' && activeHash !== '#contact' && activeHash !== '#about');
-              return (
-                <a
-                  key={link.path}
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.location.hash = '';
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className={`transition-colors duration-200 hover:text-blue-400 ${isActive ? "text-blue-400" : ""
-                    }`}
-                >
-                  {link.name}
-                </a>
-              );
-            }
-            // If the services link is clicked from another page, navigate to home with a #services hash
-            if (link.path === '/services' && pathname !== '/') {
-              return (
-                <Link
-                  key={link.path}
-                  href={'/#services'}
-                  className={`transition-colors duration-200 hover:text-blue-400 ${pathname === link.path ? "text-blue-400" : ""}`}
-                >
-                  {link.name}
-                </Link>
-              );
-            }
-            // For all other links, use Link component to navigate to separate pages
             return (
               <Link
                 key={link.path}
                 href={link.path}
-                className={`transition-colors duration-200 hover:text-blue-400 ${pathname === link.path ? "text-blue-400" : ""}`}
+                onClick={(e) => {
+                  const id = link.id;
+                  if (id) {
+                    handleNavClick(e, link.path, id);
+                  }
+                }}
+                className={`transition-colors duration-200 hover:text-blue-400 ${isActive ? "text-blue-400" : ""}`}
               >
                 {link.name}
               </Link>
@@ -214,7 +193,7 @@ export function Navbar() {
                   onClick={() => setMenuOpen(false)}
                   role="menuitem"
                 >
-                  <User size={16} />
+                  <User size={16} aria-hidden="true" />
                   <span>Profile</span>
                 </Link>
                 <button
@@ -222,7 +201,7 @@ export function Navbar() {
                   onClick={() => setMenuOpen(false)}
                   role="menuitem"
                 >
-                  <Settings size={16} />
+                  <Settings size={16} aria-hidden="true" />
                   <span>Settings</span>
                 </button>
                 <div className="my-2 h-px bg-slate-200" />
@@ -234,7 +213,7 @@ export function Navbar() {
                   }}
                   role="menuitem"
                 >
-                  <LogOut size={16} />
+                  <LogOut size={16} aria-hidden="true" />
                   <span>Logout</span>
                 </button>
               </div>
@@ -252,3 +231,4 @@ export function Navbar() {
     </header>
   );
 }
+
