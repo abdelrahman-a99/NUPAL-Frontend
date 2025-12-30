@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import { services } from '@/data/services';
 
 export default function ServicesSection() {
@@ -24,11 +25,10 @@ export default function ServicesSection() {
               <button
                 key={service.id}
                 onClick={() => handleServiceChange(service.id)}
-                className={`rounded-full px-6 py-2.5 text-sm font-semibold uppercase transition-all duration-200 ${
-                  activeService === service.id
+                className={`rounded-full px-6 py-2.5 text-sm font-semibold uppercase transition-all duration-200 ${activeService === service.id
                     ? 'bg-blue-400 text-white shadow-md shadow-blue-500/30'
                     : 'bg-blue-50 text-blue-400 hover:bg-blue-100'
-                }`}
+                  }`}
               >
                 {service.title}
               </button>
@@ -49,9 +49,8 @@ export default function ServicesSection() {
                     className="flex w-full items-center justify-between py-6 text-left"
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`h-1 w-1 rounded-full transition-all duration-300 ${
-                        isOpen ? 'h-12 w-1 bg-blue-400' : 'bg-blue-300'
-                      }`} />
+                      <div className={`h-1 w-1 rounded-full transition-all duration-300 ${isOpen ? 'h-12 w-1 bg-blue-400' : 'bg-blue-300'
+                        }`} />
                       <h3 className="text-xl font-bold text-slate-900">{service.title}</h3>
                     </div>
                     <svg className={`h-5 w-5 text-slate-600 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,7 +85,7 @@ export default function ServicesSection() {
                 <div key={service.id} className="absolute inset-0 transition-transform duration-700 ease-in-out" style={{ transform: `translateX(${translateX})`, zIndex }}>
                   <div className="absolute inset-0 bg-white/98 backdrop-blur-sm rounded-2xl p-[15px] shadow-xl" style={{ background: 'linear-gradient(to bottom, #dbeafe 0%, #2563eb 100%)' }}>
                     <div className="h-full w-full bg-white/98 backdrop-blur-sm overflow-hidden">
-                      <img src={service.image} alt={service.title} className="h-full w-full object-cover" />
+                      <Image src={service.image} alt={service.title} width={600} height={400} className="h-full w-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent" />
                     </div>
                   </div>

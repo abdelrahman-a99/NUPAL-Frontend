@@ -193,7 +193,7 @@ export function Navbar() {
                   onClick={() => setMenuOpen(false)}
                   role="menuitem"
                 >
-                  <User size={16} />
+                  <User size={16} aria-hidden="true" />
                   <span>Profile</span>
                 </Link>
                 <button
@@ -201,7 +201,7 @@ export function Navbar() {
                   onClick={() => setMenuOpen(false)}
                   role="menuitem"
                 >
-                  <Settings size={16} />
+                  <Settings size={16} aria-hidden="true" />
                   <span>Settings</span>
                 </button>
                 <div className="my-2 h-px bg-slate-200" />
@@ -213,7 +213,7 @@ export function Navbar() {
                   }}
                   role="menuitem"
                 >
-                  <LogOut size={16} />
+                  <LogOut size={16} aria-hidden="true" />
                   <span>Logout</span>
                 </button>
               </div>

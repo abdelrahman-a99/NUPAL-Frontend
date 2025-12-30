@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 
 export default function AboutIntroSection() {
   return (
@@ -23,7 +24,7 @@ export default function AboutIntroSection() {
               <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 via-indigo-600 to-purple-600 rounded-full" />
               <div className="relative">
                 <div className="relative overflow-hidden rounded-3xl group shadow-2xl">
-                  <img src="/nile4.jpg" alt="Nile University Campus" className="w-full h-auto object-cover rounded-3xl transition-transform duration-700 group-hover:scale-105" style={{ minHeight: '400px', maxHeight: '600px' }} />
+                  <Image src="/nile4.jpg" alt="Nile University Campus" width={800} height={600} className="w-full h-auto object-cover rounded-3xl transition-transform duration-700 group-hover:scale-105" style={{ minHeight: '400px', maxHeight: '600px' }} />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent pointer-events-none rounded-3xl" />
                 </div>
               </div>
