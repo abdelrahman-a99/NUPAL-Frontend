@@ -8,6 +8,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { getToken, parseJwt, removeToken } from "@/lib/auth";
 import { User, Settings, LogOut } from "lucide-react";
 
+import { useSmoothScroll } from "@/hooks/useSmoothScroll";
+
 interface NavLinkItem {
   name: string;
   path: string;
@@ -35,6 +37,7 @@ export function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname() || '';
   const router = useRouter();
+  const { scrollToId } = useSmoothScroll(100);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -110,20 +113,7 @@ export function Navbar() {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string, id?: string) => {
     if (pathname === '/' && id) {
       e.preventDefault();
-      const element = document.getElementById(id);
-      if (element) {
-        const offset = 100;
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - offset;
-
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        });
-
-        // Update URL hash without jumping
-        window.history.pushState(null, '', `/#${id}`);
-      }
+      scrollToId(id);
     }
   };
 

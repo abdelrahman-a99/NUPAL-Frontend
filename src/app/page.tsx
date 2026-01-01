@@ -8,28 +8,36 @@ import FeaturesSection from '@/components/home/FeaturesSection';
 import AboutIntroSection from '@/components/home/AboutIntroSection';
 import ContactSection from '@/components/home/ContactSection';
 
+import { useSmoothScroll } from '@/hooks/useSmoothScroll';
+
 export default function Home() {
+  const { scrollToId } = useSmoothScroll(100);
+
   useEffect(() => {
-    const handleHashChange = () => {
-      if (window.location.hash === '#services') {
-        setTimeout(() => {
-          const servicesSection = document.getElementById('services');
-          if (servicesSection) {
-            const offset = 100;
-            const elementPosition = servicesSection.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - offset;
-            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-          }
-        }, 100);
-      } else if (!window.location.hash) {
+    const handleInitialScroll = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash) {
+        // Small delay to ensure content is rendered
+        setTimeout(() => scrollToId(hash), 100);
+      } else {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     };
+
+    handleInitialScroll();
+
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash) {
+        scrollToId(hash);
+      }
+    };
+
     window.addEventListener('hashchange', handleHashChange);
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
-  }, []);
+  }, [scrollToId]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-white">

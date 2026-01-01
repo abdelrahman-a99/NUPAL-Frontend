@@ -2,14 +2,14 @@
 
 export default function Hero() {
   return (
-    <main id="home" className="relative isolate w-full overflow-hidden px-20 py-20 sm:px-20">
+    <section id="home" className="relative isolate w-full overflow-hidden px-20 py-20 sm:px-20">
       <div
         className="absolute inset-0 bg-cover bg-center blur-[0.05px]"
         style={{ backgroundImage: "url('/nile%202.jpg')" }}
       />
       <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-white/30" />
 
-      <section className="relative z-10 flex min-h-[70vh] w-full flex-col justify-center gap-10 py-10">
+      <div className="relative z-10 flex min-h-[70vh] w-full flex-col justify-center gap-10 py-10">
         <div className="max-w-3xl space-y-8 text-left">
           <h1 className="text-4xl font-bold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
             Your Academic Journey, <span className="text-blue-400">Simplified</span>
@@ -27,7 +27,7 @@ export default function Hero() {
             </button>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
   );
 }

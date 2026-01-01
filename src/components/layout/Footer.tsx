@@ -4,26 +4,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
+import { useSmoothScroll } from '@/hooks/useSmoothScroll';
+
 export function Footer() {
   const pathname = usePathname();
+  const { scrollToId } = useSmoothScroll(100);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     if (pathname === '/') {
       e.preventDefault();
-      const element = document.getElementById(id);
-      if (element) {
-        const offset = 100;
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - offset;
-
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        });
-
-        // Update URL hash without jumping
-        window.history.pushState(null, '', `/#${id}`);
-      }
+      scrollToId(id);
     }
   };
 
