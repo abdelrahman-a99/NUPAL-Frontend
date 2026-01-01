@@ -143,6 +143,7 @@ export function Navbar() {
               <Link
                 key={link.path}
                 href={link.path}
+                scroll={false}
                 onClick={(e) => {
                   const id = link.id;
                   if (id) {
@@ -157,7 +158,7 @@ export function Navbar() {
           })}
         </nav>
 
-        {(pathname.startsWith('/dashboard') || pathname === '/chat' || pathname === '/career-hub') ? (
+        {(pathname.startsWith('/dashboard') || pathname === '/chat' || pathname === '/career-hub' || pathname === '/404') ? (
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenuOpen((v) => !v)}

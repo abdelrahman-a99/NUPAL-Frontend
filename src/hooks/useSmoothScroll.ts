@@ -1,14 +1,12 @@
-'use client';
-
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export const useSmoothScroll = (offset: number = 100) => {
   const scrollToId = useCallback((id: string) => {
     const element = document.getElementById(id);
     if (!element) return;
 
-    const elementPosition = element.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - offset;
+    const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+    const offsetPosition = elementPosition - offset;
 
     window.scrollTo({
       top: offsetPosition,
@@ -16,8 +14,10 @@ export const useSmoothScroll = (offset: number = 100) => {
     });
 
     // Update URL hash without jumping
-    window.history.pushState(null, '', `/#${id}`);
+    if (window.location.hash !== `#${id}`) {
+      window.history.pushState(null, '', `/#${id}`);
+    }
   }, [offset]);
 
-  return { scrollToId };
+  return useMemo(() => ({ scrollToId }), [scrollToId]);
 };

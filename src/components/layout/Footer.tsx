@@ -18,7 +18,7 @@ export function Footer() {
   };
 
   // Hide footer on specialized full-screen pages or by user request
-  const isHidden = pathname === '/login' || pathname === '/chat' || pathname === '/contact';
+  const isHidden = ['/login', '/chat', '/contact', '/404'].includes(pathname);
 
   if (isHidden) {
     return null;
@@ -75,6 +75,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/#services"
+                  scroll={false}
                   onClick={(e) => handleNavClick(e, 'services')}
                   className="text-slate-600 transition hover:text-blue-400"
                 >
@@ -84,6 +85,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/#about"
+                  scroll={false}
                   onClick={(e) => handleNavClick(e, 'about')}
                   className="text-slate-600 transition hover:text-blue-400"
                 >
@@ -93,6 +95,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/#contact"
+                  scroll={false}
                   onClick={(e) => handleNavClick(e, 'contact')}
                   className="text-slate-600 transition hover:text-blue-400"
                 >

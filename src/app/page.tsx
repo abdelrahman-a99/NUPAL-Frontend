@@ -14,29 +14,14 @@ export default function Home() {
   const { scrollToId } = useSmoothScroll(100);
 
   useEffect(() => {
-    const handleInitialScroll = () => {
-      const hash = window.location.hash.replace('#', '');
-      if (hash) {
-        // Small delay to ensure content is rendered
-        setTimeout(() => scrollToId(hash), 100);
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    };
-
-    handleInitialScroll();
-
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '');
-      if (hash) {
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      // Small delay to ensure content is rendered on initial mount
+      const timer = setTimeout(() => {
         scrollToId(hash);
-      }
-    };
-
-    window.addEventListener('hashchange', handleHashChange);
-    return () => {
-      window.removeEventListener('hashchange', handleHashChange);
-    };
+      }, 100);
+      return () => clearTimeout(timer);
+    }
   }, [scrollToId]);
 
   return (
