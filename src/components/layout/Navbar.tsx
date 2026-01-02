@@ -128,7 +128,7 @@ export function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
         <div className="flex items-center gap-3">
           <Link href="/">
-            <Image src="/logo.svg" alt="NUPAL" width={130} height={34} priority />
+            <Image src="/logo.svg" alt="NUPal" width={100} height={34} priority />
           </Link>
         </div>
 
@@ -177,7 +177,7 @@ export function Navbar() {
                   </div>
 
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-semibold text-slate-900">{userName ?? 'NU Pal User'}</div>
+                    <div className="truncate text-sm font-semibold text-slate-900">{userName ?? 'NUPal User'}</div>
                     <div className="truncate text-xs text-slate-500">Account</div>
                   </div>
                 </div>

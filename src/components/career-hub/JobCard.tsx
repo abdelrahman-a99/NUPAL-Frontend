@@ -43,13 +43,12 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
                             <MapPin className="mr-1 h-3.5 w-3.5" />
                             <span className="line-clamp-1">{job.location}</span>
                         </div>
+
+                        <div className="mt-3 mb-2 line-clamp-2 text-[13px] text-slate-500 max-w-3xl">
+                            {job.description.replace(/<strong>|<\/strong>/g, '')}
+                        </div>
                     </div>
                 </div>
-                {/* Save button placeholder or similar could go here */}
-            </div>
-
-            <div className="mb-2 line-clamp-2 text-sm text-slate-500">
-                {job.description.replace(/<strong>|<\/strong>/g, '')}
             </div>
 
             <div className="mt-auto flex flex-wrap items-center gap-3 text-xs font-medium text-slate-500">

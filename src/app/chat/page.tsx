@@ -17,6 +17,7 @@ interface Chat {
   title: string;
   lastMessage: string;
   timestamp: string;
+  isPinned?: boolean;
   messages: Message[];
 }
 
@@ -24,11 +25,23 @@ export default function ChatPage() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarOpen((prev) => !prev);
+  }, []);
 
   // Get active chat messages
   const activeChat = chats.find((chat) => chat.id === activeChatId);
   const messages = activeChat?.messages || [];
 
+
+  // Sort chats: pinned first, then chronological
+  const sortedChats = [...chats].sort((a, b) => {
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    return 0; // Maintain relative order for same pin status
+  });
 
   // Generate chat title from first message
   const generateChatTitle = (message: string): string => {
@@ -43,17 +56,43 @@ export default function ChatPage() {
   };
 
   const handleNewChat = useCallback(() => {
+    // Check if there's already an empty chat
+    const emptyChat = chats.find((chat) => chat.messages.length === 0);
+
+    if (emptyChat) {
+      // If an empty chat exists, just switch to it
+      setActiveChatId(emptyChat.id);
+      return;
+    }
+
     const newChatId = `chat-${Date.now()}`;
     const newChat: Chat = {
       id: newChatId,
       title: 'New Chat',
       lastMessage: 'Start a conversation...',
       timestamp: 'Just now',
+      isPinned: false,
       messages: [],
     };
 
     setChats((prevChats) => [newChat, ...prevChats]);
     setActiveChatId(newChatId);
+  }, [chats]);
+
+  const handleRenameChat = useCallback((chatId: string, newTitle: string) => {
+    setChats((prevChats) =>
+      prevChats.map((chat) =>
+        chat.id === chatId ? { ...chat, title: newTitle } : chat
+      )
+    );
+  }, []);
+
+  const handlePinChat = useCallback((chatId: string) => {
+    setChats((prevChats) =>
+      prevChats.map((chat) =>
+        chat.id === chatId ? { ...chat, isPinned: !chat.isPinned } : chat
+      )
+    );
   }, []);
 
   const handleSendMessage = useCallback(
@@ -195,20 +234,54 @@ export default function ChatPage() {
   }, [activeChatId]);
 
   return (
-    <div className="flex h-[calc(99vh-64px)] w-full overflow-hidden bg-white">
-      <ChatSidebar
-        chats={chats}
-        activeChatId={activeChatId}
-        onNewChat={handleNewChat}
-        onSelectChat={handleSelectChat}
-        onDeleteChat={handleDeleteChat}
-        onSearchChange={handleSearchChange}
-      />
-      <ChatInterface
-        messages={messages}
-        onSendMessage={handleSendMessage}
-        isLoading={isLoading}
-      />
+    <div className="flex h-[calc(100vh-64px)] w-full overflow-hidden bg-white relative">
+      {/* Floating Toggle Button (Visible when sidebar is closed) */}
+      {!isSidebarOpen && (
+        <button
+          onClick={toggleSidebar}
+          className="absolute left-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900"
+          title="Open sidebar"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+            <line x1="9" x2="9" y1="3" y2="21" />
+          </svg>
+        </button>
+      )}
+
+      <div
+        className={`flex h-full flex-shrink-0 transition-all duration-300 ease-in-out ${isSidebarOpen ? 'w-80' : 'w-0'
+          } overflow-hidden`}
+      >
+        <ChatSidebar
+          chats={sortedChats}
+          activeChatId={activeChatId}
+          onNewChat={handleNewChat}
+          onSelectChat={handleSelectChat}
+          onDeleteChat={handleDeleteChat}
+          onRenameChat={handleRenameChat}
+          onPinChat={handlePinChat}
+          onSearchChange={handleSearchChange}
+          onToggleSidebar={toggleSidebar}
+        />
+      </div>
+
+      <div className="flex-1 overflow-hidden">
+        <ChatInterface
+          messages={messages}
+          onSendMessage={handleSendMessage}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { API_ENDPOINTS } from '@/config/api';
+import Button from '@/components/ui/Button';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -107,7 +108,7 @@ export default function LoginForm() {
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" aria-label="Home" className="inline-block">
-              <Image src="/logo.svg" alt="NUPAL" width={130} height={34} priority className="cursor-pointer" />
+              <Image src="/logo.svg" alt="NUPal" width={100} height={34} priority className="cursor-pointer" />
             </Link>
           </div>
           {/* <Link
@@ -160,13 +161,15 @@ export default function LoginForm() {
               </button>
             </div>
           </div>
-          <button
+          <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-lg bg-gradient-to-r from-blue-400 to-blue-400 px-6 py-3 text-sm font-semibold uppercase text-white shadow-sm transition-colors duration-200 hover: hover:to-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+            variant="primary"
+            size="lg"
+            className="w-full"
           >
             {isSubmitting ? 'LOGGING IN...' : 'LOGIN'}
-          </button>
+          </Button>
         </form>
         <div className="mt-4">{err && <div className="text-red-600 text-sm mb-2">{err}</div>}</div>
       </div>

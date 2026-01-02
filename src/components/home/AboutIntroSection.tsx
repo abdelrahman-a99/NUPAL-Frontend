@@ -16,7 +16,7 @@ export default function AboutIntroSection() {
             <span className="text-sm font-semibold uppercase tracking-wider text-blue-400">About Us</span>
             <div className="mt-2 h-1 w-16 bg-gradient-to-r from-blue-400 to-indigo-600" />
           </div>
-          <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl max-w-3xl leading-tight">NU PAL empowers everyone to build their academic success</h2>
+          <h2 className="text-3xl font-bold text-slate-900 sm:text-2xl lg:text-3xl max-w-3xl leading-tight">NUPal empowers everyone to build their academic success</h2>
         </div>
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:items-center">
           <div className="relative">
@@ -34,7 +34,7 @@ export default function AboutIntroSection() {
             <div className="space-y-4">
               <div className="flex items-start gap-4">
                 <div className="mt-2 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-blue-400" />
-                <p className="text-lg leading-relaxed text-slate-700">NU PAL is a cutting-edge academic advising platform that leverages artificial intelligence to transform how students navigate their educational journey. Our platform combines advanced machine learning algorithms with proven academic advising principles to deliver personalized, data-driven guidance that adapts to each student&#39;s unique goals and circumstances.</p>
+                <p className="text-lg leading-relaxed text-slate-700">NUPal is a cutting-edge academic advising platform that leverages artificial intelligence to transform how students navigate their educational journey. </p>
               </div>
             </div>
             <div className="space-y-4">

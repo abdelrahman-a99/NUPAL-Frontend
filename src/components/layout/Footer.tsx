@@ -30,7 +30,7 @@ export function Footer() {
           {/* Brand Column */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <Image src="/logo.svg" alt="NUPAL" width={130} height={34} priority />
+              <Image src="/logo.svg" alt="NUPal" width={100} height={34} priority />
             </div>
             <p className="text-sm leading-relaxed text-slate-600">
               Empowering students to make informed academic decisions and achieve their educational goals.
@@ -162,7 +162,7 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="text-center">
-          <p className="text-sm text-slate-600">© {new Date().getFullYear()} NU PAL. All rights reserved.</p>
+          <p className="text-sm text-slate-600">© {new Date().getFullYear()} NUPal. All rights reserved.</p>
         </div>
       </div>
     </footer>

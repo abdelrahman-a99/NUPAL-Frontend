@@ -14,21 +14,21 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "NU PAL - Your Academic Journey, Simplified",
+  title: "NUPal - Your Academic Journey, Simplified",
   description: "AI-powered academic advising platform for Nile University students. Plan your courses, track your progress, and achieve your educational goals.",
-  keywords: ["Nile University", "Academic Advising", "Course Planning", "AI Advisor", "Student Success", "NU PAL"],
-  authors: [{ name: "NU PAL Team" }],
+  keywords: ["Nile University", "Academic Advising", "Course Planning", "AI Advisor", "Student Success", "NUPal"],
+  authors: [{ name: "NUPal Team" }],
   openGraph: {
-    title: "NU PAL - Academic Advising Simplified",
+    title: "NUPal - Academic Advising Simplified",
     description: "The intelligent way to navigate your academic journey at Nile University.",
     url: "https://nupal.edu.eg",
-    siteName: "NU PAL",
+    siteName: "NUPal",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "NU PAL - Academic Advising Simplified",
+    title: "NUPal - Academic Advising Simplified",
     description: "The intelligent way to navigate your academic journey at Nile University.",
   },
   robots: {
