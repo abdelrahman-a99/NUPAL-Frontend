@@ -11,6 +11,7 @@ import { BackgroundAnimation } from '@/components/career-hub/BackgroundAnimation
 import { careerPaths } from '@/data/careerData';
 import { CareerCategoryBox } from '@/components/career-hub/CareerCategoryBox';
 import { CareerPathwaysDisplay } from '@/components/career-hub/CareerPathwaysDisplay';
+import Button from '@/components/ui/Button';
 
 export default function CareerHubPage() {
     const [jobs, setJobs] = useState<Job[]>([]);
@@ -304,23 +305,25 @@ export default function CareerHubPage() {
                             </div>
 
                             {/* Search Button */}
-                            <button
+                            <Button
                                 type="submit"
+                                variant="primary"
+                                size="md"
                                 disabled={loading}
-                                className="rounded-lg bg-blue-400 px-8 py-3 font-semibold text-white shadow-md transition-all hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="px-8 shadow-md"
                             >
                                 Search
-                            </button>
+                            </Button>
                         </div>
                     </form>
 
                     {/* Popular Searches */}
                     <div className="mt-6 text-sm text-slate-500">
                         <span className="font-medium">Popular:</span>{' '}
-                        <button onClick={() => { setJobType('Software Engineer'); loadJobs('Software Engineer', location); }} className="text-blue-400 hover:underline">Software Engineer</button>,{' '}
-                        <button onClick={() => { setJobType('AI Engineer'); loadJobs('AI Engineer', location); }} className="text-blue-400 hover:underline">AI Engineer</button>,{' '}
-                        <button onClick={() => { setJobType('Cloud Engineer'); loadJobs('Cloud Engineer', location); }} className="text-blue-400 hover:underline">Cloud Engineer</button>,{' '}
-                        <button onClick={() => { setJobType('Data Engineer'); loadJobs('Data Engineer', location); }} className="text-blue-400 hover:underline">Data Engineer</button>
+                        <Button variant="none" size="none" onClick={() => { setJobType('Software Engineer'); loadJobs('Software Engineer', location); }} className="text-blue-400 hover:underline">Software Engineer</Button>,{' '}
+                        <Button variant="none" size="none" onClick={() => { setJobType('AI Engineer'); loadJobs('AI Engineer', location); }} className="text-blue-400 hover:underline">AI Engineer</Button>,{' '}
+                        <Button variant="none" size="none" onClick={() => { setJobType('Cloud Engineer'); loadJobs('Cloud Engineer', location); }} className="text-blue-400 hover:underline">Cloud Engineer</Button>,{' '}
+                        <Button variant="none" size="none" onClick={() => { setJobType('Data Engineer'); loadJobs('Data Engineer', location); }} className="text-blue-400 hover:underline">Data Engineer</Button>
                     </div>
                 </div>
             </div>

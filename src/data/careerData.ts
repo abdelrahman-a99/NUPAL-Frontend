@@ -13,6 +13,7 @@ export interface CareerPath {
         importance: 'Critical' | 'Important' | 'Bonus';
     }[];
     learningPath: string[];
+    roadmapUrl?: string;
 }
 
 export const careerPaths: CareerPath[] = [
@@ -41,17 +42,18 @@ export const careerPaths: CareerPath[] = [
             'Master core algorithms and data structures',
             'Build full-stack project with React & Node',
             'Learn system design principles'
-        ]
+        ],
+        roadmapUrl: 'https://roadmap.sh/software-architect'
     },
     {
         id: 'ai-engineer',
         title: 'AI Engineer',
         icon: 'Brain',
-        description: 'Develop intelligent systems that can learn, reason, and adapt using state-of-the-art models.',
+        description: 'Develop intelligent systems that can learn and adapt using state-of-the-art models.',
         roleReality: [
             'Train and fine-tune machine learning models',
             'Build RAG pipelines and LLM applications',
-            'Optimize model performance and inference content',
+            'Optimize model performance and inference',
             'Clean and process large datasets'
         ],
         marketDemand: 'Very High',
@@ -68,7 +70,8 @@ export const careerPaths: CareerPath[] = [
             'Deep dive into Neural Networks',
             'Build an LLM-powered application',
             'Learn MLOps for deployment'
-        ]
+        ],
+        roadmapUrl: 'https://roadmap.sh/ai-engineer'
     },
     {
         id: 'data-scientist',
@@ -94,7 +97,8 @@ export const careerPaths: CareerPath[] = [
             'Master Statistical Analysis',
             'Learn Advanced SQL & dbt',
             'Create a predictive modeling portfolio'
-        ]
+        ],
+        roadmapUrl: 'https://roadmap.sh/ai-data-scientist'
     },
     {
         id: 'cloud-engineer',
@@ -120,7 +124,8 @@ export const careerPaths: CareerPath[] = [
             'Get AWS/Azure Certified',
             'Master Docker & Kubernetes',
             'Build Infrastructure as Code projects'
-        ]
+        ],
+        roadmapUrl: 'https://www.nextwork.org/roadmaps/cloud-engineer/'
     },
     // {
     //     id: 'cybersecurity',

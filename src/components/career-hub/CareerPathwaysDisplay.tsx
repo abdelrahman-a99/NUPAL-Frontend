@@ -1,6 +1,7 @@
 import { CareerPath } from '@/data/careerData';
 import { DynamicSkillsProfile } from '@/services/dynamicSkillsService';
-import { CheckCircle2, TrendingUp, BookOpen, Brain, DollarSign, Briefcase } from 'lucide-react';
+import { CheckCircle2, TrendingUp, BookOpen, Brain, DollarSign, Briefcase, Map } from 'lucide-react';
+import Button from '../ui/Button';
 
 interface CareerPathwaysDisplayProps {
     career: CareerPath;
@@ -77,15 +78,28 @@ export function CareerPathwaysDisplay({ career, studentProfile, onViewJobs }: Ca
                         ))}
                     </div>
 
-                    {/* View Jobs Button */}
-                    <div className="mt-6 pt-4 border-t border-slate-200">
-                        <button
+                    <div className="mt-6 pt-4 border-t border-slate-200 flex flex-wrap gap-3">
+                        <Button
+                            variant="primary"
+                            size="sm"
                             onClick={onViewJobs}
-                            className="flex items-center gap-2 bg-blue-400 hover:bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-sm"
+                            className="flex items-center gap-2"
                         >
                             <Briefcase className="h-4 w-4" />
                             <span>View Jobs</span>
-                        </button>
+                        </Button>
+
+                        {career.roadmapUrl && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                href={career.roadmapUrl}
+                                className="flex items-center gap-2 border-blue-200 text-blue-700 hover:bg-blue-50"
+                            >
+                                <Map className="h-4 w-4" />
+                                <span>Roadmap</span>
+                            </Button>
+                        )}
                     </div>
                 </div>
             </div>
