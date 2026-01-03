@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export default function AboutIntroSection() {
   return (
-    <section id="about" className="relative bg-white py-24 overflow-hidden">
+    <section id="about" className="relative bg-white pt-16 pb-24 overflow-hidden">
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-0 left-0 w-full h-full" style={{
           backgroundImage: 'radial-gradient(circle at 2px 2px, #3b82f6 1px, transparent 0)',

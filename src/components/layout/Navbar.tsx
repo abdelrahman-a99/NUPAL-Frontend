@@ -38,7 +38,7 @@ export function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname() || '';
   const router = useRouter();
-  const { scrollToId } = useSmoothScroll(100);
+  const { scrollToId } = useSmoothScroll(70);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);

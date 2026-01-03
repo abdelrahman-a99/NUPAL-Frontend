@@ -11,7 +11,7 @@ import ContactSection from '@/components/home/ContactSection';
 import { useSmoothScroll } from '@/hooks/useSmoothScroll';
 
 export default function Home() {
-  const { scrollToId } = useSmoothScroll(100);
+  const { scrollToId } = useSmoothScroll(70);
 
   useEffect(() => {
     const hash = window.location.hash.replace('#', '');
