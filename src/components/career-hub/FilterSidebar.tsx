@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
+import Button from '../ui/Button';
 
 interface FilterSidebarProps {
     onFilterChange: (filters: FilterState) => void;
@@ -62,13 +63,15 @@ export function FilterSidebar({ onFilterChange, topCompanies = [] }: FilterSideb
         <div className="w-64 flex-shrink-0 space-y-6">
             {/* Work Type Filter */}
             <div className="border-b border-slate-200 pb-4">
-                <button
+                <Button
+                    variant="none"
+                    size="none"
                     onClick={() => toggleSection('Work Type')}
                     className="flex w-full items-center justify-between text-left font-semibold text-slate-900"
                 >
                     Work Type
                     <ChevronDown className={`h-5 w-5 transition-transform ${openSections['Work Type'] ? 'rotate-180' : ''}`} />
-                </button>
+                </Button>
                 {openSections['Work Type'] && (
                     <div className="mt-3 space-y-2">
                         {['on-site', 'Remote', 'Hybrid'].map((option) => (
@@ -88,13 +91,15 @@ export function FilterSidebar({ onFilterChange, topCompanies = [] }: FilterSideb
 
             {/* Employment Type Filter */}
             <div className="border-b border-slate-200 pb-4">
-                <button
+                <Button
+                    variant="none"
+                    size="none"
                     onClick={() => toggleSection('Type of Employment')}
                     className="flex w-full items-center justify-between text-left font-semibold text-slate-900"
                 >
                     Employment Type
                     <ChevronDown className={`h-5 w-5 transition-transform ${openSections['Type of Employment'] ? 'rotate-180' : ''}`} />
-                </button>
+                </Button>
                 {openSections['Type of Employment'] && (
                     <div className="mt-3 space-y-2">
                         {['Full-time', 'Part-time', 'Contract', 'Temporary', 'Internship'].map((option) => (
@@ -115,13 +120,15 @@ export function FilterSidebar({ onFilterChange, topCompanies = [] }: FilterSideb
             {/* Top Companies Filter */}
             {topCompanies.length > 0 && (
                 <div className="border-b border-slate-200 pb-4">
-                    <button
+                    <Button
+                        variant="none"
+                        size="none"
                         onClick={() => toggleSection('Top Companies')}
                         className="flex w-full items-center justify-between text-left font-semibold text-slate-900"
                     >
                         Top Companies
                         <ChevronDown className={`h-5 w-5 transition-transform ${openSections['Top Companies'] ? 'rotate-180' : ''}`} />
-                    </button>
+                    </Button>
                     {openSections['Top Companies'] && (
                         <div className="mt-3 space-y-2">
                             {topCompanies.map((company) => (
@@ -142,13 +149,15 @@ export function FilterSidebar({ onFilterChange, topCompanies = [] }: FilterSideb
 
             {/* Categories Filter */}
             <div className="border-b border-slate-200 pb-4">
-                <button
+                <Button
+                    variant="none"
+                    size="none"
                     onClick={() => toggleSection('Categories')}
                     className="flex w-full items-center justify-between text-left font-semibold text-slate-900"
                 >
                     Categories
                     <ChevronDown className={`h-5 w-5 transition-transform ${openSections['Categories'] ? 'rotate-180' : ''}`} />
-                </button>
+                </Button>
                 {openSections['Categories'] && (
                     <div className="mt-3 space-y-2">
                         {['Design', 'Marketing', 'Development', 'Sales', 'Customer Service', 'Engineering'].map((option) => (

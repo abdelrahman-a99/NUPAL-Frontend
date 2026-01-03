@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Button from '../ui/Button';
 
 interface PaginationProps {
     currentPage: number;
@@ -46,13 +47,15 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
     return (
         <div className="flex items-center justify-center gap-2 py-8">
             {/* Previous Button */}
-            <button
+            <Button
+                variant="none"
+                size="none"
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 transition-all hover:border-blue-400 hover:text-blue-400 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-slate-300 disabled:hover:text-slate-600"
             >
                 <ChevronLeft className="h-5 w-5" />
-            </button>
+            </Button>
 
             {/* Page Numbers */}
             {getPageNumbers().map((page, index) => (
@@ -62,27 +65,31 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
                             ...
                         </span>
                     ) : (
-                        <button
+                        <Button
+                            variant="none"
+                            size="none"
                             onClick={() => onPageChange(page as number)}
                             className={`flex h-10 w-10 items-center justify-center rounded-lg border font-medium transition-all ${currentPage === page
-                                    ? 'border-blue-400 bg-blue-400 text-white'
-                                    : 'border-slate-300 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-400'
+                                ? 'border-blue-400 bg-blue-400 text-white'
+                                : 'border-slate-300 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-400'
                                 }`}
                         >
                             {page}
-                        </button>
+                        </Button>
                     )}
                 </div>
             ))}
 
             {/* Next Button */}
-            <button
+            <Button
+                variant="none"
+                size="none"
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 transition-all hover:border-blue-400 hover:text-blue-400 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-slate-300 disabled:hover:text-slate-600"
             >
                 <ChevronRight className="h-5 w-5" />
-            </button>
+            </Button>
         </div>
     );
 }

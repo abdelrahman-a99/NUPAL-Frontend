@@ -1,4 +1,5 @@
 import { Code, Brain, BarChart, Cloud, Shield, LucideIcon } from 'lucide-react';
+import Button from '../ui/Button';
 
 interface CareerCategoryBoxProps {
     id: string;
@@ -20,7 +21,9 @@ export function CareerCategoryBox({ id, title, iconName, isSelected, onClick }: 
     const Icon = iconMap[iconName] || Code;
 
     return (
-        <button
+        <Button
+            variant="none"
+            size="none"
             onClick={onClick}
             className={`group relative w-auto px-6 flex items-center justify-center gap-2 py-4 transition-all duration-200 hover:bg-slate-50
                 ${isSelected ? 'bg-white' : 'bg-white'}
@@ -37,6 +40,6 @@ export function CareerCategoryBox({ id, title, iconName, isSelected, onClick }: 
             {isSelected && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
             )}
-        </button>
+        </Button>
     );
 }
