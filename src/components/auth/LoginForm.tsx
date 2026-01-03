@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Eye, EyeOff } from 'lucide-react';
 import { API_ENDPOINTS } from '@/config/api';
 import Button from '@/components/ui/Button';
 
@@ -152,13 +153,16 @@ export default function LoginForm() {
                 className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 pr-10 text-slate-900 shadow-sm transition-colors focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
                 placeholder="password"
               />
-              <button
+              <Button
+                variant="none"
+                size="none"
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                ariaLabel={showPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 p-1"
               >
-              </button>
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </Button>
             </div>
           </div>
           <Button
