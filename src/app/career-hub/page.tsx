@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { getToken } from '@/lib/auth';
 import { Job, fetchJobs } from '@/services/jobService';
 import { DynamicSkillsProfile, fetchDynamicSkillsProfile } from '@/services/dynamicSkillsService';
 import { JobCard } from '@/components/career-hub/JobCard';
@@ -14,6 +16,15 @@ import { CareerPathwaysDisplay } from '@/components/career-hub/CareerPathwaysDis
 import Button from '@/components/ui/Button';
 
 export default function CareerHubPage() {
+    const router = useRouter();
+
+    useEffect(() => {
+        const token = getToken();
+        if (!token) {
+            router.push('/login');
+        }
+    }, [router]);
+
     const [jobs, setJobs] = useState<Job[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
