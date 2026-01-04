@@ -8,7 +8,7 @@ import { useSmoothScroll } from '@/hooks/useSmoothScroll';
 
 export function Footer() {
   const pathname = usePathname();
-  const { scrollToId, scrollToTop } = useSmoothScroll(100);
+  const { scrollToId, scrollToTop } = useSmoothScroll(70);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     if (pathname === '/') {
@@ -52,7 +52,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/dashboard"
-                  className="text-slate-600 transition hover:text-slate-900"
+                  className={`transition hover:text-blue-400 ${pathname === '/dashboard' ? 'text-blue-400' : 'text-slate-600'}`}
                 >
                   Dashboard
                 </Link>
@@ -60,7 +60,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/chat"
-                  className="text-slate-600 transition hover:text-slate-900"
+                  className={`transition hover:text-blue-400 ${pathname === '/chat' ? 'text-blue-400' : 'text-slate-600'}`}
                 >
                   Chatbot
                 </Link>
@@ -68,7 +68,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/career-hub"
-                  className="text-slate-600 transition hover:text-slate-900"
+                  className={`transition hover:text-blue-400 ${pathname === '/career-hub' ? 'text-blue-400' : 'text-slate-600'}`}
                 >
                   Career Hub
                 </Link>
