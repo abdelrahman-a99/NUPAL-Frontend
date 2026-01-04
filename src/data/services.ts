@@ -8,7 +8,7 @@ export interface Service {
 
 export const services: Service[] = [
   {
-    id: 'academic-map',
+    id: 'academic-dashboard',
     title: 'Interactive Academic Journey',
     description: 'Navigate your curriculum with an intelligent map that visualizes prerequisites and course dependencies for ultimate academic clarity.',
     image: '/academic-plan.png',
