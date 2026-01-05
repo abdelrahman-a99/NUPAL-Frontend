@@ -3,32 +3,44 @@ export interface Service {
   title: string;
   description: string;
   image: string;
+  path: string;
 }
 
 export const services: Service[] = [
   {
-    id: 'ai-recommendations',
-    title: 'AI-Powered Recommendations',
-    description: 'Get personalized course recommendations powered by advanced AI algorithms. Our system analyzes your academic history, interests, and career goals to suggest the perfect courses for your journey.',
-    image: '/services/ai-recommendations.jpg',
+    id: 'academic-dashboard',
+    title: 'Interactive Academic Journey',
+    description: 'Navigate your curriculum with an intelligent map that visualizes prerequisites and course dependencies for ultimate academic clarity.',
+    image: '/academic-plan.png',
+    path: '/dashboard',
   },
   {
-    id: 'semester-planning',
+    id: 'academic-plan',
     title: 'Semester Planning',
-    description: 'Plan your entire semester with ease. Visualize your course schedule, manage prerequisites, and optimize your workload to achieve the best balance between academics and personal life.',
-    image: '/services/semester-planning.jpg',
+    description: 'Visualize your course schedule, manage prerequisites, and optimize your workload ',
+    image: '/academic-map.png',
+    path: '/dashboard',
   },
   {
-    id: 'progress-tracking',
+    id: 'tracks-map',
     title: 'Progress Tracking',
-    description: 'Monitor your academic progress in real-time. Track your GPA, credit hours, and degree completion status with intuitive dashboards and detailed analytics.',
-    image: '/services/progress-tracking.jpg',
+    description: 'Monitor your academic progress in real-time. Track your GPA, credit hours, and degree completion status with intuitive dashboards.',
+    image: '/track-map.png',
+    path: '/dashboard',
   },
   {
-    id: 'advisor-connection',
-    title: 'Advisor Connection',
-    description: 'Connect seamlessly with your academic advisors. Schedule meetings, share your academic plans, and get expert guidance to make informed decisions about your education.',
-    image: '/services/advisor-connection.jpg',
+    id: 'chatbot',
+    title: 'AI Academic Concierge',
+    description: 'Experience 24/7 intelligent assistance. Our AI-driven concierge provides instant insights and guidance for all your academic inquiries.',
+    image: '/chatbot.png',
+    path: '/chat',
+  },
+  {
+    id: 'career-hub',
+    title: 'Career Hub',
+    description: 'Access elite career resources and internship opportunities synchronized with your academic profile.',
+    image: '/career-hub.png',
+    path: '/career-hub',
   },
 ];
 

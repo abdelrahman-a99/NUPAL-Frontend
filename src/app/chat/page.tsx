@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { getToken } from '@/lib/auth';
 import ChatSidebar from '@/components/chat/ChatSidebar';
 import ChatInterface from '@/components/chat/ChatInterface';
 import { sendMessage, getConversations, getMessages, deleteConversation, togglePinConversation, renameConversation } from '@/services/chatService';
@@ -23,6 +25,15 @@ interface Chat {
 }
 
 export default function ChatPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      router.push('/login');
+    }
+  }, [router]);
+
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [loadingChatId, setLoadingChatId] = useState<string | null>(null);

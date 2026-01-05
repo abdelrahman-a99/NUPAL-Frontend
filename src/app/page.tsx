@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 
 import Hero from '@/components/home/Hero';
-import ServicesSection from '@/components/home/ServicesSection';
+import ServicesSection from '../components/home/ServicesSection';
 import FeaturesSection from '@/components/home/FeaturesSection';
 import AboutIntroSection from '@/components/home/AboutIntroSection';
 import ContactSection from '@/components/home/ContactSection';

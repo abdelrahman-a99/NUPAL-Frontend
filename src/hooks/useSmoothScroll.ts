@@ -19,5 +19,12 @@ export const useSmoothScroll = (offset: number = 100) => {
     }
   }, [offset]);
 
-  return useMemo(() => ({ scrollToId }), [scrollToId]);
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }, []);
+
+  return useMemo(() => ({ scrollToId, scrollToTop }), [scrollToId, scrollToTop]);
 };

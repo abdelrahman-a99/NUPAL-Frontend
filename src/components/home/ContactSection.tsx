@@ -48,40 +48,67 @@ export default function ContactSection() {
         </svg>
       </div>
 
-      <div className="mx-auto max-w-4xl px-6 relative z-10">
-        <div className="rounded-2xl bg-white p-8 shadow-xl border border-slate-200 sm:p-12">
-          <div className="mb-8">
-            <h2 className="text-4xl font-bold text-slate-900 sm:text-5xl">Contact Us</h2>
-            <p className="mt-4 text-lg leading-relaxed text-slate-600">Have questions about your academic journey? Need help with course planning or academic advising? Fill out the form below</p>
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 relative z-10">
+        <div className="rounded-[2.5rem] bg-white p-8 shadow-[0_0_80px_-10px_rgba(0,0,0,0.08),0_30px_60px_-15px_rgba(0,0,0,0.1)] border border-slate-100 sm:p-12 sm:rounded-2xl">
+          <div className="mb-10 text-center sm:text-left">
+            <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl tracking-tight">Contact Us</h2>
+            <p className="mt-4 text-base sm:text-lg leading-relaxed text-slate-600 max-w-2xl mx-auto sm:mx-0">
+              Have questions about your academic journey? Need help with course planning or academic advising? Fill out the form below
+            </p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
-                <label htmlFor="studentName" className="mb-2 block text-sm font-semibold uppercase tracking-wide text-slate-900">Student Name</label>
-                <input id="studentName" name="studentName" value={formData.studentName} onChange={handleInputChange} required className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20" placeholder="Enter your full name" />
+                <label htmlFor="studentName" className="mb-2.5 block text-xs font-bold uppercase tracking-widest text-slate-500">Student Name</label>
+                <input
+                  id="studentName"
+                  name="studentName"
+                  value={formData.studentName}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full rounded-xl border border-slate-200 bg-white px-5 py-4 text-slate-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 placeholder:text-slate-300"
+                  placeholder="Enter your full name"
+                />
               </div>
               <div>
-                <label htmlFor="studentEmail" className="mb-2 block text-sm font-semibold uppercase tracking-wide text-slate-900">Student Email</label>
-                <input id="studentEmail" name="studentEmail" type="email" value={formData.studentEmail} onChange={handleInputChange} required className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20" placeholder="student@un.edu.eg" />
+                <label htmlFor="studentEmail" className="mb-2.5 block text-xs font-bold uppercase tracking-widest text-slate-500">Student Email</label>
+                <input
+                  id="studentEmail"
+                  name="studentEmail"
+                  type="email"
+                  value={formData.studentEmail}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full rounded-xl border border-slate-200 bg-white px-5 py-4 text-slate-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 placeholder:text-slate-300"
+                  placeholder="student@nu.edu.eg"
+                />
               </div>
-
             </div>
             <div>
-              <label htmlFor="message" className="mb-2 block text-sm font-semibold uppercase tracking-wide text-slate-900">Message</label>
-              <textarea id="message" name="message" rows={6} value={formData.message} onChange={handleInputChange} required className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20" placeholder="Tell us about your question or how we can help you with your academic journey..." />
+              <label htmlFor="message" className="mb-2.5 block text-xs font-bold uppercase tracking-widest text-slate-500">Message</label>
+              <textarea
+                id="message"
+                name="message"
+                rows={4}
+                value={formData.message}
+                onChange={handleInputChange}
+                required
+                className="w-full rounded-xl border border-slate-200 bg-white px-5 py-4 text-slate-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 resize-none placeholder:text-slate-300"
+                placeholder="Tell us about your question or how we can help you with your academic journey..."
+              />
             </div>
-            <div className="pt-4 space-y-4">
+            <div className="pt-4 flex flex-col items-center sm:items-start gap-4">
               <Button
                 type="submit"
                 disabled={isSubmitting}
                 variant="primary"
                 size="lg"
-                className="px-8 uppercase"
+                className="w-full sm:w-auto px-10 py-5 rounded-full uppercase tracking-widest text-xs font-black shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
               >
                 {isSubmitting ? 'SUBMITTING...' : 'SEND MESSAGE'}
               </Button>
               {statusMessage && (
-                <div className={`rounded-lg p-3 text-sm font-medium ${statusMessage.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                <div className={`w-full rounded-xl p-4 text-sm font-bold text-center sm:text-left ${statusMessage.type === 'success' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
                   {statusMessage.text}
                 </div>
               )}
