@@ -40,6 +40,15 @@ export default function ChatPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isChatsLoading, setIsChatsLoading] = useState(true);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [mounted, setMounted] = useState(false);
+
+  // Isolated Mobile Initial State Logic: Prevent Flash
+  useEffect(() => {
+    setMounted(true);
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
 
   const toggleSidebar = useCallback(() => {
     setIsSidebarOpen((prev) => !prev);
@@ -71,6 +80,9 @@ export default function ChatPage() {
 
   const handleNewChat = useCallback(() => {
     setActiveChatId(null);
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
   }, []);
 
   const handleRenameChat = useCallback(async (chatId: string, newTitle: string) => {
@@ -295,6 +307,11 @@ export default function ChatPage() {
   const handleSelectChat = useCallback(async (chatId: string) => {
     setActiveChatId(chatId);
 
+    // Auto-close sidebar on mobile
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+
     // Check if we already have messages for this chat (basic caching)
     // If messages are empty, try to fetch them. 
     // Note: This logic assumes if messages is empty array [], it implies not loaded or truly empty. 
@@ -335,6 +352,14 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-[calc(100vh-64px)] w-full overflow-hidden bg-white relative">
+      {/* Isolated Mobile Backdrop */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-[60] bg-slate-900/50 backdrop-blur-[1px] md:hidden transition-opacity duration-300"
+          onClick={toggleSidebar}
+        />
+      )}
+
       {/* Floating Toggle Button (Visible when sidebar is closed) */}
       {!isSidebarOpen && (
         <Button
@@ -360,9 +385,15 @@ export default function ChatPage() {
         </Button>
       )}
 
+      {/* Isolated Sidebar Container: Slide-over for mobile, Push for desktop */}
       <div
-        className={`flex h-full flex-shrink-0 transition-all duration-300 ease-in-out ${isSidebarOpen ? 'w-80' : 'w-0'
-          } overflow-hidden`}
+        className={`flex flex-shrink-0 overflow-hidden fixed inset-y-0 left-0 z-[70] md:static md:z-auto md:h-full 
+          transition-all duration-300 ease-in-out 
+          ${!mounted ? 'max-md:-translate-x-full' : ''} 
+          ${isSidebarOpen
+            ? 'w-80 translate-x-0 md:w-80'
+            : 'w-80 -translate-x-full md:w-0'
+          }`}
       >
         <ChatSidebar
           chats={sortedChats}
