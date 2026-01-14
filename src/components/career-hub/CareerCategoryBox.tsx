@@ -25,7 +25,7 @@ export function CareerCategoryBox({ id, title, iconName, isSelected, onClick }: 
             variant="none"
             size="none"
             onClick={onClick}
-            className={`group relative w-auto px-6 flex items-center justify-center gap-2 py-4 transition-all duration-200 hover:bg-slate-50
+            className={`group relative w-full h-full px-4 md:px-6 flex items-center justify-center gap-2 py-4 transition-all duration-200 hover:bg-slate-50
                 ${isSelected ? 'bg-white' : 'bg-white'}
             `}
         >

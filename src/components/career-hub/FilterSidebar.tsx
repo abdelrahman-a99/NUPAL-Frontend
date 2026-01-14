@@ -1,12 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { ChevronDown } from 'lucide-react';
 import Button from '../ui/Button';
-
-interface FilterSidebarProps {
-    onFilterChange: (filters: FilterState) => void;
-}
 
 export interface FilterState {
     employmentTypes: string[];
@@ -16,11 +12,18 @@ export interface FilterState {
 }
 
 interface FilterSidebarProps {
-    onFilterChange: (filters: FilterState) => void;
+    onFilterChange: Dispatch<SetStateAction<FilterState>>;
     topCompanies?: string[];
+    initialFilters?: FilterState;
+    selectedFilters?: FilterState; // Controlled prop
 }
 
-export function FilterSidebar({ onFilterChange, topCompanies = [] }: FilterSidebarProps) {
+export function FilterSidebar({
+    onFilterChange,
+    topCompanies = [],
+    initialFilters,
+    selectedFilters: controlledFilters
+}: FilterSidebarProps) {
     const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
         'Work Type': true,
         'Type of Employment': true,
@@ -28,17 +31,23 @@ export function FilterSidebar({ onFilterChange, topCompanies = [] }: FilterSideb
         'Top Companies': true,
     });
 
-    const [selectedFilters, setSelectedFilters] = useState<FilterState>({
+    // Internal state for uncontrolled mode
+    const [internalFilters, setInternalFilters] = useState<FilterState>(initialFilters || {
         employmentTypes: [],
         workTypes: [],
         companies: [],
         categories: [],
     });
 
-    // Call onFilterChange whenever selectedFilters changes
+    // Determine which filters to use
+    const activeFilters = controlledFilters || internalFilters;
+
+    // Call onFilterChange only if not controlled (or we can call it always if prop provided)
     useEffect(() => {
-        onFilterChange(selectedFilters);
-    }, [selectedFilters, onFilterChange]);
+        if (!controlledFilters) {
+            onFilterChange(internalFilters);
+        }
+    }, [internalFilters, onFilterChange, controlledFilters]);
 
     const toggleSection = (title: string) => {
         setOpenSections(prev => ({
@@ -48,19 +57,34 @@ export function FilterSidebar({ onFilterChange, topCompanies = [] }: FilterSideb
     };
 
     const handleCheckboxChange = (filterType: 'employmentTypes' | 'categories' | 'companies' | 'workTypes', value: string, checked: boolean) => {
-        setSelectedFilters(prev => {
+        const updateFn = (prev: FilterState) => {
             const newFilters = { ...prev };
+            // Ensure array exists (safety check)
+            const currentArray = newFilters[filterType] || [];
+
             if (checked) {
-                newFilters[filterType] = [...newFilters[filterType], value];
+                // Add if not already present
+                if (!currentArray.includes(value)) {
+                    newFilters[filterType] = [...currentArray, value];
+                }
             } else {
-                newFilters[filterType] = newFilters[filterType].filter(v => v !== value);
+                // Remove
+                newFilters[filterType] = currentArray.filter(v => v !== value);
             }
             return newFilters;
-        });
+        };
+
+        if (controlledFilters) {
+            // Pass the FUNCTION to the parent's setter
+            // @ts-ignore - Typescript might complain about signature mismatch if strict, but SetStateAction usually allows it
+            onFilterChange((prev) => updateFn(prev));
+        } else {
+            setInternalFilters(prev => updateFn(prev));
+        }
     };
 
     return (
-        <div className="w-64 flex-shrink-0 space-y-6">
+        <div className="w-full space-y-6">
             {/* Work Type Filter */}
             <div className="border-b border-slate-200 pb-4">
                 <Button
@@ -78,7 +102,7 @@ export function FilterSidebar({ onFilterChange, topCompanies = [] }: FilterSideb
                             <label key={option} className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    checked={selectedFilters.workTypes.includes(option.toLowerCase())}
+                                    checked={activeFilters.workTypes.includes(option.toLowerCase())}
                                     onChange={(e) => handleCheckboxChange('workTypes', option.toLowerCase(), e.target.checked)}
                                     className="h-4 w-4 rounded border-slate-300 text-blue-400 focus:ring-blue-400"
                                 />
@@ -106,7 +130,7 @@ export function FilterSidebar({ onFilterChange, topCompanies = [] }: FilterSideb
                             <label key={option} className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    checked={selectedFilters.employmentTypes.includes(option)}
+                                    checked={activeFilters.employmentTypes.includes(option)}
                                     onChange={(e) => handleCheckboxChange('employmentTypes', option, e.target.checked)}
                                     className="h-4 w-4 rounded border-slate-300 text-blue-400 focus:ring-blue-400"
                                 />
@@ -135,7 +159,7 @@ export function FilterSidebar({ onFilterChange, topCompanies = [] }: FilterSideb
                                 <label key={company} className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 cursor-pointer">
                                     <input
                                         type="checkbox"
-                                        checked={selectedFilters.companies.includes(company)}
+                                        checked={activeFilters.companies.includes(company)}
                                         onChange={(e) => handleCheckboxChange('companies', company, e.target.checked)}
                                         className="h-4 w-4 rounded border-slate-300 text-blue-400 focus:ring-blue-400"
                                     />
@@ -164,7 +188,7 @@ export function FilterSidebar({ onFilterChange, topCompanies = [] }: FilterSideb
                             <label key={option} className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    checked={selectedFilters.categories.includes(option)}
+                                    checked={activeFilters.categories.includes(option)}
                                     onChange={(e) => handleCheckboxChange('categories', option, e.target.checked)}
                                     className="h-4 w-4 rounded border-slate-300 text-blue-400 focus:ring-blue-400"
                                 />
