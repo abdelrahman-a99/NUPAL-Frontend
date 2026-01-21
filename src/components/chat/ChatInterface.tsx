@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import ChatMessage from './ChatMessage';
 import Button from '../ui/Button';
+import Skeleton from '../ui/Skeleton';
 
 interface Message {
   id: string;
@@ -140,15 +141,17 @@ export default function ChatInterface({
 
   const renderSkeleton = () => (
     <div className="w-full">
-      <div className="mx-auto max-w-3xl px-6 py-8">
-        <h3 className="mb-6 text-[10px] font-bold uppercase tracking-[0.15em] text-blue-900/40">
-          Loading conversation
-        </h3>
-        <div className="animate-pulse space-y-4">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-8 w-full bg-slate-100 rounded-lg"></div>
-          ))}
-        </div>
+      <div className="mx-auto max-w-3xl px-6 py-8 space-y-8">
+        {[1, 2].map((group) => (
+          <div key={group} className="space-y-4">
+            <Skeleton className="h-4 w-24 opacity-50" />
+            <div className="space-y-3">
+              <Skeleton className="h-8 w-[90%]" />
+              <Skeleton className="h-8 w-[75%]" />
+              <Skeleton className="h-8 w-[85%]" />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -196,7 +199,7 @@ export default function ChatInterface({
 
       {/* Persistent Bottom Input Area (Only visible when a chat is selected) */}
       {chatId && (
-        <div className="border-t border-slate-200 bg-white px-4 py-3 md:px-6 md:py-4">
+        <div className="border-t border-slate-200 bg-white px-4 py-3 md:px-6 md:py-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           {renderInputForm(false)}
         </div>
       )}

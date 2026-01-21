@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Button from '../ui/Button';
+import Skeleton from '../ui/Skeleton';
 
 interface Chat {
   id: string;
@@ -180,9 +181,9 @@ export default function ChatSidebar({
           </h3>
           <div className="space-y-1">
             {isLoading ? (
-              <div className="animate-pulse space-y-3">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="h-10 bg-slate-200 rounded-lg w-full"></div>
+              <div className="space-y-3">
+                {[1, 2, 3, 4, 5].map(i => (
+                  <Skeleton key={i} className="h-10 w-full rounded-lg" />
                 ))}
               </div>
             ) : filteredChats.length === 0 ? (

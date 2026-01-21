@@ -373,7 +373,7 @@ export default function ChatPage() {
   }, [activeChatId]);
 
   return (
-    <div className="flex h-[calc(100vh-64px)] w-full overflow-hidden bg-white relative">
+    <div className="flex h-[calc(100dvh-64px)] w-full overflow-hidden bg-white relative overscroll-none">
       {/* Isolated Mobile Backdrop */}
       {isSidebarOpen && (
         <div

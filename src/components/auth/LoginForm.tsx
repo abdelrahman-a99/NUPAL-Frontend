@@ -103,7 +103,7 @@ export default function LoginForm() {
           </defs>
         </svg>
       </div>
-      <div className="relative z-10 w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-xl">
+      <div className="relative z-10 w-full max-w-l md:max-w-md rounded-2xl border border-slate-200 bg-white p-5 md:p-8 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" aria-label="Home" className="inline-block">
@@ -163,7 +163,7 @@ export default function LoginForm() {
             {isSubmitting ? 'LOGGING IN...' : 'LOGIN'}
           </Button>
         </form>
-        <div className="mt-4">{err && <div className="text-red-600 text-sm mb-2">{err}</div>}</div>
+        {err && <div className="mt-4 text-red-600 text-sm mb-2 text-center">{err}</div>}
       </div>
     </div>
   );
