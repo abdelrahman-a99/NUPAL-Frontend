@@ -12,6 +12,7 @@ import AcademicMindMap from '../../components/dashboard/AcademicMindMap';
 import GPAProgressChart from '../../components/dashboard/GPAProgressChart';
 import AIAvatar from '../../components/dashboard/AIAvatar';
 import AcademicPlanBoard from '../../components/dashboard/AcademicPlanBoard';
+import DashboardSkeleton from '../../components/dashboard/DashboardSkeleton';
 
 
 export default function DashboardPage() {
@@ -113,11 +114,7 @@ export default function DashboardPage() {
     } : null;
 
     if (loading) {
-        return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
-                <div className="text-gray-500">Loading...</div>
-            </div>
-        );
+        return <DashboardSkeleton />;
     }
 
     if (error || !studentData) {
@@ -479,7 +476,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* GPA Graph */}
-                    <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
+                    <div className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100">
                         <h3 className="font-bold text-slate-900 text-lg mb-4">GPA Progress</h3>
                         <div className="h-80 rounded-2xl bg-[#064E3B] overflow-hidden p-3 relative">
                             <GPAProgressChart data={studentData} />
@@ -505,25 +502,25 @@ export default function DashboardPage() {
                                     id: 'general',
                                     title: 'General Track',
                                     desc: 'CS foundations',
-                                    color: 'text-blue-600',
-                                    bg: 'bg-blue-50',
-                                    dot: 'bg-blue-500'
+                                    color: 'from-blue-500 to-blue-600',
+                                    border: 'border-blue-100',
+                                    text: 'text-blue-600'
                                 },
                                 {
                                     id: 'media',
                                     title: 'Media Informatics',
                                     desc: 'Graphics & Vision',
-                                    color: 'text-pink-600',
-                                    bg: 'bg-pink-50',
-                                    dot: 'bg-pink-500'
+                                    color: 'from-pink-500 to-pink-600',
+                                    border: 'border-pink-100',
+                                    text: 'text-pink-600'
                                 },
                                 {
                                     id: 'bigdata',
                                     title: 'Big Data',
                                     desc: 'Data Mining & AI',
-                                    color: 'text-amber-600',
-                                    bg: 'bg-amber-50',
-                                    dot: 'bg-amber-500'
+                                    color: 'from-amber-500 to-amber-600',
+                                    border: 'border-amber-100',
+                                    text: 'text-amber-600'
                                 }
                             ].map((track) => (
                                 <div
@@ -535,17 +532,18 @@ export default function DashboardPage() {
                                             el.scrollIntoView({ behavior: 'smooth' });
                                         }
                                     }}
-                                    className="bg-white p-4 rounded-[1.5rem] border border-slate-100 flex items-center gap-4 active:scale-98 transition-transform shadow-sm"
+                                    className="bg-white p-4 rounded-[1.5rem] border border-slate-100 relative overflow-hidden active:scale-98 transition-transform shadow-sm flex items-center gap-4"
                                 >
-                                    <div className={`w-12 h-12 rounded-full ${track.bg} flex items-center justify-center shrink-0`}>
-                                        <div className={`w-3 h-3 rounded-full ${track.dot}`}></div>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-slate-900 text-sm">{track.title}</h4>
+                                    {/* Decorative Curve on Left */}
+                                    <div className={`absolute top-0 left-0 w-14 h-14 bg-gradient-to-br ${track.color} opacity-10 rounded-br-[3rem] pointer-events-none`} />
+
+                                    <div className="relative z-10 flex-1 ml-8">
+                                        <h4 className="font-bold text-slate-900 text-base">{track.title}</h4>
                                         <p className="text-xs text-slate-500 mt-0.5">{track.desc}</p>
                                     </div>
-                                    <div className={`ml-auto ${track.bg} p-2 rounded-full ${track.color}`}>
-                                        <ChevronRight size={16} />
+
+                                    <div className={`relative z-10 w-10 h-10 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center ${track.text}`}>
+                                        <ChevronRight size={18} />
                                     </div>
                                 </div>
                             ))}

@@ -48,7 +48,18 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function GPAProgressChart({ data }: GPAProgressChartProps) {
-    const chartData = data?.education?.semesters || [];
+    let chartData = data?.education?.semesters || [];
+
+    // If only one semester, pad data to show a horizontal line instead of a single dot
+    const isSingleSemester = chartData.length === 1;
+    if (isSingleSemester) {
+        const single = chartData[0];
+        chartData = [
+            { ...single, term: ' ' }, // Left buffer
+            single,                   // Actual data
+            { ...single, term: '  ' } // Right buffer
+        ];
+    }
 
     // Calculate dynamic min to make fluctuations more visible, but keep max at 4.0 for motivation
     const allGpas = chartData.flatMap(s => [s.semesterGpa, s.cumulativeGpa]);
