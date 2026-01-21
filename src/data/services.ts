@@ -23,7 +23,7 @@ export const services: Service[] = [
   },
   {
     id: 'tracks-map',
-    title: 'Interactive Tracks Map',
+    title: 'Tracks Map',
     description: 'Explore specialization tracks in detail. Zoom in to visualize course connections, understand prerequisite chains.',
     image: '/track-map.png',
     path: '/dashboard',

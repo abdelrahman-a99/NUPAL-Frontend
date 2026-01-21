@@ -27,6 +27,7 @@ export const fetchJobs = async (params?: JobSearchParams): Promise<Job[]> => {
     const queryParams = new URLSearchParams();
     if (params?.what) queryParams.append('what', params.what);
     if (params?.where) queryParams.append('where', params.where);
+    queryParams.append('limit', '100'); // Increase limit to try and exceed 75
 
     const queryString = queryParams.toString();
     const url = `${API_ENDPOINTS.JOBS}${queryString ? `?${queryString}` : ''}`;

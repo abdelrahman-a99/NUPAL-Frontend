@@ -14,6 +14,7 @@ import { careerPaths } from '@/data/careerData';
 import { CareerCategoryBox } from '@/components/career-hub/CareerCategoryBox';
 import { CareerPathwaysDisplay } from '@/components/career-hub/CareerPathwaysDisplay';
 import Button from '@/components/ui/Button';
+import Skeleton from '@/components/ui/Skeleton';
 import { Dispatch, SetStateAction } from 'react';
 
 export default function CareerHubPage() {
@@ -476,8 +477,23 @@ export default function CareerHubPage() {
 
                             {/* Loading State */}
                             {loading && (
-                                <div className="flex items-center justify-center py-20">
-                                    <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-400 border-t-transparent"></div>
+                                <div className="space-y-4">
+                                    {[1, 2, 3].map((i) => (
+                                        <div key={i} className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-4">
+                                            <div className="flex gap-4">
+                                                <Skeleton className="h-12 w-12 rounded-xl" />
+                                                <div className="flex-1 space-y-2">
+                                                    <Skeleton className="h-6 w-1/3" />
+                                                    <Skeleton className="h-4 w-1/4" />
+                                                </div>
+                                            </div>
+                                            <Skeleton className="h-20 w-full" />
+                                            <div className="flex gap-2">
+                                                <Skeleton className="h-8 w-20 rounded-full" />
+                                                <Skeleton className="h-8 w-20 rounded-full" />
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
 
