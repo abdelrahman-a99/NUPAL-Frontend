@@ -18,7 +18,7 @@ export function Footer() {
   };
 
   // Hide footer on specialized full-screen pages or by user request
-  const isHidden = ['/login', '/chat', '/contact', '/404'].includes(pathname);
+  const isHidden = ['/login', '/chat', '/contact', '/404'].some(path => pathname === path || pathname?.startsWith('/chat/'));
 
   if (isHidden) {
     return null;
