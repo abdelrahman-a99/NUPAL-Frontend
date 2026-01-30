@@ -50,7 +50,10 @@ export function Navbar() {
 
   // Intersection Observer for Scroll Spy
   useEffect(() => {
-    if (pathname !== '/') return;
+    if (pathname !== '/') {
+      setActiveSection('home');
+      return;
+    }
 
     const options = {
       root: null,
@@ -66,15 +69,30 @@ export function Navbar() {
       });
     };
 
-    const observer = new IntersectionObserver(handleIntersect, options);
+    let observer: IntersectionObserver | null = null;
+    let timeoutId: NodeJS.Timeout;
 
-    const sections = navLinks
-      .filter(link => !!link.id)
-      .map(link => document.getElementById(link.id!))
-      .filter(Boolean);
-    sections.forEach(section => observer.observe(section!));
+    const setupObserver = () => {
+      const sections = navLinks
+        .filter(link => !!link.id)
+        .map(link => document.getElementById(link.id!))
+        .filter(Boolean);
 
-    return () => observer.disconnect();
+      if (sections.length > 0) {
+        observer = new IntersectionObserver(handleIntersect, options);
+        sections.forEach(section => observer?.observe(section!));
+      } else {
+        // If sections not found (e.g. during loading), try again after a delay
+        timeoutId = setTimeout(setupObserver, 500);
+      }
+    };
+
+    setupObserver();
+
+    return () => {
+      observer?.disconnect();
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [pathname]);
 
   // Click outside listener for profile menu
