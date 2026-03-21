@@ -3,12 +3,16 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getToken } from '@/lib/auth';
-import { parseResume, ParsedResume } from '@/services/resumeService';
+import { 
+  parseResume, ParsedResume, getResumeHistory, getResumeById, deleteResume,
+  type ResumeHistoryItem 
+} from '@/services/resumeService';
 import {
   Upload, FileText, User, Mail, Phone, MapPin, Linkedin, Github, Globe,
   Briefcase, GraduationCap, Wrench, FolderGit2, Award, Languages,
   ChevronLeft, AlertCircle, Star, Code, ExternalLink, Calendar, Building2,
-  Sparkles, CheckCircle2, Trophy, BookOpen, Loader2
+  Sparkles, CheckCircle2, Trophy, BookOpen, Loader2,
+  History as HistoryIcon, Clock, Trash2, ChevronRight
 } from 'lucide-react';
 
 // ──────────────────────────────────────────
@@ -450,9 +454,27 @@ export default function ResumeAnalyzerPage() {
   }, [router]);
 
   const [loading, setLoading] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [parsed, setParsed] = useState<ParsedResume | null>(null);
   const [fileName, setFileName] = useState('');
+  const [history, setHistory] = useState<ResumeHistoryItem[]>([]);
+
+  const loadHistory = useCallback(async () => {
+    try {
+      setHistoryLoading(true);
+      const data = await getResumeHistory();
+      setHistory(data);
+    } catch (err) {
+      console.error('Failed to load history', err);
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadHistory();
+  }, [loadHistory]);
 
   const handleFile = async (file: File) => {
     setLoading(true);
@@ -462,11 +484,38 @@ export default function ResumeAnalyzerPage() {
 
     try {
       const result = await parseResume(file);
-      setParsed(result);
+      setParsed(result.data);
+      loadHistory(); // Refresh history
     } catch (err: any) {
       setError(err.message ?? 'Failed to parse resume. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLoadFromHistory = async (item: ResumeHistoryItem) => {
+    setLoading(true);
+    setError(null);
+    setFileName(item.fileName);
+    try {
+      const data = await getResumeById(item.id);
+      setParsed(data);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err: any) {
+      setError('Failed to load analysis from history.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteHistory = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (!confirm('Are you sure you want to delete this analysis?')) return;
+    try {
+      await deleteResume(id);
+      setHistory(prev => prev.filter(h => h.id !== id));
+    } catch (err) {
+      alert('Failed to delete.');
     }
   };
 
@@ -503,6 +552,51 @@ export default function ResumeAnalyzerPage() {
         {/* Upload zone */}
         {!parsed && (
           <UploadZone onFile={handleFile} loading={loading} />
+        )}
+
+        {/* History Section */}
+        {!parsed && !loading && history.length > 0 && (
+          <div className="mt-16 max-w-2xl mx-auto">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-slate-100 rounded-xl text-slate-600"><HistoryIcon className="w-5 h-5" /></div>
+              <h2 className="text-xl font-bold text-slate-900">Recent Analyses</h2>
+            </div>
+            
+            <div className="grid gap-3">
+              {history.map((item) => (
+                <div 
+                  key={item.id}
+                  onClick={() => handleLoadFromHistory(item)}
+                  className="group flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:border-blue-400 hover:shadow-md transition-all transition-none"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-blue-50 rounded-xl text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-none">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900 group-hover:text-blue-600">{item.fileName}</h3>
+                      <div className="flex items-center gap-3 mt-1">
+                         <span className="text-xs font-semibold text-slate-400 capitalize">{item.fullName || 'Analysis'}</span>
+                         <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
+                         <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                           <Clock className="w-3 h-3" /> {new Date(item.analyzedAt).toLocaleDateString()}
+                         </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={(e) => handleDeleteHistory(e, item.id)}
+                      className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-none"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                    <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-blue-400 group-hover:translate-x-1 transition-none" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Feature pills */}

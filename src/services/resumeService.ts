@@ -47,7 +47,14 @@ export interface ParsedResume {
   awards: string[];
 }
 
-export async function parseResume(file: File): Promise<ParsedResume> {
+export interface ResumeHistoryItem {
+  id: string;
+  fileName: string;
+  analyzedAt: string;
+  fullName?: string;
+}
+
+export async function parseResume(file: File): Promise<{ id: string; data: ParsedResume }> {
   const token = getToken();
   if (!token) throw new Error('Not authenticated');
 
@@ -58,7 +65,6 @@ export async function parseResume(file: File): Promise<ParsedResume> {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
-      // Don't set Content-Type here — browser sets it automatically with boundary for multipart
     },
     body: formData,
   });
@@ -69,4 +75,40 @@ export async function parseResume(file: File): Promise<ParsedResume> {
   }
 
   return response.json();
+}
+
+export async function getResumeHistory(): Promise<ResumeHistoryItem[]> {
+  const token = getToken();
+  if (!token) throw new Error('Not authenticated');
+
+  const response = await fetch(`${API_ENDPOINTS.RESUME}/history`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch history');
+  return response.json();
+}
+
+export async function getResumeById(id: string): Promise<ParsedResume> {
+  const token = getToken();
+  if (!token) throw new Error('Not authenticated');
+
+  const response = await fetch(`${API_ENDPOINTS.RESUME}/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch analysis');
+  return response.json();
+}
+
+export async function deleteResume(id: string): Promise<void> {
+  const token = getToken();
+  if (!token) throw new Error('Not authenticated');
+
+  const response = await fetch(`${API_ENDPOINTS.RESUME}/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) throw new Error('Failed to delete');
 }
