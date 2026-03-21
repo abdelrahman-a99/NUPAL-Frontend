@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { getToken } from '@/lib/auth';
 import { Job, fetchJobs } from '@/services/jobService';
 import { DynamicSkillsProfile, fetchDynamicSkillsProfile } from '@/services/dynamicSkillsService';
 import { JobCard } from '@/components/career-hub/JobCard';
 import { FilterSidebar, FilterState } from '@/components/career-hub/FilterSidebar';
 import { Pagination } from '@/components/career-hub/Pagination';
-import { Search, MapPin, SlidersHorizontal, X } from 'lucide-react';
+import { Search, MapPin, SlidersHorizontal, X, FileText, Sparkles, ArrowRight } from 'lucide-react';
 import { BackgroundAnimation } from '@/components/career-hub/BackgroundAnimation';
 import { careerPaths } from '@/data/careerData';
 import { CareerCategoryBox } from '@/components/career-hub/CareerCategoryBox';
@@ -280,6 +281,8 @@ export default function CareerHubPage() {
                             ))}
                         </div>
                     </div>
+
+
                 </div>
             </div>
 

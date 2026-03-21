@@ -6,7 +6,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 
 import { getToken, parseJwt, removeToken } from "@/lib/auth";
-import { User, Settings, LogOut, Menu, X, Home, Briefcase, MessageSquare, Info, Mail, LayoutDashboard, ChevronRight } from "lucide-react";
+import { User, Settings, LogOut, Menu, X, Home, Briefcase, MessageSquare, Info, Mail, LayoutDashboard, ChevronRight, ChevronDown } from "lucide-react";
 import Button from "@/components/ui/Button";
 
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
@@ -15,6 +15,7 @@ interface NavLinkItem {
   name: string;
   path: string;
   id?: string;
+  children?: { name: string; path: string }[];
 }
 
 const navLinks: NavLinkItem[] = [
@@ -27,7 +28,15 @@ const navLinks: NavLinkItem[] = [
 const dashboardLinks: NavLinkItem[] = [
   { name: "Dashboard", path: "/dashboard", id: "dashboard" },
   { name: "Chatbot", path: "/chat", id: "chat" },
-  { name: "Career Hub", path: "/career-hub", id: "career-hub" },
+  { 
+    name: "Career Hub", 
+    path: "/career-hub", 
+    id: "career-hub",
+    children: [
+      { name: "Career Reality", path: "/career-hub" },
+      { name: "Resumes", path: "/career-hub/resume-analyzer" }
+    ]
+  },
 ];
 
 export function Navbar() {
@@ -133,7 +142,7 @@ export function Navbar() {
 
   const initial = (userName?.trim()?.charAt(0)?.toUpperCase() ?? 'N');
 
-  const links = (pathname.startsWith('/dashboard') || pathname === '/chat' || pathname === '/career-hub') ? dashboardLinks : navLinks;
+  const links = (userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub')) ? dashboardLinks : navLinks;
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string, id?: string) => {
     if (pathname === '/' && id) {
@@ -173,6 +182,34 @@ export function Navbar() {
                   ? (pathname === '/' && activeSection === link.id)
                   : (pathname === link.path || (link.path !== '/' && pathname.startsWith(link.path)));
 
+                if (link.children) {
+                  return (
+                    <div key={link.path} className="relative group p-2 -m-2">
+                        <Link 
+                            href={link.path}
+                            className={`flex items-center gap-1 transition-colors duration-200 hover:text-blue-500 ${isActive ? "text-blue-500" : ""}`}
+                        >
+                            {link.name}
+                            <ChevronDown size={14} className="transition-transform duration-200 group-hover:rotate-180" />
+                        </Link>
+                        {/* Invisible hover bridge to prevent menu from closing when moving mouse */}
+                        <div className="absolute top-full left-0 w-full h-4"></div>
+                        {/* Dropdown Menu */}
+                        <div className="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 w-48 rounded-xl bg-white shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-slate-100 py-2 z-50">
+                            {link.children.map(child => (
+                                <Link 
+                                    key={child.path} 
+                                    href={child.path} 
+                                    className={`block px-4 py-2 text-sm transition-colors ${pathname === child.path ? "text-blue-600 font-bold bg-blue-50/50" : "text-slate-600 hover:bg-slate-50 hover:text-blue-500"}`}
+                                >
+                                    {child.name}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                  );
+                }
+
                 return (
                   <Link
                     key={link.path}
@@ -183,7 +220,7 @@ export function Navbar() {
                         handleNavClick(e, link.path, id);
                       }
                     }}
-                    className={`transition-colors duration-200 hover:text-blue-400 ${isActive ? "text-blue-400" : ""}`}
+                    className={`transition-colors duration-200 hover:text-blue-500 ${isActive ? "text-blue-500" : ""}`}
                   >
                     {link.name}
                   </Link>
@@ -200,7 +237,7 @@ export function Navbar() {
             </button>
           </div>
 
-          {(pathname.startsWith('/dashboard') || pathname === '/chat' || pathname === '/career-hub' || pathname === '/404') ? (
+          {(userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub') || pathname === '/404') ? (
             <div className="hidden lg:block relative" ref={menuRef}>
               <Button
                 variant="none"
@@ -308,6 +345,29 @@ export function Navbar() {
                   ? (pathname === '/' && activeSection === link.id)
                   : (pathname === link.path || (link.path !== '/' && pathname.startsWith(link.path)));
 
+                if (link.children) {
+                    return (
+                        <div key={link.path} className="border-b border-dashed border-slate-100 flex flex-col">
+                            <div className="flex items-center justify-between px-6 py-5 cursor-default">
+                                <span className={`font-bold text-lg ${isActive ? "text-blue-500" : "text-slate-800"}`}>{link.name}</span>
+                                <ChevronDown size={20} className="text-slate-400" />
+                            </div>
+                            <div className="flex flex-col bg-slate-50/50 pb-2">
+                                {link.children.map(child => (
+                                    <Link
+                                        key={child.path}
+                                        href={child.path}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className={`flex items-center px-10 py-3 transition-colors ${pathname === child.path ? "text-blue-600 font-bold" : "text-slate-600 hover:text-blue-500"}`}
+                                    >
+                                        <span className="font-semibold">{child.name}</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                }
+
                 return (
                   <Link
                     key={link.path}
@@ -330,7 +390,7 @@ export function Navbar() {
 
             {/* Mobile-Native Account Section */}
             <div className="mt-auto px-4 py-4 bg-slate-50/50 border-t border-slate-100">
-              {(pathname.startsWith('/dashboard') || pathname === '/chat' || pathname === '/career-hub' || pathname === '/404') ? (
+              {(userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub') || pathname === '/404') ? (
                 <div className="space-y-3">
                   {/* User Info - Horizontal Layout */}
                   <div className="flex items-center gap-3 px-2">

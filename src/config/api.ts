@@ -6,4 +6,5 @@ export const API_ENDPOINTS = {
   CHAT: `${API_BASE_URL}/api/chat`,
   CONTACT: `${API_BASE_URL}/api/contact`,
   SKILLS: `${API_BASE_URL}/api/DynamicSkills`,
+  RESUME: `${API_BASE_URL}/api/resume`,
 };
