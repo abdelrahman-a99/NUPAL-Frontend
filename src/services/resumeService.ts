@@ -54,6 +54,16 @@ export interface ResumeHistoryItem {
   fullName?: string;
 }
 
+export interface JobFitHistoryItem {
+  id: string;
+  jobTitle?: string;
+  companyName?: string;
+  overallScore: number;
+  matchStatus?: string;
+  jobUrl: string;
+  analyzedAt: string;
+}
+
 export async function parseResume(file: File): Promise<{ id: string; data: ParsedResume }> {
   const token = getToken();
   if (!token) throw new Error('Not authenticated');
@@ -113,15 +123,15 @@ export async function deleteResume(id: string): Promise<void> {
   if (!response.ok) throw new Error('Failed to delete');
 }
 
-export async function analyzeJobFit(jobUrl: string, resumeId?: string): Promise<any> {
+export async function analyzeJobFit(jobUrl: string, resumeId?: string): Promise<{ id: string; analysis: any }> {
   const token = getToken();
   if (!token) throw new Error('Not authenticated');
 
   const response = await fetch(`${API_ENDPOINTS.RESUME}/job-fit/analyze`, {
     method: 'POST',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}` 
+      Authorization: `Bearer ${token}`
     },
     body: JSON.stringify({ jobUrl, resumeId }),
   });
@@ -132,4 +142,40 @@ export async function analyzeJobFit(jobUrl: string, resumeId?: string): Promise<
   }
 
   return response.json();
+}
+
+export async function getJobFitHistory(): Promise<JobFitHistoryItem[]> {
+  const token = getToken();
+  if (!token) throw new Error('Not authenticated');
+
+  const response = await fetch(`${API_ENDPOINTS.RESUME}/job-fit/history`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch job fit history');
+  return response.json();
+}
+
+export async function getJobFitById(id: string): Promise<{ id: string; analysis: any; jobUrl: string; analyzedAt: string }> {
+  const token = getToken();
+  if (!token) throw new Error('Not authenticated');
+
+  const response = await fetch(`${API_ENDPOINTS.RESUME}/job-fit/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch job fit result');
+  return response.json();
+}
+
+export async function deleteJobFit(id: string): Promise<void> {
+  const token = getToken();
+  if (!token) throw new Error('Not authenticated');
+
+  const response = await fetch(`${API_ENDPOINTS.RESUME}/job-fit/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) throw new Error('Failed to delete job fit result');
 }

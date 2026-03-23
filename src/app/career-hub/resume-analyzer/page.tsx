@@ -3,14 +3,16 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getToken } from '@/lib/auth';
-import { 
+import {
   parseResume, getResumeHistory, getResumeById, deleteResume,
-  analyzeJobFit, type ParsedResume, type ResumeHistoryItem 
+  analyzeJobFit, getJobFitHistory, getJobFitById, deleteJobFit,
+  type ParsedResume, type ResumeHistoryItem, type JobFitHistoryItem
 } from '@/services/resumeService';
 import { AlertCircle, Sparkles, Loader2 } from 'lucide-react';
 
 // Components
 import { JobFitReport } from '@/components/career-hub/resume-analyzer/JobFitReport';
+import { JobFitHistoryList } from '@/components/career-hub/resume-analyzer/JobFitHistoryList';
 import { UploadZone } from '@/components/career-hub/resume-analyzer/UploadZone';
 import { ResumeDisplay } from '@/components/career-hub/resume-analyzer/ResumeDisplay';
 import { HistoryList } from '@/components/career-hub/resume-analyzer/HistoryList';
@@ -35,14 +37,19 @@ export default function ResumeAnalyzerPage() {
 
   // Job Fit State
   const [jobUrl, setJobUrl] = useState('');
-  const [jobFitData, setJobFitData] = useState<JobFitAnalysisData | null>(null);
+  const [jobFitData, setJobFitData] = useState<JobFitAnalysisData & { id?: string } | null>(null);
   const [fitLoading, setFitLoading] = useState(false);
+  const [jobFitHistory, setJobFitHistory] = useState<JobFitHistoryItem[]>([]);
 
   const loadHistory = useCallback(async () => {
     try {
       setHistoryLoading(true);
-      const data = await getResumeHistory();
-      setHistory(data);
+      const [resHistory, jfHistory] = await Promise.all([
+        getResumeHistory(),
+        getJobFitHistory().catch(() => []) // fail gracefully
+      ]);
+      setHistory(resHistory);
+      setJobFitHistory(jfHistory);
     } catch (err) {
       console.error('Failed to load history', err);
     } finally {
@@ -103,7 +110,8 @@ export default function ResumeAnalyzerPage() {
     setError(null);
     try {
       const data = await analyzeJobFit(jobUrl);
-      setJobFitData(data);
+      setJobFitData({ ...data.analysis, id: data.id });
+      loadHistory(); // refresh job fit history
     } catch (err: any) {
       setError(err.message || 'Failed to analyze job fit');
     } finally {
@@ -111,11 +119,43 @@ export default function ResumeAnalyzerPage() {
     }
   };
 
+  const handleLoadJobFitFromHistory = async (item: JobFitHistoryItem) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await getJobFitById(item.id);
+      setJobFitData({ ...result.analysis, id: result.id });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err: any) {
+      setError('Failed to load job fit analysis from history.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteJobFit = async (e: React.MouseEvent | null, id: string) => {
+    if (e) e.stopPropagation();
+    if (!confirm('Are you sure you want to delete this job fit result?')) return;
+    try {
+      await deleteJobFit(id);
+      setJobFitHistory(prev => prev.filter(h => h.id !== id));
+      if (jobFitData?.id === id) {
+        setJobFitData(null);
+      }
+    } catch (err) {
+      alert('Failed to delete job fit result.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className={`mx-auto px-4 sm:px-6 py-8 ${parsed || jobFitData ? 'max-w-7xl' : 'max-w-5xl'}`}>
         {jobFitData ? (
-          <JobFitReport data={jobFitData} onBack={() => setJobFitData(null)} />
+          <JobFitReport 
+            data={jobFitData} 
+            onBack={() => setJobFitData(null)} 
+            onDelete={(id) => handleDeleteJobFit(null, id)}
+          />
         ) : (
           <>
             {/* Header / Hero */}
@@ -151,28 +191,36 @@ export default function ResumeAnalyzerPage() {
             )}
 
             {!parsed && !loading && (
-              <JobFitCheck 
-                jobUrl={jobUrl} 
-                setJobUrl={setJobUrl} 
-                handleJobFit={handleJobFit} 
-                fitLoading={fitLoading} 
+              <JobFitCheck
+                jobUrl={jobUrl}
+                setJobUrl={setJobUrl}
+                handleJobFit={handleJobFit}
+                fitLoading={fitLoading}
                 historyLength={history.length}
               />
             )}
 
+            {!parsed && !loading && jobFitHistory.length > 0 && (
+              <JobFitHistoryList
+                history={jobFitHistory}
+                onLoad={handleLoadJobFitFromHistory}
+                onDelete={handleDeleteJobFit}
+              />
+            )}
+
             {!parsed && !loading && history.length > 0 && (
-              <HistoryList 
-                history={history} 
-                onLoad={handleLoadFromHistory} 
-                onDelete={handleDeleteHistory} 
+              <HistoryList
+                history={history}
+                onLoad={handleLoadFromHistory}
+                onDelete={handleDeleteHistory}
               />
             )}
 
             {parsed && (
-              <ResumeDisplay 
-                data={parsed} 
-                fileName={fileName} 
-                onReset={() => { setParsed(null); setError(null); }} 
+              <ResumeDisplay
+                data={parsed}
+                fileName={fileName}
+                onReset={() => { setParsed(null); setError(null); }}
               />
             )}
           </>

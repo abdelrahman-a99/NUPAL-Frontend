@@ -1,16 +1,16 @@
-import React from 'react';
 import { 
   ChevronLeft, Target, Zap, Sparkles, CheckCircle2,
-  BarChart3, HelpCircle, BookOpen, AlertCircle
+  BarChart3, HelpCircle, BookOpen, AlertCircle, Trash2
 } from 'lucide-react';
 import { JobFitAnalysisData } from '../../../app/career-hub/resume-analyzer/types';
 
 interface JobFitReportProps {
-  data: JobFitAnalysisData;
+  data: JobFitAnalysisData & { id?: string };
   onBack: () => void;
+  onDelete?: (id: string) => void;
 }
 
-export function JobFitReport({ data, onBack }: JobFitReportProps) {
+export function JobFitReport({ data, onBack, onDelete }: JobFitReportProps) {
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-10">
       {/* Header - Matching User's Preference (No Blue Box) */}
@@ -22,6 +22,15 @@ export function JobFitReport({ data, onBack }: JobFitReportProps) {
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
+          {onDelete && data.id && (
+            <button
+               onClick={() => onDelete(data.id as string)}
+               className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition-all shadow-sm"
+               title="Delete Report"
+            >
+               <Trash2 className="w-6 h-6" />
+            </button>
+          )}
           <div>
             <div className="flex items-center gap-2 mb-1.5">
                <span className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-blue-100/50">Analysis Report</span>
