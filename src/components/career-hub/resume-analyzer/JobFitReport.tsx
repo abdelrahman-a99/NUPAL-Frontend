@@ -16,21 +16,6 @@ export function JobFitReport({ data, onBack, onDelete }: JobFitReportProps) {
       {/* Header - Matching User's Preference (No Blue Box) */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
         <div className="flex items-center gap-5">
-          <button 
-            onClick={onBack}
-            className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          {onDelete && data.id && (
-            <button
-               onClick={() => onDelete(data.id as string)}
-               className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition-all shadow-sm"
-               title="Delete Report"
-            >
-               <Trash2 className="w-6 h-6" />
-            </button>
-          )}
           <div>
             <div className="flex items-center gap-2 mb-1.5">
                <span className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-blue-100/50">Analysis Report</span>
@@ -101,58 +86,86 @@ export function JobFitReport({ data, onBack, onDelete }: JobFitReportProps) {
             </section>
           )}
 
-          {/* Detailed Breakdown - Moved to Main Column */}
-          <section className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-8">
-            <div className="flex items-center gap-3">
-               <div className="p-2 bg-slate-50 rounded-lg text-slate-600"><BarChart3 className="w-6 h-6" /></div>
-               <h2 className="text-lg font-black text-slate-900">Match Breakdown</h2>
+          {/* Detailed Breakdown - Redesigned as Boxes */}
+          <section className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="p-2 bg-blue-50 rounded-lg text-blue-600"><BarChart3 className="w-5 h-5" /></div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">Match Breakdown</h2>
+                <p className="text-xs text-slate-400 font-semibold mt-0.5">Categorized breakdown of your alignment with the role</p>
+              </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
-              {/* Skills Alignment Summary */}
-              {/* Skills Alignment Summary and Keyword Lists */}
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-end">
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Skills Alignment</h4>
-                    <span className="text-sm font-black text-blue-600">{data.breakdown.skills}/100</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                     <div className="h-full bg-blue-600 rounded-full" style={{ width: `${data.breakdown.skills}%` }} />
-                  </div>
-                  <p className="text-sm text-slate-800 font-black leading-relaxed">{data.breakdown.skillsNote || 'Technical coverage'}</p>
-                </div>
 
-                <div className="space-y-6 pt-2 pb-6 border-b border-slate-50">
-                  <div>
-                    <p className="text-[11px] font-black text-emerald-600 uppercase tracking-[0.2em] mb-3">Matched Keywords</p>
-                    <p className="text-[15px] text-slate-600 leading-relaxed font-bold">
-                      {data.breakdown.matchedSkills.filter(s => s && typeof s === 'object' && s.skill).map(s => s.skill).join(', ')}
-                    </p>
-                  </div>
-
-                  {data.breakdown.missingSkills?.filter(s => s && typeof s === 'object' && s.skill).length > 0 && (
-                    <div>
-                      <p className="text-[11px] font-black text-red-500 uppercase tracking-[0.2em] mb-3">Missing Keywords</p>
-                      <p className="text-[15px] text-slate-600 leading-relaxed font-bold">
-                        {data.breakdown.missingSkills.filter(s => s && typeof s === 'object' && s.skill).map(s => s.skill).join(', ')}
-                      </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Skills Alignment Box */}
+              <div className="group bg-slate-50/60 hover:bg-blue-50/40 border border-slate-100 hover:border-blue-100 rounded-2xl p-6 transition-all duration-200 flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Skills Alignment</h4>
+                      <p className="text-lg font-bold text-slate-900 leading-snug">Technical Coverage</p>
                     </div>
-                  )}
-                </div>
-
-                {/* Experience Alignment - Restored and simplified */}
-                <div className="space-y-4 pt-4">
-                  <div className="flex justify-between items-end">
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Experience Alignment</h4>
-                    <span className="text-sm font-black text-slate-900">{data.breakdown.experience}/100</span>
+                    <div className="flex flex-col items-end">
+                      <span className="text-lg font-black text-blue-600 leading-none">{data.breakdown.skills}%</span>
+                      <div className="h-1 w-12 bg-slate-100 rounded-full mt-2 overflow-hidden">
+                        <div className="h-full bg-blue-600 rounded-full transition-all duration-1000" style={{ width: `${data.breakdown.skills}%` }} />
+                      </div>
+                    </div>
                   </div>
-                  <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                     <div className="h-full bg-slate-900 rounded-full" style={{ width: `${data.breakdown.experience}%` }} />
-                  </div>
-                  <p className="text-sm text-slate-600 font-bold leading-relaxed">{data.breakdown.experienceNote}</p>
+                  <p className="text-[13px] text-slate-600 font-medium leading-relaxed">{data.breakdown.skillsNote || 'Comprehensive review of technical keywords and proficiency.'}</p>
                 </div>
               </div>
+
+              {/* Experience Alignment Box */}
+              <div className="group bg-slate-50/60 hover:bg-slate-900/[0.02] border border-slate-100 hover:border-slate-300 rounded-2xl p-6 transition-all duration-200 flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Experience Match</h4>
+                      <p className="text-lg font-bold text-slate-900 leading-snug">Professional Tenure</p>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-lg font-black text-slate-900 leading-none">{data.breakdown.experience}%</span>
+                      <div className="h-1 w-12 bg-slate-100 rounded-full mt-2 overflow-hidden">
+                        <div className="h-full bg-slate-900 rounded-full transition-all duration-1000" style={{ width: `${data.breakdown.experience}%` }} />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-[13px] text-slate-600 font-medium leading-relaxed">{data.breakdown.experienceNote}</p>
+                </div>
+              </div>
+
+              {/* Matched Keywords Box */}
+              <div className="group bg-emerald-50/30 hover:bg-emerald-50/60 border border-emerald-100/50 hover:border-emerald-200 rounded-2xl p-6 transition-all duration-200">
+                <div className="flex items-center gap-2 mb-5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <h4 className="text-xs font-black text-emerald-600 uppercase tracking-[0.15em]">Matched Keywords</h4>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {data.breakdown.matchedSkills.filter(s => s && typeof s === 'object' && s.skill).map((s, i) => (
+                    <span key={i} className="px-3 py-1.5 bg-white border border-emerald-100 text-emerald-700 text-[11px] font-bold rounded-xl shadow-sm hover:scale-105 transition-transform cursor-default">
+                      {s.skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Missing Keywords Box */}
+              {data.breakdown.missingSkills?.filter(s => s && typeof s === 'object' && s.skill).length > 0 && (
+                <div className="group bg-red-50/30 hover:bg-red-50/60 border border-red-100/50 hover:border-red-200 rounded-2xl p-6 transition-all duration-200">
+                  <div className="flex items-center gap-2 mb-5">
+                    <AlertCircle className="w-4 h-4 text-red-400" />
+                    <h4 className="text-xs font-black text-red-500 uppercase tracking-[0.15em]">Missing Keywords</h4>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {data.breakdown.missingSkills.filter(s => s && typeof s === 'object' && s.skill).map((s, i) => (
+                      <span key={i} className="px-3 py-1.5 bg-white border border-red-100 text-red-600 text-[11px] font-bold rounded-xl shadow-sm hover:scale-105 transition-transform cursor-default">
+                        {s.skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </section>
 

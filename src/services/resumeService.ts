@@ -123,7 +123,7 @@ export async function deleteResume(id: string): Promise<void> {
   if (!response.ok) throw new Error('Failed to delete');
 }
 
-export async function analyzeJobFit(jobUrl: string, resumeId?: string): Promise<{ id: string; analysis: any }> {
+export async function analyzeJobFit(jobUrl?: string, jobDescription?: string, resumeId?: string): Promise<{ id: string; analysis: any }> {
   const token = getToken();
   if (!token) throw new Error('Not authenticated');
 
@@ -133,7 +133,7 @@ export async function analyzeJobFit(jobUrl: string, resumeId?: string): Promise<
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify({ jobUrl, resumeId }),
+    body: JSON.stringify({ jobUrl, jobDescription, resumeId }),
   });
 
   if (!response.ok) {

@@ -16,34 +16,6 @@ interface ResumeDisplayProps {
 export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
   return (
     <div className="space-y-8">
-      {/* Top Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-100/50">
-            <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-slate-900 leading-none">Analysis Complete</h1>
-            <p className="text-sm text-slate-500 mt-1.5 font-medium flex items-center gap-1.5">
-              <FileText className="w-3.5 h-3.5" /> {fileName}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onReset}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-200 hover:text-blue-600 shadow-none"
-          >
-            <Upload className="w-4 h-4" /> Upload New
-          </button>
-          <div className="h-10 w-px bg-slate-200 mx-1 hidden md:block"></div>
-          <button className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 rounded-xl text-sm font-semibold text-white opacity-50 grayscale shadow-none" disabled>
-            <Sparkles className="w-4 h-4" /> Save Result
-          </button>
-        </div>
-      </div>
-
       {/* ── Main Layout Grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
