@@ -21,6 +21,12 @@ export function middleware(request: NextRequest) {
             loginUrl.searchParams.set('redirect', pathname);
             return NextResponse.redirect(loginUrl);
         }
+    } else if (pathname === '/' || pathname === '/login') {
+        // If user is already authenticated and tries to access the landing page or login page, redirect to dashboard
+        const token = request.cookies.get('token')?.value;
+        if (token) {
+            return NextResponse.redirect(new URL('/dashboard', request.url));
+        }
     }
 
     // Allow the request to continue
