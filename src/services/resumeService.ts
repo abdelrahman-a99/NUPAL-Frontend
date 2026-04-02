@@ -138,7 +138,7 @@ export async function analyzeJobFit(jobUrl?: string, jobDescription?: string, re
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error((err as any).error || 'Failed to analyze job fit');
+    throw new Error((err as any).message || (err as any).error || 'Failed to analyze job fit');
   }
 
   return response.json();
