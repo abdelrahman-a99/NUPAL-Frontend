@@ -1,4 +1,4 @@
-import { 
+import {
   ChevronLeft, Target, Zap, Sparkles, CheckCircle2,
   BarChart3, HelpCircle, BookOpen, AlertCircle, Trash2
 } from 'lucide-react';
@@ -18,7 +18,7 @@ export function JobFitReport({ data, onBack, onDelete }: JobFitReportProps) {
         <div className="flex items-center gap-5">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-               <span className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-blue-100/50">Analysis Report</span>
+              <span className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-blue-100/50">Analysis Report</span>
             </div>
             <h1 className="text-3xl font-black text-slate-900 tracking-tight">
               {data.jobTitle || 'Role Analysis'}
@@ -28,40 +28,40 @@ export function JobFitReport({ data, onBack, onDelete }: JobFitReportProps) {
             </p>
           </div>
         </div>
-        
+
         {/* Score - Redesigned (Circular Bubble) */}
         <div className="relative flex items-center justify-center">
-           <svg className="w-24 h-24 transform -rotate-90">
-             <circle 
-                cx="48" cy="48" r="40" 
-                className="stroke-slate-100 fill-none" 
-                strokeWidth="8"
-             />
-             <circle 
-                cx="48" cy="48" r="40" 
-                className="stroke-blue-600 fill-none" 
-                strokeWidth="8"
-                strokeDasharray={`${2*Math.PI*40}`}
-                strokeDashoffset={`${2*Math.PI*40 * (1 - data.overallScore / 100)}`}
-                strokeLinecap="round"
-             />
-           </svg>
-           <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-black text-slate-900">{data.overallScore}%</span>
-              <span className="text-[8px] font-black uppercase tracking-tighter text-slate-400">Match</span>
-           </div>
+          <svg className="w-24 h-24 transform -rotate-90">
+            <circle
+              cx="48" cy="48" r="40"
+              className="stroke-slate-100 fill-none"
+              strokeWidth="8"
+            />
+            <circle
+              cx="48" cy="48" r="40"
+              className="stroke-blue-600 fill-none"
+              strokeWidth="8"
+              strokeDasharray={`${2 * Math.PI * 40}`}
+              strokeDashoffset={`${2 * Math.PI * 40 * (1 - data.overallScore / 100)}`}
+              strokeLinecap="round"
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-2xl font-black text-slate-900">{data.overallScore}%</span>
+            <span className="text-[8px] font-black uppercase tracking-tighter text-slate-400">Match</span>
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Main Content Area */}
-        <div className="lg:col-span-8 space-y-6">
-          
+        <div className="lg:col-span-8 space-y-3">
+
           {/* Analysis Summary */}
           <section className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
             <div className="flex items-center gap-3 mb-6">
-               <div className="p-2 bg-blue-50 rounded-lg text-blue-600"><Zap className="w-5 h-5" /></div>
-               <h2 className="text-lg font-bold text-slate-900">Analysis Summary</h2>
+              <div className="p-2 bg-blue-50 rounded-lg text-blue-600"><Zap className="w-5 h-5" /></div>
+              <h2 className="text-lg font-bold text-slate-900">Analysis Summary</h2>
             </div>
             <p className="text-slate-600 leading-relaxed font-semibold text-[15px]">
               {data.detailedSummary}
@@ -206,58 +206,58 @@ export function JobFitReport({ data, onBack, onDelete }: JobFitReportProps) {
         </div>
 
         {/* Sidebar */}
-        <aside className="lg:col-span-4 space-y-6">
-           {/* Highlights & Opportunities - Moved to Sidebar */}
-           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-             <div>
-                <div className="flex items-center gap-3 mb-4 text-emerald-600">
-                   <div className="p-2 bg-emerald-50 rounded-lg"><Sparkles className="w-4 h-4" /></div>
-                   <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Key Highlights</h3>
-                </div>
-                <ul className="space-y-3">
-                  {data.highlights.map((h, i) => (
-                    <li key={i} className="flex items-start gap-2.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                      <span className="text-[11px] font-bold text-slate-600 leading-snug">{h}</span>
-                    </li>
-                  ))}
-                </ul>
-             </div>
-
-             <div className="pt-6 border-t border-slate-100">
-                <div className="flex items-center gap-3 mb-4 text-amber-600">
-                   <div className="p-2 bg-amber-50 rounded-lg"><Target className="w-4 h-4" /></div>
-                   <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Opportunities</h3>
-                </div>
-                <ul className="space-y-3">
-                  {data.opportunities.map((o, i) => (
-                    <li key={i} className="flex items-start gap-2.5">
-                      <div className="w-3.5 h-3.5 flex items-center justify-center shrink-0 mt-0.5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                      </div>
-                      <span className="text-[11px] font-bold text-slate-600 leading-snug">{o}</span>
-                    </li>
-                  ))}
-                </ul>
-             </div>
-           </div>
-
-           {/* Quick Tips */}
-           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-8">
-              <div>
-                <div className="flex items-center gap-3 mb-5">
-                   <div className="p-2 bg-blue-50 rounded-lg text-blue-600"><HelpCircle className="w-5 h-5" /></div>
-                   <h3 className="text-sm font-black text-slate-900 uppercase">Interview Focus</h3>
-                </div>
-                <div className="space-y-2">
-                  {data.interviewFocus.slice(0, 4).map((f, i) => (
-                    <div key={i} className="text-[11px] font-bold text-slate-600 p-3 bg-slate-50/50 rounded-xl border border-slate-100 flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1.5 shrink-0" /> {f}
-                    </div>
-                  ))}
-                </div>
+        <aside className="lg:col-span-4 space-y-4">
+          {/* Highlights & Opportunities - Moved to Sidebar */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+            <div>
+              <div className="flex items-center gap-3 mb-4 text-emerald-600">
+                <div className="p-2 bg-emerald-50 rounded-lg"><Sparkles className="w-4 h-4" /></div>
+                <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Key Highlights</h3>
               </div>
-           </div>
+              <ul className="space-y-3">
+                {data.highlights.map((h, i) => (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                    <span className="text-[11px] font-bold text-slate-600 leading-snug">{h}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="pt-6 border-t border-slate-100">
+              <div className="flex items-center gap-3 mb-4 text-amber-600">
+                <div className="p-2 bg-amber-50 rounded-lg"><Target className="w-4 h-4" /></div>
+                <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Opportunities</h3>
+              </div>
+              <ul className="space-y-3">
+                {data.opportunities.map((o, i) => (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <div className="w-3.5 h-3.5 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-600 leading-snug">{o}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Quick Tips */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-8">
+            <div>
+              <div className="flex items-center gap-3 mb-5">
+                <div className="p-2 bg-blue-50 rounded-lg text-blue-600"><HelpCircle className="w-5 h-5" /></div>
+                <h3 className="text-sm font-black text-slate-900 uppercase">Interview Focus</h3>
+              </div>
+              <div className="space-y-2">
+                {data.interviewFocus.slice(0, 4).map((f, i) => (
+                  <div key={i} className="text-[11px] font-bold text-slate-600 p-3 bg-slate-50/50 rounded-xl border border-slate-100 flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1.5 shrink-0" /> {f}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </aside>
       </div>
     </div>

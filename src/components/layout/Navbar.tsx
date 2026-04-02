@@ -140,7 +140,7 @@ export function Navbar() {
     return null;
   }
 
-  const initial = (userName?.trim()?.charAt(0)?.toUpperCase() ?? 'N');
+  const initial = (userName?.trim()?.charAt(0)?.toUpperCase() ?? '');
 
   const links = (userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub')) ? dashboardLinks : navLinks;
 
@@ -257,7 +257,7 @@ export function Navbar() {
                     </div>
 
                     <div className="min-w-0">
-                      <div className="truncate text-sm font-semibold text-slate-900">{userName ?? 'NUPal User'}</div>
+                      <div className="truncate text-sm font-semibold text-slate-900">{userName ?? 'User'}</div>
                       <div className="truncate text-xs text-slate-500">Account</div>
                     </div>
                   </div>
@@ -398,7 +398,7 @@ export function Navbar() {
                       <span className="text-base font-bold">{initial}</span>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-bold text-slate-900">{userName ?? 'NUPal User'}</div>
+                      <div className="truncate text-sm font-bold text-slate-900">{userName ?? 'User'}</div>
                       <div className="truncate text-xs text-slate-500">My Account</div>
                     </div>
                   </div>

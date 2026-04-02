@@ -17,10 +17,10 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
   return (
     <div className="space-y-8">
       {/* ── Main Layout Grid ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
         {/* LEFT COLUMN: Main Info */}
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-4">
 
           {/* Main Hero Card */}
           <div className="bg-white rounded-2xl p-8 border border-slate-200 relative overflow-hidden shadow-none ring-1 ring-blue-50">
@@ -197,7 +197,7 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
         </div>
 
         {/* RIGHT COLUMN: Sidebar (Skills, Languages, etc.) */}
-        <div className="lg:col-span-4 space-y-8">
+        <div className="lg:col-span-4 space-y-4">
 
           {/* Skills Section */}
           {(data.technicalSkills?.length > 0 || data.softSkills?.length > 0) && (
