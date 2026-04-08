@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { getToken, parseJwt, removeToken } from "@/lib/auth";
 import { User, Settings, LogOut, Menu, X, Home, Briefcase, MessageSquare, Info, Mail, LayoutDashboard, ChevronRight, ChevronDown } from "lucide-react";
@@ -15,7 +15,7 @@ interface NavLinkItem {
   name: string;
   path: string;
   id?: string;
-  children?: { name: string; path: string }[];
+  children?: { name: string; path: string; description?: string; icon?: React.ReactNode }[];
 }
 
 const navLinks: NavLinkItem[] = [
@@ -33,8 +33,16 @@ const dashboardLinks: NavLinkItem[] = [
     path: "/career-hub", 
     id: "career-hub",
     children: [
-      { name: "Career Reality", path: "/career-hub" },
-      { name: "Resumes", path: "/career-hub/resume-analyzer" }
+      { 
+        name: "Find Jobs", 
+        path: "/career-hub?tab=find-jobs",
+        description: "Browse openings tailored to your skills",
+      },
+      { 
+        name: "AI Resume Tools", 
+        path: "/career-hub",
+        description: "Check CV, Job Match & AI Interview",
+      }
     ]
   },
 ];
@@ -48,6 +56,7 @@ export function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname() || '';
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { scrollToId, scrollToTop } = useSmoothScroll(70);
 
   useEffect(() => {
@@ -140,9 +149,9 @@ export function Navbar() {
     return null;
   }
 
-  const initial = (userName?.trim()?.charAt(0)?.toUpperCase() ?? 'N');
+  const initial = (userName?.trim()?.charAt(0)?.toUpperCase() ?? '');
 
-  const links = (userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub')) ? dashboardLinks : navLinks;
+  const links = (userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub') || pathname.startsWith('/interview')) ? dashboardLinks : navLinks;
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string, id?: string) => {
     if (pathname === '/' && id) {
@@ -184,27 +193,40 @@ export function Navbar() {
 
                 if (link.children) {
                   return (
-                    <div key={link.path} className="relative group p-2 -m-2">
-                        <Link 
-                            href={link.path}
-                            className={`flex items-center gap-1 transition-colors duration-200 hover:text-blue-500 ${isActive ? "text-blue-500" : ""}`}
+                    <div key={link.path} className="relative group">
+                        <span 
+                            className={`flex items-center gap-1 transition-colors duration-200 cursor-pointer hover:text-blue-500 p-2 -m-2 ${isActive ? "text-blue-500" : ""}`}
                         >
                             {link.name}
                             <ChevronDown size={14} className="transition-transform duration-200 group-hover:rotate-180" />
-                        </Link>
+                        </span>
                         {/* Invisible hover bridge to prevent menu from closing when moving mouse */}
                         <div className="absolute top-full left-0 w-full h-4"></div>
                         {/* Dropdown Menu */}
-                        <div className="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 w-48 rounded-xl bg-white shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-slate-100 py-2 z-50">
-                            {link.children.map(child => (
+                        <div className="absolute top-[calc(100%+0.5rem)] left-0 w-72 rounded-2xl bg-white shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-slate-100 p-2 z-50">
+                            {link.children.map(child => {
+                                const currentTab = searchParams.get('tab');
+                                const isChildActive = child.path.includes('tab=find-jobs') 
+                                  ? currentTab === 'find-jobs'
+                                  : (pathname === '/career-hub' && currentTab !== 'find-jobs');
+                                
+                                return (
                                 <Link 
                                     key={child.path} 
                                     href={child.path} 
-                                    className={`block px-4 py-2 text-sm transition-colors ${pathname === child.path ? "text-blue-600 font-bold bg-blue-50/50" : "text-slate-600 hover:bg-slate-50 hover:text-blue-500"}`}
+                                    className={`flex flex-col gap-0.5 p-3.5 rounded-xl transition-all duration-200 ${
+                                      isChildActive ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-600"
+                                    }`}
                                 >
-                                    {child.name}
+                                    <span className={`text-[14.5px] font-bold leading-none ${isChildActive ? "text-blue-600" : "text-slate-900"}`}>
+                                      {child.name}
+                                    </span>
+                                    <span className="text-[11px] font-medium text-slate-400 leading-tight">
+                                      {child.description}
+                                    </span>
                                 </Link>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                   );
@@ -237,7 +259,7 @@ export function Navbar() {
             </button>
           </div>
 
-          {(userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub') || pathname === '/404') ? (
+          {(userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub') || pathname.startsWith('/interview') || pathname === '/404') ? (
             <div className="hidden lg:block relative" ref={menuRef}>
               <Button
                 variant="none"
@@ -257,7 +279,7 @@ export function Navbar() {
                     </div>
 
                     <div className="min-w-0">
-                      <div className="truncate text-sm font-semibold text-slate-900">{userName ?? 'NUPal User'}</div>
+                      <div className="truncate text-sm font-semibold text-slate-900">{userName ?? 'User'}</div>
                       <div className="truncate text-xs text-slate-500">Account</div>
                     </div>
                   </div>
@@ -353,16 +375,24 @@ export function Navbar() {
                                 <ChevronDown size={20} className="text-slate-400" />
                             </div>
                             <div className="flex flex-col bg-slate-50/50 pb-2">
-                                {link.children.map(child => (
-                                    <Link
-                                        key={child.path}
-                                        href={child.path}
-                                        onClick={() => setMobileMenuOpen(false)}
-                                        className={`flex items-center px-10 py-3 transition-colors ${pathname === child.path ? "text-blue-600 font-bold" : "text-slate-600 hover:text-blue-500"}`}
-                                    >
-                                        <span className="font-semibold">{child.name}</span>
-                                    </Link>
-                                ))}
+                                {link.children.map(child => {
+                                    const currentTab = searchParams.get('tab');
+                                    const isChildActive = child.path.includes('tab=find-jobs') 
+                                      ? currentTab === 'find-jobs'
+                                      : (pathname === '/career-hub' && currentTab !== 'find-jobs');
+
+                                    return (
+                                        <Link
+                                            key={child.path}
+                                            href={child.path}
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            className={`flex flex-col gap-1 px-10 py-3.5 transition-colors ${isChildActive ? "text-blue-600" : "text-slate-600"}`}
+                                        >
+                                            <span className="font-bold text-[15px]">{child.name}</span>
+                                            <span className="text-[10px] font-medium text-slate-400">{child.description}</span>
+                                        </Link>
+                                    );
+                                })}
                             </div>
                         </div>
                     );
@@ -390,7 +420,7 @@ export function Navbar() {
 
             {/* Mobile-Native Account Section */}
             <div className="mt-auto px-4 py-4 bg-slate-50/50 border-t border-slate-100">
-              {(userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub') || pathname === '/404') ? (
+              {(userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub') || pathname.startsWith('/interview') || pathname === '/404') ? (
                 <div className="space-y-3">
                   {/* User Info - Horizontal Layout */}
                   <div className="flex items-center gap-3 px-2">
@@ -398,7 +428,7 @@ export function Navbar() {
                       <span className="text-base font-bold">{initial}</span>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-bold text-slate-900">{userName ?? 'NUPal User'}</div>
+                      <div className="truncate text-sm font-bold text-slate-900">{userName ?? 'User'}</div>
                       <div className="truncate text-xs text-slate-500">My Account</div>
                     </div>
                   </div>

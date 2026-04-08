@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { UploadCloud, FileText, CheckCircle2, Trash2 } from 'lucide-react';
+import { UploadCloud, FileText, CheckCircle2, Trash2, ArrowRight } from 'lucide-react';
 import { ResumeHistoryItem } from '@/services/resumeService';
 
 interface CVScoringTabProps {
   history: ResumeHistoryItem[];
+  isHistoryLoading: boolean;
   onUpload: (file: File) => void;
   onSelectExisting: (item: ResumeHistoryItem) => void;
   isUploading: boolean;
   onDeleteHistory?: (e: React.MouseEvent, id: string) => void;
 }
 
-export function CVScoringTab({ history, onUpload, onSelectExisting, isUploading, onDeleteHistory }: CVScoringTabProps) {
+export function CVScoringTab({ history, isHistoryLoading, onUpload, onSelectExisting, isUploading, onDeleteHistory }: CVScoringTabProps) {
   const [dragActive, setDragActive] = useState(false);
-  const [selectedHoverId, setSelectedHoverId] = React.useState<string | null>(null);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -38,19 +38,16 @@ export function CVScoringTab({ history, onUpload, onSelectExisting, isUploading,
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 animate-in fade-in duration-500 w-full max-w-5xl">
-      <div className="text-center mb-10">
-        <h2 className="text-2xl font-black text-slate-900 tracking-tight">Select Resume for Checking</h2>
-        <p className="text-sm font-semibold text-slate-400 mt-2 tracking-wide">Upload a new document or choose from your history</p>
-      </div>
+    <div className="w-full flex flex-col items-center gap-10">
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 animate-in fade-in duration-500 w-full max-w-5xl">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Select Resume for Checking</h2>
+          <p className="text-sm font-semibold text-slate-950 mt-2 tracking-wide">Upload a new document or choose from your history</p>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        
-        {/* Upload Zone */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-black text-slate-900 tracking-tight ml-1">Upload New Resume</h3>
-          <div 
-            className={`relative flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-dashed transition-all cursor-pointer min-h-[220px] ${
+        <div className="w-full max-w-2xl mx-auto space-y-4">
+          <div
+            className={`relative flex flex-col items-center justify-center p-12 rounded-2xl border-2 border-dashed transition-all cursor-pointer min-h-[300px] ${
               dragActive ? 'border-blue-500 bg-blue-50/50' : 'border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300'
             }`}
             onDragEnter={handleDrag}
@@ -58,86 +55,112 @@ export function CVScoringTab({ history, onUpload, onSelectExisting, isUploading,
             onDragOver={handleDrag}
             onDrop={handleDrop}
           >
-            <input 
-              type="file" 
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+            <input
+              type="file"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               onChange={handleChange}
               accept=".pdf,.doc,.docx"
               disabled={isUploading}
             />
-            <div className="w-14 h-14 bg-white shadow-sm border border-slate-100 rounded-2xl flex items-center justify-center text-blue-600 mb-4">
-               <UploadCloud className="w-6 h-6" />
+            <div className="w-16 h-16 bg-white shadow-sm border border-slate-100 rounded-2xl flex items-center justify-center text-blue-600 mb-6">
+              <UploadCloud className="w-8 h-8" />
             </div>
-            <p className="text-sm font-black text-slate-800">Upload Resume</p>
-            <p className="text-xs font-semibold text-slate-400 mt-1.5 text-center">Drag and drop your resume here, or click to browse</p>
-            <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-4">Supports PDF files up to 5MB</p>
-          </div>
-        </div>
-
-        {/* Existing Resumes */}
-        <div className="space-y-4 flex flex-col">
-          <h3 className="text-sm font-black text-slate-900 tracking-tight ml-1 flex justify-between">
-            <span>Existing Resumes</span>
-            <span className="text-slate-400 font-bold bg-slate-100 px-2 py-0.5 rounded-md text-xs">{history.length}</span>
-          </h3>
-          <div className="flex-1 bg-white border border-slate-200 rounded-2xl p-4 overflow-y-auto max-h-[220px] shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] scrollbar-thin scrollbar-thumb-slate-200">
-            {history.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-slate-400">
-                <FileText className="w-8 h-8 opacity-20 mb-2" />
-                <p className="text-xs font-bold uppercase tracking-wider">No existing resumes</p>
-              </div>
-            ) : (
-              <ul className="space-y-2.5">
-                {history.map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() => onSelectExisting(item)}
-                    onMouseEnter={() => setSelectedHoverId(item.id)}
-                    onMouseLeave={() => setSelectedHoverId(null)}
-                    className="w-full text-left bg-white border border-slate-100 hover:border-blue-200 hover:shadow-md p-4 rounded-2xl transition-all group flex items-center gap-4 relative overflow-hidden cursor-pointer"
-                  >
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
-                    
-                    <div className="p-2.5 bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-500 rounded-xl transition-colors shrink-0">
-                      <FileText className="w-6 h-6" />
-                    </div>
-                    
-                    <div className="flex-1 min-w-0 pr-4">
-                      <h4 className="font-bold text-[15px] text-slate-800 truncate group-hover:text-blue-900 transition-colors">
-                        {item.fileName}
-                      </h4>
-                      <p className="text-xs font-semibold text-slate-400 mt-0.5">
-                        {new Date(item.analyzedAt).toLocaleDateString(undefined, {
-                          year: 'numeric',
-                          month: 'numeric',
-                          day: 'numeric'
-                        })}
-                      </p>
-                    </div>
-
-                    {selectedHoverId === item.id && (
-                       <div className="flex items-center gap-2 shrink-0 animate-in slide-in-from-right-2 duration-200">
-                         {onDeleteHistory && (
-                           <button 
-                             onClick={(e) => onDeleteHistory(e, item.id)}
-                             className="p-2 text-slate-400 hover:text-white hover:bg-red-500 rounded-lg transition-colors"
-                             title="Delete History"
-                           >
-                             <Trash2 className="w-4 h-4" />
-                           </button>
-                         )}
-                         <div className="text-xs font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 uppercase tracking-widest shrink-0">
-                           <CheckCircle2 className="w-3.5 h-3.5" /> View
-                         </div>
-                       </div>
-                    )}
-                  </div>
-                ))}
-              </ul>
-            )}
+            <p className="text-[17px] font-bold text-slate-800">Upload Resume</p>
+            <p className="text-[13px] font-semibold text-slate-950 mt-2 text-center">Drag and drop your resume here, or click <br/>to browse from your device</p>
+            <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-6">Supports PDF files up to 5MB</p>
           </div>
         </div>
       </div>
+
+      {(isHistoryLoading || history.length > 0) && (
+        <div className="w-full max-w-5xl">
+          <h3 className="text-lg font-bold text-slate-900 mb-4 ml-1">Existing Resumes</h3>
+          <div className="w-full flex flex-col gap-4">
+            {isHistoryLoading ? (
+              <>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white border border-slate-100 rounded-3xl gap-4">
+                  <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 shrink-0 bg-slate-100 rounded-2xl animate-pulse"></div>
+                    <div className="flex flex-col gap-2.5">
+                      <div className="h-4 w-32 bg-slate-200 rounded-md animate-pulse"></div>
+                      <div className="h-3 w-20 bg-slate-100 rounded-md animate-pulse"></div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-[85px] h-[42px] bg-slate-100 rounded-2xl animate-pulse"></div>
+                    <div className="w-10 h-10 bg-slate-50 rounded-xl animate-pulse"></div>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white border border-slate-100 rounded-3xl gap-4">
+                  <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 shrink-0 bg-slate-100 rounded-2xl animate-pulse"></div>
+                    <div className="flex flex-col gap-2.5">
+                      <div className="h-4 w-40 bg-slate-200 rounded-md animate-pulse"></div>
+                      <div className="h-3 w-24 bg-slate-100 rounded-md animate-pulse"></div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-[85px] h-[42px] bg-slate-100 rounded-2xl animate-pulse"></div>
+                    <div className="w-10 h-10 bg-slate-50 rounded-xl animate-pulse"></div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              history.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white border border-slate-200 rounded-3xl hover:border-slate-300 transition-colors group gap-4"
+                >
+                  {/* Left section: Icon and Info */}
+                  <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 shrink-0 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-blue-500 shadow-sm font-bold text-sm uppercase overflow-hidden">
+                      <FileText className="w-6 h-6 group-hover:text-blue-600 transition-colors" />
+                    </div>
+
+                    <div className="flex flex-col mb-1">
+                      <div className="flex items-center gap-3">
+                        <h3 className="font-bold text-[16px] text-slate-950 tracking-tight">
+                          {item.fileName}
+                        </h3>
+                        <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 font-bold text-[10px] uppercase tracking-wider">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Ready
+                        </span>
+                      </div>
+                      <p className="text-[13px] font-semibold text-slate-950 mt-1">
+                        {new Date(item.analyzedAt).toLocaleDateString(undefined, {
+                          month: 'short', day: 'numeric', year: 'numeric'
+                        })}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right section: Actions */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => onSelectExisting(item)}
+                      className="flex items-center gap-1.5 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:text-slate-950 hover:border-slate-300 hover:bg-slate-50 rounded-2xl font-bold text-[13px] transition-colors"
+                    >
+                      View <ArrowRight className="w-4 h-4 ml-0.5" />
+                    </button>
+                    {onDeleteHistory && (
+                      <>
+                        <div className="w-1 h-3 border-r border-slate-200 mx-1"></div>
+                        <button
+                          onClick={(e) => onDeleteHistory(e, item.id)}
+                          className="p-2.5 text-slate-950 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors shrink-0"
+                          title="Delete History"
+                        >
+                          <Trash2 className="w-5 h-5 pointer-events-none" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

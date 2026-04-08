@@ -17,34 +17,34 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
   return (
     <div className="space-y-8">
       {/* ── Main Layout Grid ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
         {/* LEFT COLUMN: Main Info */}
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-4">
 
           {/* Main Hero Card */}
           <div className="bg-white rounded-2xl p-8 border border-slate-200 relative overflow-hidden shadow-none ring-1 ring-blue-50">
             <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-600"></div>
 
             <div className="relative flex flex-col sm:flex-row items-center sm:items-start gap-6 ml-1.5">
-              <div className="w-20 h-20 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-black text-3xl shrink-0 uppercase">
+              <div className="w-20 h-20 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-bold text-3xl shrink-0 uppercase">
                 {data.fullName?.[0] ?? '?'}
               </div>
               <div className="text-center sm:text-left flex-1 min-w-0">
-                <h2 className="text-3xl font-black tracking-tight text-slate-900">{data.fullName ?? 'Candidate Name'}</h2>
+                <h2 className="text-3xl font-bold tracking-tight text-slate-950">{data.fullName ?? 'Candidate Name'}</h2>
                 <div className="mt-4 flex flex-wrap justify-center sm:justify-start gap-y-3 gap-x-5">
                   {data.email && (
-                    <a href={`mailto:${data.email}`} className="flex items-center gap-2 text-sm text-slate-600 font-medium hover:text-blue-600">
+                    <a href={`mailto:${data.email}`} className="flex items-center gap-2 text-sm text-slate-950 font-medium hover:text-blue-600">
                       <div className="p-1.5 bg-blue-50 rounded-lg border border-blue-100 text-blue-600"><Mail className="w-4 h-4" /></div> {data.email}
                     </a>
                   )}
                   {data.phone && (
-                    <div className="flex items-center gap-2 text-sm text-slate-600 font-medium whitespace-nowrap">
+                    <div className="flex items-center gap-2 text-sm text-slate-950 font-medium whitespace-nowrap">
                       <div className="p-1.5 bg-blue-50 rounded-lg border border-blue-100 text-blue-600"><Phone className="w-4 h-4" /></div> {data.phone}
                     </div>
                   )}
                   {data.location && (
-                    <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
+                    <div className="flex items-center gap-2 text-sm text-slate-950 font-medium">
                       <div className="p-1.5 bg-blue-50 rounded-lg border border-blue-100 text-blue-600"><MapPin className="w-4 h-4" /></div> {data.location}
                     </div>
                   )}
@@ -54,19 +54,19 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
                 <div className="mt-6 flex flex-wrap justify-center sm:justify-start gap-3">
                   {data.linkedIn && (
                     <a href={data.linkedIn.startsWith('http') ? data.linkedIn : `https://${data.linkedIn}`} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-600 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 rounded-xl text-xs font-bold transition-none">
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-950 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 rounded-xl text-xs font-bold transition-none">
                       <Linkedin className="w-3.5 h-3.5" /> LinkedIn
                     </a>
                   )}
                   {data.gitHub && (
                     <a href={data.gitHub.startsWith('http') ? data.gitHub : `https://${data.gitHub}`} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-600 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 rounded-xl text-xs font-bold transition-none">
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-950 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 rounded-xl text-xs font-bold transition-none">
                       <Github className="w-3.5 h-3.5" /> GitHub
                     </a>
                   )}
                   {data.website && (
                     <a href={data.website.startsWith('http') ? data.website : `https://${data.website}`} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-600 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 rounded-xl text-xs font-bold transition-none">
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-950 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 rounded-xl text-xs font-bold transition-none">
                       <Globe className="w-3.5 h-3.5" /> Website
                     </a>
                   )}
@@ -78,7 +78,7 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
           {/* Summary */}
           {data.summary && (
             <Section icon={<BookOpen className="w-4 h-4" />} title="Professional Summary">
-              <p className="text-slate-600 leading-relaxed text-[15px] font-medium whitespace-pre-wrap">{data.summary}</p>
+              <p className="text-slate-950 leading-relaxed text-[15px] font-medium whitespace-pre-wrap">{data.summary}</p>
             </Section>
           )}
 
@@ -102,7 +102,7 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
                       </div>
                       <div className="flex flex-col sm:items-end gap-1 shrink-0">
                         {(edu.startDate || edu.endDate) && (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold text-slate-500">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold text-slate-900">
                             <Calendar className="w-3.5 h-3.5" />
                             {edu.startDate}{edu.endDate ? ` — ${edu.endDate}` : ''}
                           </div>
@@ -137,13 +137,13 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
                       </div>
                       <div className="flex flex-col sm:items-end gap-1">
                         {(exp.startDate || exp.endDate) && (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold text-slate-500">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold text-slate-900">
                             <Calendar className="w-3.5 h-3.5 text-blue-400" />
                             {exp.startDate} {exp.endDate ? `— ${exp.endDate}` : exp.isCurrent ? '— Present' : ''}
                           </div>
                         )}
                         {exp.location && (
-                          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 mt-1 sm:justify-end">
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-950 mt-1 sm:justify-end">
                             <MapPin className="w-3.5 h-3.5" /> {exp.location}
                           </div>
                         )}
@@ -152,7 +152,7 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
                     {exp.bullets?.length > 0 && (
                       <ul className="mt-4 space-y-2.5">
                         {exp.bullets.map((b, j) => (
-                          <li key={j} className="flex items-start gap-3 text-[14px] text-slate-600 font-medium whitespace-pre-wrap">
+                          <li key={j} className="flex items-start gap-3 text-[14px] text-slate-950 font-medium whitespace-pre-wrap">
                             <span className="mt-2 w-1.5 h-1.5 rounded-full bg-blue-300 shrink-0" />
                             {b}
                           </li>
@@ -177,7 +177,7 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
                       <h3 className="font-bold text-slate-900 text-[18px] tracking-tight">{proj.name}</h3>
                     </div>
                     {proj.description && (
-                      <p className="mt-3 text-[15px] text-slate-600 leading-relaxed font-medium whitespace-pre-wrap">
+                      <p className="mt-3 text-[15px] text-slate-950 leading-relaxed font-medium whitespace-pre-wrap">
                         {proj.description}
                       </p>
                     )}
@@ -197,20 +197,20 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
         </div>
 
         {/* RIGHT COLUMN: Sidebar (Skills, Languages, etc.) */}
-        <div className="lg:col-span-4 space-y-8">
+        <div className="lg:col-span-4 space-y-4">
 
           {/* Skills Section */}
           {(data.technicalSkills?.length > 0 || data.softSkills?.length > 0) && (
             <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-none">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-blue-50 rounded-xl border border-blue-100 text-blue-600"><Wrench className="w-5 h-5" /></div>
-                <h2 className="text-lg font-black text-slate-900">Skills & Expertise</h2>
+                <h2 className="text-lg font-bold text-slate-900">Skills & Expertise</h2>
               </div>
 
               <div className="space-y-8">
                 {data.technicalSkills?.length > 0 && (
                   <div>
-                    <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-950 mb-4 flex items-center gap-2">
                       <div className="w-1 h-3 bg-blue-500 rounded-full"></div> Technical Stack
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -225,7 +225,7 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
 
                 {data.softSkills?.length > 0 && (
                   <div>
-                    <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-950 mb-4 flex items-center gap-2">
                       <div className="w-1 h-3 bg-emerald-500 rounded-full"></div> Soft Skills
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -246,7 +246,7 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
             <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-none">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-emerald-50 rounded-xl border border-emerald-100 text-emerald-600"><Languages className="w-5 h-5" /></div>
-                <h2 className="text-base font-black text-slate-900">Languages</h2>
+                <h2 className="text-base font-bold text-slate-900">Languages</h2>
               </div>
               <div className="flex flex-wrap gap-2">
                 {data.languages.map((l) => (
@@ -263,7 +263,7 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
             <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-none">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-blue-50 rounded-xl border border-blue-100 text-blue-600"><Trophy className="w-5 h-5" /></div>
-                <h2 className="text-base font-black text-slate-900">Achievements</h2>
+                <h2 className="text-base font-bold text-slate-900">Achievements</h2>
               </div>
 
               <div className="space-y-6">
@@ -272,7 +272,7 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
                     {data.certifications.map((c, i) => (
                       <li key={i} className="flex items-start gap-3 p-3 bg-white rounded-2xl border border-slate-100 hover:border-blue-200 transition-none group shadow-none">
                         <div className="p-1.5 bg-slate-50 border border-slate-100 rounded-lg text-blue-500 group-hover:scale-110 transition-none"><Award className="w-4 h-4" /></div>
-                        <span className="text-xs font-bold text-slate-700 mt-1">{c}</span>
+                        <span className="text-xs font-bold text-slate-900 mt-1">{c}</span>
                       </li>
                     ))}
                   </ul>
@@ -282,7 +282,7 @@ export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
                     {data.awards.map((a, i) => (
                       <li key={i} className="flex items-start gap-3 p-3 bg-white rounded-2xl border border-slate-100 hover:border-emerald-200 transition-none group shadow-none">
                         <div className="p-1.5 bg-emerald-50 border border-emerald-100 rounded-lg text-emerald-500 group-hover:scale-110 transition-none"><Star className="w-4 h-4" /></div>
-                        <span className="text-xs font-bold text-slate-700 mt-1">{a}</span>
+                        <span className="text-xs font-bold text-slate-900 mt-1">{a}</span>
                       </li>
                     ))}
                   </ul>

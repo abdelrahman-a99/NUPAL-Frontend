@@ -77,7 +77,7 @@ export function ProgressOverlay({ isOpen, type, isDataReady = false, onComplete 
           <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
         </div>
 
-        <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
+        <h2 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
           {type === 'cv' ? 'Select Resume for Checking' : 'Analyzing Match'}
         </h2>
         <p className="text-sm font-semibold text-slate-400 mb-12">Please wait while we process your request...</p>
@@ -116,7 +116,7 @@ export function ProgressOverlay({ isOpen, type, isDataReady = false, onComplete 
 
         {/* Fake Progress Bar */}
         <div className="w-full max-w-xs mt-16 flex flex-col items-center gap-3">
-          <span className="text-xs font-black tracking-widest text-slate-400 uppercase">
+          <span className="text-xs font-bold tracking-widest text-slate-400 uppercase">
             {Math.round(((currentStepIndex + 0.5) / steps.length) * 100)}% Complete
           </span>
           <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
