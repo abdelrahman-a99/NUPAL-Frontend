@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart2, Target, Bot, Search, DollarSign } from 'lucide-react';
+import { BarChart2, Target, Bot } from 'lucide-react';
 
 export type NavTabId = 'cv-scoring' | 'job-fit' | 'interview-prep';
 
@@ -8,7 +8,6 @@ interface NavItem {
   title: string;
   description: string;
   icon: React.ElementType;
-  disabled?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -27,18 +26,19 @@ const NAV_ITEMS: NavItem[] = [
   {
     id: 'interview-prep',
     title: 'Technical Interview Preparation',
-    description: 'Practice with AI-driven technical interviews',
+    description: 'Practice interviews for the job you matched',
     icon: Bot,
-    disabled: true,
   }
 ];
 
 interface SidebarNavProps {
   activeTab: NavTabId;
   onSelect: (tab: NavTabId) => void;
+  /** Step 3 requires a completed Job Match for a role */
+  interviewLocked: boolean;
 }
 
-export function SidebarNav({ activeTab, onSelect }: SidebarNavProps) {
+export function SidebarNav({ activeTab, onSelect, interviewLocked }: SidebarNavProps) {
   return (
     <nav className="w-full max-w-sm space-y-4 pr-6 shrink-0 relative">
       <div className="absolute left-10 top-10 bottom-10 w-px bg-slate-200 -z-10" />
@@ -46,13 +46,12 @@ export function SidebarNav({ activeTab, onSelect }: SidebarNavProps) {
       {NAV_ITEMS.map((item, index) => {
         const isActive = activeTab === item.id;
         const Icon = item.icon;
-
         return (
           <button
             key={item.id}
-            disabled={item.disabled}
+            type="button"
             onClick={() => onSelect(item.id)}
-            className={`w-full flex items-start text-left gap-4 p-4 rounded-2xl transition-all relative hover:bg-slate-50/80 border border-transparent ${item.disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+            className={`w-full flex items-start text-left gap-4 p-4 rounded-2xl transition-all relative hover:bg-slate-50/80 border border-transparent`}
           >
             <div className={`mt-0.5 w-12 h-12 rounded-full flex items-center justify-center shrink-0 border-4 transition-all ${isActive
                 ? 'bg-blue-600 border-blue-50 text-white'
@@ -61,7 +60,7 @@ export function SidebarNav({ activeTab, onSelect }: SidebarNavProps) {
               <Icon className="w-5 h-5" />
             </div>
             <div className="flex-1 mt-1.5">
-              <h3 className={`font-black text-sm tracking-tight ${isActive ? 'text-blue-900' : 'text-slate-800'}`}>
+              <h3 className={`font-bold text-sm tracking-tight ${isActive ? 'text-blue-900' : 'text-slate-800'}`}>
                 {item.title}
               </h3>
               <p className={`mt-0.5 text-xs font-semibold leading-relaxed ${isActive ? 'text-blue-600/80' : 'text-slate-400'}`}>

@@ -4,12 +4,35 @@ import { Target, Trash2, ChevronRight, Clock, Building2, CheckCircle2, ArrowRigh
 
 interface JobFitHistoryListProps {
   history: JobFitHistoryItem[];
+  isLoading?: boolean;
   onLoad: (item: JobFitHistoryItem) => void;
   onDelete: (e: React.MouseEvent, id: string) => void;
 }
 
-export function JobFitHistoryList({ history, onLoad, onDelete }: JobFitHistoryListProps) {
-  if (history.length === 0) return null;
+export function JobFitHistoryList({ history, isLoading, onLoad, onDelete }: JobFitHistoryListProps) {
+  if (!isLoading && history.length === 0) return null;
+
+  if (isLoading) {
+    return (
+      <div className="w-full flex flex-col gap-4">
+        {[1, 2].map((i) => (
+          <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white border border-slate-100 rounded-3xl gap-4">
+            <div className="flex items-center gap-5">
+              <div className="w-14 h-14 shrink-0 bg-slate-100 rounded-2xl animate-pulse"></div>
+              <div className="flex flex-col gap-2.5">
+                <div className="h-4 w-32 bg-slate-200 rounded-md animate-pulse"></div>
+                <div className="h-3 w-20 bg-slate-100 rounded-md animate-pulse"></div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-[85px] h-[42px] bg-slate-100 rounded-2xl animate-pulse"></div>
+              <div className="w-10 h-10 bg-slate-50 rounded-xl animate-pulse"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col gap-4">
