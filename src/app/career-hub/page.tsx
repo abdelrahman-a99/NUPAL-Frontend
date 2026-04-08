@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { getToken } from '@/lib/auth';
 import { Job, fetchJobs } from '@/services/jobService';
@@ -17,9 +17,18 @@ import { CareerPathwaysDisplay } from '@/components/career-hub/CareerPathwaysDis
 import Button from '@/components/ui/Button';
 import Skeleton from '@/components/ui/Skeleton';
 import { Dispatch, SetStateAction } from 'react';
+import ResumeAnalyzerPage from './resume-analyzer/page';
 
 export default function CareerHubPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const activeTab = searchParams.get('tab');
+    
+    // Show Job Search only if tab is explicitly 'find-jobs'
+    const isFindJobsActive = activeTab === 'find-jobs';
+    
+    // Default to Resume Analyzer for anything else (including empty tab)
+    const isResumeAnalyzerTab = !isFindJobsActive;
 
     useEffect(() => {
         const token = getToken();
@@ -224,6 +233,10 @@ export default function CareerHubPage() {
             jobsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     };
+
+    if (isResumeAnalyzerTab) {
+        return <ResumeAnalyzerPage />;
+    }
 
     return (
         <div className="min-h-screen bg-slate-50">

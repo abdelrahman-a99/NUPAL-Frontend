@@ -1,5 +1,19 @@
+import { careerServicesApiUrl } from '../config/careerApi';
 import { getToken } from '../lib/auth';
-import { API_ENDPOINTS } from '../config/api';
+
+const RESUME_API = () => careerServicesApiUrl('/v1/resume');
+
+/** FastAPI HTTPException uses `{ detail: string | object }`; surface it in UI errors. */
+function fastApiDetailMessage(body: unknown): string | null {
+  if (!body || typeof body !== 'object') return null;
+  const detail = (body as { detail?: unknown }).detail;
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail) && detail.length > 0) {
+    const first = detail[0] as { msg?: string };
+    if (typeof first?.msg === 'string') return first.msg;
+  }
+  return null;
+}
 
 export interface ParsedResumeExperience {
   title: string | null;
@@ -71,7 +85,7 @@ export async function parseResume(file: File): Promise<{ id: string; data: Parse
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await fetch(`${API_ENDPOINTS.RESUME}/parse`, {
+  const response = await fetch(`${RESUME_API()}/parse`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -91,11 +105,15 @@ export async function getResumeHistory(): Promise<ResumeHistoryItem[]> {
   const token = getToken();
   if (!token) throw new Error('Not authenticated');
 
-  const response = await fetch(`${API_ENDPOINTS.RESUME}/history`, {
+  const response = await fetch(`${RESUME_API()}/history`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  if (!response.ok) throw new Error('Failed to fetch history');
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    console.error(`getResumeHistory failed (${response.status}):`, err);
+    throw new Error(err.message || err.detail || 'Failed to fetch history');
+  }
   return response.json();
 }
 
@@ -103,11 +121,15 @@ export async function getResumeById(id: string): Promise<ParsedResume> {
   const token = getToken();
   if (!token) throw new Error('Not authenticated');
 
-  const response = await fetch(`${API_ENDPOINTS.RESUME}/${id}`, {
+  const response = await fetch(`${RESUME_API()}/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  if (!response.ok) throw new Error('Failed to fetch analysis');
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    console.error(`getResumeById failed (${response.status}):`, err);
+    throw new Error(err.message || err.detail || 'Failed to fetch analysis');
+  }
   return response.json();
 }
 
@@ -115,7 +137,7 @@ export async function deleteResume(id: string): Promise<void> {
   const token = getToken();
   if (!token) throw new Error('Not authenticated');
 
-  const response = await fetch(`${API_ENDPOINTS.RESUME}/${id}`, {
+  const response = await fetch(`${RESUME_API()}/${id}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -123,11 +145,15 @@ export async function deleteResume(id: string): Promise<void> {
   if (!response.ok) throw new Error('Failed to delete');
 }
 
-export async function analyzeJobFit(jobUrl?: string, jobDescription?: string, resumeId?: string): Promise<{ id: string; analysis: any }> {
+export async function analyzeJobFit(jobUrl?: string, jobDescription?: string, resumeId?: string): Promise<{
+  id: string;
+  analysis: any;
+  jobDescriptionText?: string | null;
+}> {
   const token = getToken();
   if (!token) throw new Error('Not authenticated');
 
-  const response = await fetch(`${API_ENDPOINTS.RESUME}/job-fit/analyze`, {
+  const response = await fetch(`${RESUME_API()}/job-fit/analyze`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -138,7 +164,12 @@ export async function analyzeJobFit(jobUrl?: string, jobDescription?: string, re
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error((err as any).message || (err as any).error || 'Failed to analyze job fit');
+    const msg =
+      fastApiDetailMessage(err) ||
+      (err as { message?: string }).message ||
+      (err as { error?: string }).error ||
+      'Failed to analyze job fit';
+    throw new Error(msg);
   }
 
   return response.json();
@@ -148,23 +179,37 @@ export async function getJobFitHistory(): Promise<JobFitHistoryItem[]> {
   const token = getToken();
   if (!token) throw new Error('Not authenticated');
 
-  const response = await fetch(`${API_ENDPOINTS.RESUME}/job-fit/history`, {
+  const response = await fetch(`${RESUME_API()}/job-fit/history`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  if (!response.ok) throw new Error('Failed to fetch job fit history');
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    console.error(`getJobFitHistory failed (${response.status}):`, err);
+    throw new Error(err.message || err.detail || 'Failed to fetch job fit history');
+  }
   return response.json();
 }
 
-export async function getJobFitById(id: string): Promise<{ id: string; analysis: any; jobUrl: string; analyzedAt: string }> {
+export async function getJobFitById(id: string): Promise<{
+  id: string;
+  analysis: any;
+  jobUrl: string;
+  analyzedAt: string;
+  jobDescriptionText?: string | null;
+}> {
   const token = getToken();
   if (!token) throw new Error('Not authenticated');
 
-  const response = await fetch(`${API_ENDPOINTS.RESUME}/job-fit/${id}`, {
+  const response = await fetch(`${RESUME_API()}/job-fit/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  if (!response.ok) throw new Error('Failed to fetch job fit result');
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    console.error(`getJobFitById failed (${response.status}):`, err);
+    throw new Error(err.message || err.detail || 'Failed to fetch job fit result');
+  }
   return response.json();
 }
 
@@ -172,7 +217,7 @@ export async function deleteJobFit(id: string): Promise<void> {
   const token = getToken();
   if (!token) throw new Error('Not authenticated');
 
-  const response = await fetch(`${API_ENDPOINTS.RESUME}/job-fit/${id}`, {
+  const response = await fetch(`${RESUME_API()}/job-fit/${id}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
