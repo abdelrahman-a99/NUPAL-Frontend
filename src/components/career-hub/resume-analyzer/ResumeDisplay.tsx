@@ -2,7 +2,8 @@ import React from 'react';
 import { 
   CheckCircle2, FileText, Upload, Sparkles, Mail, Phone, MapPin, 
   Linkedin, Github, Globe, BookOpen, GraduationCap, Building2, 
-  Calendar, Briefcase, FolderGit2, Wrench, Languages, Trophy, Award, Star 
+  Calendar, Briefcase, FolderGit2, Wrench, Languages, Trophy, Award, Star,
+  ChevronLeft
 } from 'lucide-react';
 import { ParsedResume } from '@/services/resumeService';
 import { Section } from './Section';
@@ -16,9 +17,19 @@ interface ResumeDisplayProps {
 export function ResumeDisplay({ data, fileName, onReset }: ResumeDisplayProps) {
   return (
     <div className="space-y-8">
+      {/* ── Header with Back Button ── */}
+      <div className="flex items-center gap-4 px-2">
+        <button onClick={onReset} className="p-2.5 bg-white border border-slate-200 shadow-sm rounded-xl hover:bg-slate-50 transition-colors shrink-0 group">
+          <ChevronLeft className="w-5 h-5 text-slate-500 group-hover:text-slate-900 transition-colors" />
+        </button>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Resume Analysis</h1>
+          <p className="text-sm text-slate-500 font-medium">Viewing details for {fileName}</p>
+        </div>
+      </div>
+
       {/* ── Main Layout Grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
         {/* LEFT COLUMN: Main Info */}
         <div className="lg:col-span-8 space-y-4">
 
