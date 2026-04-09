@@ -18,6 +18,9 @@ export function JobFitReport({ data, onBack, onDelete, onStartInterviewPrep }: J
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between w-full md:w-auto">
           <div className="flex items-center gap-5">
+            <button onClick={onBack} className="p-2.5 bg-white border border-slate-200 shadow-sm rounded-xl hover:bg-slate-50 transition-colors shrink-0 group">
+              <ChevronLeft className="w-5 h-5 text-slate-500 group-hover:text-slate-900 transition-colors" />
+            </button>
             <div>
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-widest rounded-full border border-blue-100/50">Analysis Report</span>
