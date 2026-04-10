@@ -1,13 +1,10 @@
 /**
- * Browser and server-safe base URL for the Career Hub proxy (`/api/career-services/...`).
+ * Universal safe base URL routing career services directly into the .NET Core API proxy.
  */
 export function careerServicesApiUrl(path: string): string {
   const p = path.startsWith("/") ? path : `/${path}`;
-  if (typeof window !== "undefined") {
-    return `${window.location.origin}/api/career-services${p}`;
-  }
   const origin =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-  return `${origin}/api/career-services${p}`;
+    process.env.NEXT_PUBLIC_API_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:5009");
+  return `${origin}/api/ai-proxy${p}`;
 }
