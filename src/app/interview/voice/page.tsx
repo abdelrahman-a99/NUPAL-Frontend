@@ -42,6 +42,7 @@ const PoseTrackerFromStream = dynamic(
   () => import("@/components/interview/PoseTrackerFromStream"),
   { ssr: false, loading: () => null }
 );
+import { careerServicesApiUrl } from "@/config/careerApi";
 
 const CAREER_INTERVIEW_SETUP = "/career-hub?tab=interview-prep";
 
@@ -91,6 +92,8 @@ export default function VoiceInterviewPage() {
   const formDataRef = useRef<VoiceFormData | null>(null);
   const transcriptRef = useRef<TranscriptItem[]>([]);
   const isMutedRef = useRef(false);
+  const retryCountRef = useRef(0);
+  const MAX_RETRIES = 5;
 
   const wsRef = useRef<WebSocket | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
@@ -335,7 +338,7 @@ export default function VoiceInterviewPage() {
       setLoading(true);
       setPhase("feedback");
       try {
-        const response = await fetch("/api/interview/voice-agent", {
+        const response = await fetch(careerServicesApiUrl("/v1/interview/voice-agent"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -383,7 +386,7 @@ export default function VoiceInterviewPage() {
     poseSamplesRef.current = [];
 
     try {
-      const configRes = await fetch("/api/interview/voice-agent", {
+      const configRes = await fetch(careerServicesApiUrl("/v1/interview/voice-agent"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "start", formData }),
@@ -393,7 +396,7 @@ export default function VoiceInterviewPage() {
         throw new Error(configData.error || "Voice agent config failed");
       }
 
-      const keyRes = await fetch("/api/interview/voice-agent");
+      const keyRes = await fetch(careerServicesApiUrl("/v1/interview/voice-agent"));
       const keyData = await keyRes.json();
       if (!keyRes.ok || !keyData.apiKey) {
         throw new Error(keyData.error || "Deepgram key unavailable");
@@ -442,6 +445,10 @@ export default function VoiceInterviewPage() {
       const wsUrl = "wss://agent.deepgram.com/v1/agent/converse";
       wsRef.current = new WebSocket(wsUrl, ["token", keyData.apiKey as string]);
       wsRef.current.binaryType = "arraybuffer";
+
+      wsRef.current.onopen = () => {
+        retryCountRef.current = 0;
+      };
 
       wsRef.current.onmessage = async (event) => {
         if (event.data instanceof ArrayBuffer) {
@@ -527,14 +534,34 @@ export default function VoiceInterviewPage() {
       };
 
       wsRef.current.onerror = () => {
-        setConnectionStatus("error");
-        setLoading(false);
-        setError("WebSocket error");
+        // Browsers hide 401 WebSocket errors, but we can handle it generically
+        // If it failed before connecting, we'll try to catch it in onclose
+        if (connectionStatus === "connected") {
+          setConnectionStatus("error");
+          setLoading(false);
+          setError("WebSocket error");
+        }
       };
 
-      wsRef.current.onclose = () => {
+      wsRef.current.onclose = (event) => {
         setIsConnected(false);
         setConnectionStatus("disconnected");
+
+        // Deepgram usually sends 1008 or 1011 for auth/token issues, or if it closes abnormally
+        if (event.code === 1008 || event.code === 1011 || (!isConnected && event.code !== 1000 && !error)) {
+           if (retryCountRef.current < MAX_RETRIES) {
+             retryCountRef.current += 1;
+             const delay = Math.min(1000 * retryCountRef.current, 8000);
+             console.warn(`Connection dropped. Reconnecting... (attempt ${retryCountRef.current})`);
+             setError(`Connection dropped. Re-establishing... (attempt ${retryCountRef.current})`);
+             setTimeout(() => {
+                void connectToDeepgram();
+             }, delay);
+           } else {
+             setError("Could not reconnect. Please restart the session manually.");
+             retryCountRef.current = 0; // reset for next manual attempt
+           }
+        }
       };
     } catch (e) {
       setConnectionStatus("error");

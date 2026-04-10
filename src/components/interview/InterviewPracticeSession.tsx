@@ -34,6 +34,7 @@ import {
 } from "@/lib/interview/bodyLanguage";
 import { JobSelector } from "@/components/career-hub/resume-analyzer/JobSelector";
 import { type JobFitHistoryItem } from "@/services/resumeService";
+import { careerServicesApiUrl } from "@/config/careerApi";
 
 const PoseTracker = dynamic(
   () => import("@/components/interview/PoseTracker"),
@@ -149,7 +150,7 @@ export function InterviewPracticeSession({
     setPoseSamples([]);
     setFeedback(null);
     try {
-      const res = await fetch("/api/interview/generate-questions", {
+      const res = await fetch(careerServicesApiUrl("/v1/interview/generate-questions"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -179,7 +180,7 @@ export function InterviewPracticeSession({
     setStep("loadingFeedback");
     const agg = aggregateSamples(poseSamples);
     try {
-      const res = await fetch("/api/interview/generate-feedback", {
+      const res = await fetch(careerServicesApiUrl("/v1/interview/generate-feedback"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
