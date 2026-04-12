@@ -26,6 +26,7 @@ import {
   Target,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getToken } from "@/lib/auth";
 
 import Button from "@/components/ui/Button";
 import InterviewFeedbackReport, {
@@ -45,6 +46,18 @@ const PoseTrackerFromStream = dynamic(
 import { careerServicesApiUrl } from "@/config/careerApi";
 
 const CAREER_INTERVIEW_SETUP = "/career-hub?tab=interview-prep";
+
+/** Safe parsing to catch empty/missing JSON bodies from proxies */
+async function safeJson<T>(response: Response): Promise<T | null> {
+  try {
+    const text = await response.text();
+    if (!text || !text.trim()) return null;
+    return JSON.parse(text) as T;
+  } catch {
+    return null;
+  }
+}
+
 
 export type VoiceFormData = {
   topic: string;
@@ -94,6 +107,7 @@ export default function VoiceInterviewPage() {
   const isMutedRef = useRef(false);
   const retryCountRef = useRef(0);
   const MAX_RETRIES = 5;
+  const intentionalCloseRef = useRef(false);
 
   const wsRef = useRef<WebSocket | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
@@ -329,6 +343,8 @@ export default function VoiceInterviewPage() {
         : undefined;
     const bodyLanguageSummary = poseAgg?.summaryForModel;
 
+    // Mark as intentional so onclose doesn't trigger reconnect
+    intentionalCloseRef.current = true;
     const ws = wsRef.current;
     wsRef.current = null;
     ws?.close();
@@ -337,10 +353,15 @@ export default function VoiceInterviewPage() {
     if (lines.length > 0 && fd) {
       setLoading(true);
       setPhase("feedback");
+      setError(null);
       try {
+        const token = getToken();
         const response = await fetch(careerServicesApiUrl("/v1/interview/voice-agent"), {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({
             action: "feedback",
             formData: fd,
@@ -349,9 +370,9 @@ export default function VoiceInterviewPage() {
             bodyLanguageMetrics: poseAgg,
           }),
         });
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.error || data.message || "Feedback failed");
+        const data = await safeJson<any>(response);
+        if (!response.ok || !data) {
+          throw new Error(data?.error || data?.message || "Feedback failed");
         }
         setFeedback((data.feedback || null) as InterviewFeedback);
         setPhase("report");
@@ -370,6 +391,7 @@ export default function VoiceInterviewPage() {
   endAndReportRef.current = endAndReport;
 
   const abandon = useCallback(() => {
+    intentionalCloseRef.current = true;
     const ws = wsRef.current;
     wsRef.current = null;
     ws?.close();
@@ -386,20 +408,26 @@ export default function VoiceInterviewPage() {
     poseSamplesRef.current = [];
 
     try {
+      const token = getToken();
       const configRes = await fetch(careerServicesApiUrl("/v1/interview/voice-agent"), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ action: "start", formData }),
       });
-      const configData = await configRes.json();
-      if (!configRes.ok) {
-        throw new Error(configData.error || "Voice agent config failed");
+      const configData = await safeJson<any>(configRes);
+      if (!configRes.ok || !configData) {
+        throw new Error(configData?.error || "Voice agent config failed");
       }
 
-      const keyRes = await fetch(careerServicesApiUrl("/v1/interview/voice-agent"));
-      const keyData = await keyRes.json();
-      if (!keyRes.ok || !keyData.apiKey) {
-        throw new Error(keyData.error || "Deepgram key unavailable");
+      const keyRes = await fetch(careerServicesApiUrl("/v1/interview/voice-agent"), {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      const keyData = await safeJson<any>(keyRes);
+      if (!keyRes.ok || !keyData || !keyData.apiKey) {
+        throw new Error(keyData?.error || "Deepgram key unavailable");
       }
 
       const audioConstraints: MediaTrackConstraints = {
@@ -547,8 +575,15 @@ export default function VoiceInterviewPage() {
         setIsConnected(false);
         setConnectionStatus("disconnected");
 
-        // Deepgram usually sends 1008 or 1011 for auth/token issues, or if it closes abnormally
-        if (event.code === 1008 || event.code === 1011 || (!isConnected && event.code !== 1000 && !error)) {
+        // Skip reconnect if the close was intentional (user ended/abandoned session)
+        if (intentionalCloseRef.current) {
+          intentionalCloseRef.current = false;
+          return;
+        }
+
+        // Deepgram sends 1008 or 1011 for auth/token issues, or closes abnormally mid-session
+        const isUnexpected = event.code === 1008 || event.code === 1011 || event.code !== 1000;
+        if (isUnexpected) {
            if (retryCountRef.current < MAX_RETRIES) {
              retryCountRef.current += 1;
              const delay = Math.min(1000 * retryCountRef.current, 8000);
@@ -559,7 +594,7 @@ export default function VoiceInterviewPage() {
              }, delay);
            } else {
              setError("Could not reconnect. Please restart the session manually.");
-             retryCountRef.current = 0; // reset for next manual attempt
+             retryCountRef.current = 0;
            }
         }
       };
@@ -591,7 +626,7 @@ export default function VoiceInterviewPage() {
     );
   }
 
-  if (phase === "report") {
+  if (phase === "feedback" || phase === "report") {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-8 lg:px-12 bg-white min-h-screen">
         <div className="mb-8">
@@ -609,7 +644,7 @@ export default function VoiceInterviewPage() {
           </button>
         </div>
 
-        {!feedback ? (
+        {phase === "feedback" || !feedback ? (
           <InterviewFeedbackSkeleton />
         ) : (
           <InterviewFeedbackReport
@@ -681,11 +716,7 @@ export default function VoiceInterviewPage() {
           </motion.div>
         )}
 
-        {phase === "feedback" && (
-          <div className="flex-1 overflow-y-auto px-2 custom-scrollbar">
-             <InterviewFeedbackSkeleton />
-          </div>
-        )}
+        {/* feedback phase now handled above the call UI — skeleton shown there */}
 
         {phase === "call" && (
           <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-10 min-h-0">

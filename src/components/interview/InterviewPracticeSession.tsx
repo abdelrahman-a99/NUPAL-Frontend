@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { getToken } from "@/lib/auth";
 import dynamic from "next/dynamic";
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -40,6 +41,17 @@ const PoseTracker = dynamic(
   () => import("@/components/interview/PoseTracker"),
   { ssr: false, loading: () => null }
 );
+
+/** Safe parsing to catch empty/missing JSON bodies from proxies */
+async function safeJson<T>(response: Response): Promise<T | null> {
+  try {
+    const text = await response.text();
+    if (!text || !text.trim()) return null;
+    return JSON.parse(text) as T;
+  } catch {
+    return null;
+  }
+}
 
 export const VOICE_STORAGE_KEY = "nupalVoiceInterview";
 
@@ -150,9 +162,13 @@ export function InterviewPracticeSession({
     setPoseSamples([]);
     setFeedback(null);
     try {
+      const token = getToken();
       const res = await fetch(careerServicesApiUrl("/v1/interview/generate-questions"), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({
           topic: topic.trim(),
           difficulty,
@@ -160,9 +176,9 @@ export function InterviewPracticeSession({
           ...apiJobPayload,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || data.message || "Request failed");
+      const data = await safeJson<any>(res);
+      if (!res.ok || !data) {
+        throw new Error(data?.error || data?.message || "Request failed");
       }
       const qs = (data.questions || []) as QuestionItem[];
       setQuestions(qs);
@@ -180,9 +196,13 @@ export function InterviewPracticeSession({
     setStep("loadingFeedback");
     const agg = aggregateSamples(poseSamples);
     try {
+      const token = getToken();
       const res = await fetch(careerServicesApiUrl("/v1/interview/generate-feedback"), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({
           topic: topic.trim(),
           difficulty: difficultyLabel,
@@ -197,9 +217,9 @@ export function InterviewPracticeSession({
           ...apiJobPayload,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || data.message || "Request failed");
+      const data = await safeJson<any>(res);
+      if (!res.ok || !data) {
+        throw new Error(data?.error || data?.message || "Request failed");
       }
       setFeedback((data.feedback || null) as FeedbackShape);
       setStep("report");
