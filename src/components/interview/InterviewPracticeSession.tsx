@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { getToken } from "@/lib/auth";
 import dynamic from "next/dynamic";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -136,6 +136,17 @@ export function InterviewPracticeSession({
   const [poseSamples, setPoseSamples] = useState<FrameScores[]>([]);
   const [feedback, setFeedback] = useState<FeedbackShape | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (step !== "setup") {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [step]);
 
   const difficultyLabel = useMemo(
     () =>
@@ -642,8 +653,8 @@ export function InterviewPracticeSession({
           <main className="max-w-[1400px] mx-auto p-4 md:p-8 lg:p-12">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
               
-              {/* PRIMARY QUESTION LIST (Left) */}
-              <div className="lg:col-span-8 flex flex-col gap-12">
+              {/* PRIMARY QUESTION LIST (Left or Centered) */}
+              <div className={`flex flex-col gap-12 ${useCamera ? 'lg:col-span-8' : 'lg:col-span-8 lg:col-start-3'}`}>
                 <div className="space-y-2 mb-4">
                   <h3 className="text-2xl font-black text-slate-900 tracking-tight">Required Scenarios</h3>
                   <p className="text-sm text-slate-500 font-medium tracking-tight">Answer the following questions to complete your technical evaluation.</p>
@@ -695,10 +706,21 @@ export function InterviewPracticeSession({
                   </motion.div>
                 ))}
 
-                <div className="pt-8 pb-16 flex justify-center">
+                <div className="pt-8 pb-16 flex flex-col items-center gap-3">
+                  {answers.some(a => !a.trim()) && (
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                      Answer all questions to submit
+                    </p>
+                  )}
                   <button
                     onClick={() => void submitAnswers()}
-                    className="bg-slate-900 text-white hover:bg-blue-600 px-12 py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-slate-900/20 active:scale-[0.98] transition-all flex items-center gap-4"
+                    disabled={answers.some(a => !a.trim())}
+                    className={`px-12 py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-2xl active:scale-[0.98] transition-all flex items-center gap-4
+                      ${answers.some(a => !a.trim())
+                        ? 'bg-slate-100 text-slate-300 cursor-not-allowed shadow-none'
+                        : 'bg-slate-900 text-white hover:bg-blue-600 shadow-slate-900/20'
+                      }`
+                    }
                   >
                     Finalize & Submit Evaluation
                     <Sparkles className="w-5 h-5" />
@@ -706,13 +728,13 @@ export function InterviewPracticeSession({
                 </div>
               </div>
 
-              {/* SIDEBAR: STICKY CAMERA & GUIDELINES (Right) */}
-              <div className="lg:col-span-4 sticky top-28 space-y-8">
-                
-                {/* AI Bio-Sync Card */}
-                {useCamera && (
-                  <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8">
-                    <div className="flex items-center justify-between mb-6">
+              {/* SIDEBAR: STICKY CAMERA & GUIDELINES (Right) — only shown when camera is on */}
+              {useCamera && (
+                <div className="lg:col-span-4 sticky top-28 space-y-5 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-hide pb-8">
+                  
+                  {/* AI Bio-Sync Card */}
+                  <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6">
+                    <div className="flex items-center justify-between mb-4">
                        <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100/50">
                              <Target className="w-4 h-4 text-blue-600" />
@@ -725,7 +747,7 @@ export function InterviewPracticeSession({
                        </div>
                     </div>
 
-                    <div className="rounded-2xl overflow-hidden bg-slate-50 border border-slate-200 shadow-inner group relative mb-6">
+                    <div className="rounded-2xl overflow-hidden bg-slate-50 border border-slate-200 shadow-inner group relative mb-4">
                        <PoseTracker active={useCamera} onSamplesChange={onPoseSamples} />
                        <div className="absolute inset-0 border-2 border-white/20 rounded-2xl pointer-events-none group-hover:border-blue-500/20 transition-colors" />
                     </div>
@@ -741,27 +763,27 @@ export function InterviewPracticeSession({
                        </div>
                     </div>
                   </div>
-                )}
 
-                {/* Session Rules */}
-                <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
-                   <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Protocols</h3>
-                   <ul className="space-y-6">
-                      {[
-                        'Maintain consistent eye contact.',
-                        'Avoid excessive fidgeting.',
-                        'Answer with technical depth.'
-                      ].map((tip, i) => (
-                        <li key={i} className="flex items-start gap-4">
-                           <div className="w-5 h-5 rounded-md bg-slate-900 text-white flex items-center justify-center text-[9px] font-black shadow-lg shadow-slate-900/20">
-                              {i + 1}
-                           </div>
-                           <p className="text-[11px] font-bold text-slate-600 leading-tight pt-0.5">{tip}</p>
-                        </li>
-                      ))}
-                   </ul>
+                  {/* Session Rules */}
+                  <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm">
+                     <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-4">Protocols</h3>
+                     <ul className="space-y-4">
+                        {[
+                          'Maintain consistent eye contact.',
+                          'Avoid excessive fidgeting.',
+                          'Answer with technical depth.'
+                        ].map((tip, i) => (
+                          <li key={i} className="flex items-start gap-4">
+                             <div className="w-5 h-5 rounded-md bg-slate-900 text-white flex items-center justify-center text-[9px] font-black shadow-lg shadow-slate-900/20">
+                                {i + 1}
+                             </div>
+                             <p className="text-[11px] font-bold text-slate-600 leading-tight pt-0.5">{tip}</p>
+                          </li>
+                        ))}
+                     </ul>
+                  </div>
                 </div>
-              </div>
+              )}
 
             </div>
           </main>
@@ -797,7 +819,8 @@ export function InterviewPracticeSession({
 
             <InterviewFeedbackReport 
               feedback={feedback as InterviewFeedback} 
-              onNewSession={resetAll} 
+              onNewSession={resetAll}
+              cameraEnabled={useCamera}
             />
           </div>
         </div>

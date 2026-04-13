@@ -24,12 +24,73 @@ export type InterviewFeedback = {
 export default function InterviewFeedbackReport({
   feedback,
   onNewSession,
+  cameraEnabled = false,
 }: {
   feedback: InterviewFeedback;
   onNewSession: () => void;
+  cameraEnabled?: boolean;
 }) {
+  const handlePrint = () => {
+    const content = document.getElementById("printable-report");
+    if (!content) return;
+
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+
+    const iframeDoc = iframe.contentWindow?.document;
+    if (!iframeDoc) return;
+
+    // Compile CSS links and rules
+    const styleTags = Array.from(document.styleSheets)
+      .map((sheet) => {
+        try {
+          if (sheet.href) return `<link rel="stylesheet" href="${sheet.href}">`;
+          return `<style>${Array.from(sheet.cssRules)
+            .map((rule) => rule.cssText)
+            .join("")}</style>`;
+        } catch (e) {
+          // Cross-origin stylesheet access blocked
+          return "";
+        }
+      })
+      .join("\n");
+
+    iframeDoc.write(`
+      <html>
+        <head>
+          <title>Interview Evaluation</title>
+          ${styleTags}
+          <style>
+            @page { margin: 20mm; }
+            body { 
+              -webkit-print-color-adjust: exact; 
+              print-color-adjust: exact; 
+              background: white;
+            }
+            .print\\:hidden { display: none !important; }
+          </style>
+        </head>
+        <body class="bg-white p-8">
+          ${content.outerHTML}
+        </body>
+      </html>
+    `);
+    iframeDoc.close();
+
+    iframe.onload = () => {
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 1000);
+      }, 500);
+    };
+  };
+
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-10 animate-in fade-in duration-500 pb-16 px-4 md:px-6">
+    <div id="printable-report" className="w-full max-w-6xl mx-auto space-y-10 animate-in fade-in duration-500 pb-16 px-4 md:px-6">
       {/* ── HEADER & SCORE ───────────────────────────────────── */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 px-2">
         <div className="space-y-4">
@@ -59,7 +120,7 @@ export default function InterviewFeedbackReport({
               />
               <circle
                 cx="56" cy="56" r="48"
-                className="stroke-slate-900 fill-none"
+                className="stroke-blue-600 fill-none"
                 strokeWidth="8"
                 strokeDasharray={`${2 * Math.PI * 48}`}
                 strokeDashoffset={`${2 * Math.PI * 48 * (1 - (
@@ -69,10 +130,10 @@ export default function InterviewFeedbackReport({
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-black text-slate-900">
+              <span className="text-2xl font-black text-blue-700">
                 {Math.round(((feedback.scores.technical ?? 0) + (feedback.scores.communication ?? 0) + (feedback.scores.presence ?? 0)) / 3)}%
               </span>
-              <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-slate-400">Readiness</span>
+              <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-blue-400">Readiness</span>
             </div>
           </div>
         )}
@@ -85,14 +146,14 @@ export default function InterviewFeedbackReport({
           {/* Executive Summary */}
           <section className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="flex items-center gap-3 mb-6">
-              <Sparkles className="w-4 h-4 text-slate-900" />
-              <h2 className="text-xs font-bold text-slate-900 uppercase tracking-[0.25em]">Executive Summary</h2>
+              <Sparkles className="w-4 h-4 text-blue-600" />
+              <h2 className="text-xs font-bold text-blue-900 uppercase tracking-[0.25em]">Executive Summary</h2>
             </div>
             <p className="text-slate-800 leading-relaxed text-lg font-semibold">
               {feedback.overall}
             </p>
             
-            {feedback.bodyLanguageComment && (
+            {cameraEnabled && feedback.bodyLanguageComment && (
               <div className="mt-8 pt-6 border-t border-slate-100 space-y-3">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mentor Insight</span>
                 <p className="text-slate-600 font-medium leading-relaxed italic text-sm">
@@ -111,7 +172,7 @@ export default function InterviewFeedbackReport({
                   <div key={i} className="bg-white rounded-2xl border border-slate-200 overflow-hidden divide-y divide-slate-100">
                     <div className="p-5 bg-slate-50/50">
                       <h4 className="text-sm font-bold text-slate-900 flex gap-3">
-                        <span className="text-slate-400">{i + 1}.</span>
+                        <span className="text-blue-600">{i + 1}.</span>
                         {qf.question}
                       </h4>
                     </div>
@@ -142,9 +203,9 @@ export default function InterviewFeedbackReport({
               <div className="space-y-6">
                 {(
                   [
-                    ["technical", "Technical Depth", "slate-900"],
-                    ["communication", "Communication", "slate-600"],
-                    ["presence", "Professional Presence", "slate-400"],
+                    ["technical", "Technical Depth", "blue-600"],
+                    ["communication", "Communication", "blue-500"],
+                    ["presence", "Professional Presence", "blue-400"],
                   ] as const
                 ).map(([key, label, color]) => (
                   <div key={key} className="space-y-3">
@@ -164,8 +225,8 @@ export default function InterviewFeedbackReport({
             </section>
           )}
 
-          {/* Biometric Analysis */}
-          {feedback.postureObjectiveNotes && feedback.postureObjectiveNotes.length > 0 && (
+          {/* Biometric Analysis — only when camera was active */}
+          {cameraEnabled && feedback.postureObjectiveNotes && feedback.postureObjectiveNotes.length > 0 && (
             <section className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
               <h2 className="text-[10px] font-bold text-slate-900 uppercase tracking-[0.2em] mb-4">Biometric Logs</h2>
               <div className="space-y-2">
@@ -186,7 +247,7 @@ export default function InterviewFeedbackReport({
               <div className="space-y-4">
                 {feedback.recommendations.map((rec, i) => (
                   <div key={i} className="flex gap-4">
-                    <div className="shrink-0 w-5 h-5 rounded-md bg-slate-900 text-white flex items-center justify-center font-bold text-[10px]">
+                    <div className="shrink-0 w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center font-bold text-[10px]">
                       {i + 1}
                     </div>
                     <p className="text-[11px] text-slate-800 font-bold leading-relaxed">
@@ -198,14 +259,17 @@ export default function InterviewFeedbackReport({
             </section>
           )}
 
-          <div className="pt-4 space-y-3">
+          <div className="pt-4 space-y-3 print:hidden">
             <button 
               onClick={onNewSession}
-              className="w-full py-3.5 bg-slate-900 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-[0.98]"
+              className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-[0.98]"
             >
               Start New Analysis
             </button>
-            <button className="w-full py-3.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-[0.98]">
+            <button 
+              onClick={handlePrint}
+              className="w-full py-3.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-[0.98]"
+            >
               Export Analysis PDF
             </button>
           </div>
