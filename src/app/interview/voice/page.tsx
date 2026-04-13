@@ -123,6 +123,13 @@ export default function VoiceInterviewPage() {
   const isCollectingAudioRef = useRef(false);
   const audioChunkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const transcriptEndRef = useRef<HTMLDivElement | null>(null);
+  const activeAudioSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const activeGainNodeRef = useRef<GainNode | null>(null);
+  const pendingTextRef = useRef<TranscriptItem[]>([]);
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const userSpeakingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isAgentAudioCompleteRef = useRef(true);
+  const timeAgentStartedSpeakingRef = useRef<number | null>(null);
 
   // Auto-scroll transcript
   useEffect(() => {
@@ -130,6 +137,37 @@ export default function VoiceInterviewPage() {
       transcriptEndRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
   }, [transcript, phase]);
+
+  // Silence Timer Smart UX
+  useEffect(() => {
+    if (phase !== "call") return;
+    if (!isUserSpeaking && !isInterviewerSpeaking && isConnected) {
+      silenceTimerRef.current = setTimeout(() => {
+        if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+          wsRef.current.send(
+            JSON.stringify({
+              type: "InjectUserMessage",
+              content: "[System Interaction: The user has been silent for 15 seconds. Please gently encourage them to continue or provide a hint depending on what was being asked. Keep your sentence very short and natural.]",
+            })
+          );
+        } else {
+          setTranscript((prev) => [
+            ...prev,
+            {
+              speaker: "interviewer",
+              text: "Take your time... let me know when you are ready.",
+              timestamp: new Date().toISOString(),
+            },
+          ]);
+        }
+      }, 15000);
+    } else {
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+    }
+    return () => {
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+    };
+  }, [isUserSpeaking, isInterviewerSpeaking, phase, isConnected]);
 
   useEffect(() => {
     const raw = sessionStorage.getItem(STORAGE_KEY);
@@ -216,12 +254,23 @@ export default function VoiceInterviewPage() {
 
     isPlayingRef.current = true;
     setIsInterviewerSpeaking(true);
+    if (!timeAgentStartedSpeakingRef.current) {
+      timeAgentStartedSpeakingRef.current = Date.now();
+    }
 
     try {
       const audioData = audioQueueRef.current.shift();
       if (!audioData) {
         isPlayingRef.current = false;
-        setIsInterviewerSpeaking(false);
+        if (isAgentAudioCompleteRef.current) {
+          setIsInterviewerSpeaking(false);
+          timeAgentStartedSpeakingRef.current = null;
+          if (pendingTextRef.current.length > 0) {
+            const textsToFlush = [...pendingTextRef.current];
+            setTranscript((prev) => [...prev, ...textsToFlush]);
+            pendingTextRef.current = [];
+          }
+        }
         return;
       }
 
@@ -241,21 +290,66 @@ export default function VoiceInterviewPage() {
       audioBuffer.getChannelData(0).set(float32Data);
       const source = ctx.createBufferSource();
       source.buffer = audioBuffer;
-      source.connect(ctx.destination);
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = 1;
+      
+      source.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      activeAudioSourceRef.current = source;
+      activeGainNodeRef.current = gainNode;
+      
+      const syncFlush = () => {
+         setIsInterviewerSpeaking(false);
+         timeAgentStartedSpeakingRef.current = null;
+         if (pendingTextRef.current.length > 0) {
+           const textsToFlush = [...pendingTextRef.current];
+           setTranscript((prev) => [...prev, ...textsToFlush]);
+           pendingTextRef.current = [];
+         }
+      };
+
       source.onended = () => {
         isPlayingRef.current = false;
+        activeAudioSourceRef.current = null;
+        activeGainNodeRef.current = null;
         if (audioQueueRef.current.length > 0) {
           void playAudioQueue();
+        } else if (isAgentAudioCompleteRef.current) {
+          syncFlush();
         } else {
-          setIsInterviewerSpeaking(false);
+          // Fallback if AgentAudioDone never arrives for this utterance
+          setTimeout(() => {
+             if (!isPlayingRef.current && audioQueueRef.current.length === 0) {
+                syncFlush();
+             }
+          }, 1000);
         }
       };
       source.start(0);
     } catch {
       isPlayingRef.current = false;
-      setIsInterviewerSpeaking(false);
       if (audioQueueRef.current.length > 0) {
         setTimeout(() => void playAudioQueue(), 100);
+      } else {
+        const syncFlush = () => {
+           setIsInterviewerSpeaking(false);
+           timeAgentStartedSpeakingRef.current = null;
+           if (pendingTextRef.current.length > 0) {
+             const textsToFlush = [...pendingTextRef.current];
+             setTranscript((prev) => [...prev, ...textsToFlush]);
+             pendingTextRef.current = [];
+           }
+        };
+        if (isAgentAudioCompleteRef.current) {
+          syncFlush();
+        } else {
+          setTimeout(() => {
+             if (!isPlayingRef.current && audioQueueRef.current.length === 0) {
+                syncFlush();
+             }
+          }, 1000);
+        }
       }
     }
   }, []);
@@ -480,6 +574,7 @@ export default function VoiceInterviewPage() {
 
       wsRef.current.onmessage = async (event) => {
         if (event.data instanceof ArrayBuffer) {
+          isAgentAudioCompleteRef.current = false;
           if (!isCollectingAudioRef.current) {
             isCollectingAudioRef.current = true;
             currentAudioChunksRef.current = [];
@@ -516,6 +611,15 @@ export default function VoiceInterviewPage() {
           }
 
           if (data.type === "AgentAudioDone") {
+            isAgentAudioCompleteRef.current = true;
+            if (!isPlayingRef.current && audioQueueRef.current.length === 0) {
+              setIsInterviewerSpeaking(false);
+              if (pendingTextRef.current.length > 0) {
+                 const textsToFlush = [...pendingTextRef.current];
+                 setTranscript((prev) => [...prev, ...textsToFlush]);
+                 pendingTextRef.current = [];
+              }
+            }
             if (audioChunkTimerRef.current) {
               clearTimeout(audioChunkTimerRef.current);
               audioChunkTimerRef.current = null;
@@ -526,11 +630,69 @@ export default function VoiceInterviewPage() {
             isCollectingAudioRef.current = false;
           }
 
-          if (data.type === "UserStartedSpeaking") setIsUserSpeaking(true);
-          if (data.type === "UserStoppedSpeaking") setIsUserSpeaking(false);
+          if (data.type === "UserStartedSpeaking") {
+            setIsUserSpeaking(true);
+            if (userSpeakingTimerRef.current) clearTimeout(userSpeakingTimerRef.current);
+            userSpeakingTimerRef.current = setTimeout(() => setIsUserSpeaking(false), 4000);
+            
+            // INTERRUPT CONTROL: stop AI if user talks, with smooth fade out
+            audioQueueRef.current = [];
+            if (pendingTextRef.current.length > 0) {
+              const spokenMs = timeAgentStartedSpeakingRef.current ? Date.now() - timeAgentStartedSpeakingRef.current : 0;
+              let remainingChars = Math.floor((spokenMs / 1000) * 24);
+              
+              const textsToFlush: TranscriptItem[] = [];
+              for (const item of pendingTextRef.current) {
+                 if (remainingChars <= 0) {
+                    if (textsToFlush.length === 0) {
+                       textsToFlush.push({ ...item, text: item.text.slice(0, 3) + "..." });
+                    }
+                    break;
+                 }
+                 if (item.text.length > remainingChars + 10) {
+                    textsToFlush.push({ ...item, text: item.text.slice(0, Math.max(1, remainingChars)) + "..." });
+                    remainingChars = 0;
+                 } else {
+                    textsToFlush.push(item);
+                    remainingChars -= item.text.length;
+                 }
+              }
+              setTranscript((prev) => [...prev, ...textsToFlush]);
+            }
+            pendingTextRef.current = [];
+            timeAgentStartedSpeakingRef.current = null;
+            if (activeAudioSourceRef.current && activeGainNodeRef.current && audioContextRef.current) {
+               const gain = activeGainNodeRef.current.gain;
+               // Smoothly fade out over 200ms
+               gain.exponentialRampToValueAtTime(0.001, audioContextRef.current.currentTime + 0.2);
+               const src = activeAudioSourceRef.current;
+               setTimeout(() => {
+                 try { src.stop(); } catch (e) {}
+               }, 250);
+               activeAudioSourceRef.current = null;
+               activeGainNodeRef.current = null;
+            } else if (activeAudioSourceRef.current) {
+              activeAudioSourceRef.current.stop();
+              activeAudioSourceRef.current = null;
+            }
+            setIsInterviewerSpeaking(false);
+          }
+          if (data.type === "UserStoppedSpeaking") {
+            setIsUserSpeaking(false);
+            if (userSpeakingTimerRef.current) clearTimeout(userSpeakingTimerRef.current);
+          }
 
           if (data.type === "ConversationText" && data.content) {
+            setIsUserSpeaking(false); // Clear listening UI since AI is talking
+            if (userSpeakingTimerRef.current) clearTimeout(userSpeakingTimerRef.current);
+            
             if (data.role === "user") {
+              setIsUserSpeaking(true);
+              if (userSpeakingTimerRef.current) clearTimeout(userSpeakingTimerRef.current);
+              userSpeakingTimerRef.current = setTimeout(() => setIsUserSpeaking(false), 4000);
+              
+              if (data.content.startsWith("[System")) return;
+              
               setTranscript((prev) => [
                 ...prev,
                 {
@@ -539,16 +701,26 @@ export default function VoiceInterviewPage() {
                   timestamp: new Date().toISOString(),
                 },
               ]);
-            } else if (data.role === "assistant") {
+            } else {
               setCurrentQuestion(data.content!);
-              setTranscript((prev) => [
-                ...prev,
-                {
-                  speaker: "interviewer",
-                  text: data.content!,
-                  timestamp: new Date().toISOString(),
-                },
-              ]);
+              // TEXT SYNC: Queue it instead of directly setting transcript
+              pendingTextRef.current.push({
+                speaker: "interviewer",
+                text: data.content!,
+                timestamp: new Date().toISOString(),
+              });
+              
+              // Fallback flush to prevent text from being stuck forever if audio doesn't play
+              setTimeout(() => {
+                if (!isPlayingRef.current && pendingTextRef.current.length > 0) {
+                  setTranscript((prev) => {
+                    const texts = pendingTextRef.current;
+                    if (texts.length === 0) return prev;
+                    pendingTextRef.current = [];
+                    return [...prev, ...texts];
+                  });
+                }
+              }, 1500);
             }
           }
 
@@ -643,12 +815,12 @@ export default function VoiceInterviewPage() {
             <span className="text-sm font-bold tracking-tight">Back to Dashboard</span>
           </button>
         </div>
-
         {phase === "feedback" || !feedback ? (
           <InterviewFeedbackSkeleton />
         ) : (
           <InterviewFeedbackReport
             feedback={feedback}
+            cameraEnabled={formData?.useCamera !== false}
             onNewSession={() => {
               sessionStorage.removeItem(STORAGE_KEY);
               router.push(CAREER_INTERVIEW_SETUP);
@@ -724,6 +896,35 @@ export default function VoiceInterviewPage() {
             {/* ── LEFT COLUMN: IMMERSION VIEW ──────────────────────────── */}
             <div className="lg:col-span-8 flex flex-col gap-6 h-full overflow-hidden">
               
+              {/* SIMPLIFIED REAL-TIME ANALYSIS (Moved to top for better eye-contact UX) */}
+              <div className="shrink-0 grid grid-cols-2 gap-4">
+                 <div className="flex items-center justify-between p-5 rounded-[2rem] bg-white border border-slate-200 shadow-sm transition-all hover:shadow-md">
+                    <div className="flex items-center gap-3">
+                       <div className="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center border border-blue-100/50">
+                          <Target className="h-5 w-5 text-blue-600" />
+                       </div>
+                       <div>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Movement Symmetry</p>
+                          <h4 className="text-sm font-black text-slate-900 tracking-tight">Body Stability</h4>
+                       </div>
+                    </div>
+                    <span className="text-lg font-black text-blue-600">{isConnected ? `${livePoseStats.symmetry}%` : '—'}</span>
+                 </div>
+
+                 <div className="flex items-center justify-between p-5 rounded-[2rem] bg-white border border-slate-200 shadow-sm transition-all hover:shadow-md">
+                    <div className="flex items-center gap-3">
+                       <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center border border-emerald-100/50">
+                          <Eye className="h-5 w-5 text-emerald-600" />
+                       </div>
+                       <div>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Gaze Alignment</p>
+                          <h4 className="text-sm font-black text-slate-900 tracking-tight">Focus Score</h4>
+                       </div>
+                    </div>
+                    <span className="text-lg font-black text-emerald-600">{isConnected ? `${livePoseStats.gaze}%` : '—'}</span>
+                 </div>
+              </div>
+
               {/* PRIMARY VIDEO STAGE */}
               <div className="flex-1 group relative w-full rounded-[2.5rem] overflow-hidden bg-[#0A0F1E] shadow-lg flex flex-col border border-white/5 min-h-0">
                 
@@ -863,35 +1064,6 @@ export default function VoiceInterviewPage() {
                    </motion.div>
                 </div>
               </div>
-
-              {/* SIMPLIFIED REAL-TIME ANALYSIS */}
-              <div className="shrink-0 grid grid-cols-2 gap-4">
-                 <div className="flex items-center justify-between p-5 rounded-[2rem] bg-white border border-slate-200 shadow-sm transition-all hover:shadow-md">
-                    <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center border border-blue-100/50">
-                          <Target className="h-5 w-5 text-blue-600" />
-                       </div>
-                       <div>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Movement Symmetry</p>
-                          <h4 className="text-sm font-black text-slate-900 tracking-tight">Body Stability</h4>
-                       </div>
-                    </div>
-                    <span className="text-lg font-black text-blue-600">{isConnected ? `${livePoseStats.symmetry}%` : '—'}</span>
-                 </div>
-
-                 <div className="flex items-center justify-between p-5 rounded-[2rem] bg-white border border-slate-200 shadow-sm transition-all hover:shadow-md">
-                    <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center border border-emerald-100/50">
-                          <Eye className="h-5 w-5 text-emerald-600" />
-                       </div>
-                       <div>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Gaze Alignment</p>
-                          <h4 className="text-sm font-black text-slate-900 tracking-tight">Focus Score</h4>
-                       </div>
-                    </div>
-                    <span className="text-lg font-black text-emerald-600">{isConnected ? `${livePoseStats.gaze}%` : '—'}</span>
-                 </div>
-              </div>
             </div>
 
             {/* ── RIGHT COLUMN: SMART TRANSCRIPT (Question List) ──────── */}
@@ -965,7 +1137,7 @@ export default function VoiceInterviewPage() {
                                />
                             ))}
                          </div>
-                         <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Listening...</span>
+                         <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Mic Active</span>
                       </div>
                       <Smile className="h-3.5 w-3.5 text-emerald-500" />
                    </motion.div>
