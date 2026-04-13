@@ -40,7 +40,7 @@ const dashboardLinks: NavLinkItem[] = [
       },
       { 
         name: "AI Resume Tools", 
-        path: "/career-hub",
+        path: "/career-hub?tab=resume-checking",
         description: "Check CV, Job Match & AI Interview",
       }
     ]

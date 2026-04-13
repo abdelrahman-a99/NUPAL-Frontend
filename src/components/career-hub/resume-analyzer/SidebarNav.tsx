@@ -1,7 +1,7 @@
 import React from 'react';
 import { BarChart2, Target, Bot } from 'lucide-react';
 
-export type NavTabId = 'cv-scoring' | 'job-fit' | 'interview-prep';
+export type NavTabId = 'resume-checking' | 'job-fit' | 'interview-prep';
 
 interface NavItem {
   id: NavTabId;
@@ -12,8 +12,8 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   {
-    id: 'cv-scoring',
-    title: 'Resume AI Analysis',
+    id: 'resume-checking',
+    title: 'Resume Checking',
     description: 'Get deep AI-powered insights on your CV structure',
     icon: BarChart2,
   },

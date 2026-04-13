@@ -70,7 +70,7 @@ function ResumeAnalyzerPageInner() {
   }, []);
 
   // UI State
-  const initialTab = (searchParams.get('tab') as NavTabId) || 'cv-scoring';
+  const initialTab = (searchParams.get('tab') as NavTabId) || 'resume-checking';
   const [activeTab, setActiveTab] = useState<NavTabId>(initialTab);
   const [error, setError] = useState<string | null>(null);
 
@@ -195,7 +195,7 @@ function ResumeAnalyzerPageInner() {
   useEffect(() => {
     const resumeId = searchParams.get('resumeId');
     if (resumeId) {
-      setActiveTab('cv-scoring');
+      setActiveTab('resume-checking');
       void loadResumeDetailsById(resumeId);
     } else {
       setParsed(null);
@@ -254,7 +254,7 @@ function ResumeAnalyzerPageInner() {
     [updateAnalyzerUrl]
   );
 
-  const isViewingSpecificResume = activeTab === 'cv-scoring' && (!!searchParams.get('resumeId') || isResumeDetailsLoading);
+  const isViewingSpecificResume = activeTab === 'resume-checking' && (!!searchParams.get('resumeId') || isResumeDetailsLoading);
   const isViewingSpecificJobFit = activeTab === 'job-fit' && (!!searchParams.get('jobFitId') || (isJobFitDetailsLoading && !isSilentJobFitLoad));
   const hideChrome = isViewingSpecificResume || isViewingSpecificJobFit;
 
@@ -277,15 +277,15 @@ function ResumeAnalyzerPageInner() {
   };
 
   const handleLoadFromHistory = async (item: ResumeHistoryItem) => {
-    setActiveTab('cv-scoring');
-    updateAnalyzerUrl({ tab: 'cv-scoring', resumeId: item.id, jobFitId: null });
+    setActiveTab('resume-checking');
+    updateAnalyzerUrl({ tab: 'resume-checking', resumeId: item.id, jobFitId: null });
     await loadResumeDetailsById(item.id, item.fileName);
   };
 
   const handleResetCV = () => {
     window.scrollTo(0, 0);
     setError(null);
-    updateAnalyzerUrl({ tab: 'cv-scoring', resumeId: null });
+    updateAnalyzerUrl({ tab: 'resume-checking', resumeId: null });
   };
 
   const handleDeleteHistory = async (e: React.MouseEvent, id: string) => {
@@ -384,11 +384,11 @@ function ResumeAnalyzerPageInner() {
               transition={{ duration: 0.2 }}
             >
               <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-                {activeTab === 'cv-scoring' && 'Resume AI Analysis'}
+                {activeTab === 'resume-checking' && 'Resume Checking'}
                 {activeTab === 'job-fit' && 'Job Match Analysis'}
               </h1>
               <p className="mt-2 text-slate-500 font-semibold text-sm sm:text-base">
-                {activeTab === 'cv-scoring' && 'Get deep AI-powered insights on your CV structure'}
+                {activeTab === 'resume-checking' && 'Get deep AI-powered insights on your CV structure'}
                 {activeTab === 'job-fit' && 'Measure your fit against any job description'}
               </p>
             </motion.div>
@@ -418,9 +418,9 @@ function ResumeAnalyzerPageInner() {
             </div>
           )}
 
-          {activeTab === 'cv-scoring' && (
+          {activeTab === 'resume-checking' && (
             <motion.div
-              key="cv-scoring"
+              key="resume-checking"
               initial={{ y: 12 }}
               animate={{ y: 0 }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
