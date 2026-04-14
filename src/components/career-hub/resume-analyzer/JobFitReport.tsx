@@ -210,21 +210,51 @@ export function JobFitReport({ data, onBack, onDelete, onStartInterviewPrep }: J
               </div>
             </div>
             <div className="space-y-5">
-              {data.recommendations.map((rec, i) => (
-                <div key={i} className="group flex gap-5 bg-slate-50/60 hover:bg-blue-50/40 border border-slate-100 hover:border-blue-100 rounded-2xl p-5 transition-all duration-200">
-                  {/* Step number */}
-                  <div className="shrink-0 w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
-                    {i + 1}
+              {data.recommendations.map((rec, i) => {
+                // Extract URLs from the recommendation text
+                const urlRegex = /https?:\/\/[^\s)]+/g;
+                const urls = rec.match(urlRegex) || [];
+                // Remove URLs and empty parentheses from display text
+                let textWithoutUrls = rec.replace(urlRegex, '').trim();
+                // Remove any remaining empty parentheses ()
+                textWithoutUrls = textWithoutUrls.replace(/\s*\(\s*\)/g, '');
+
+                return (
+                  <div key={i} className="group flex gap-5 bg-slate-50/60 hover:bg-blue-50/40 border border-slate-100 hover:border-blue-100 rounded-2xl p-5 transition-all duration-200">
+                    {/* Step number */}
+                    <div className="shrink-0 w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                      {i + 1}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[13px] text-slate-800 font-bold leading-relaxed whitespace-pre-wrap">
+                        {textWithoutUrls}
+                      </p>
+                      {urls.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {urls.map((url, idx) => (
+                            <a
+                              key={idx}
+                              href={url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm"
+                            >
+                              Open Resource
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-[13px] text-slate-800 font-bold leading-relaxed whitespace-pre-wrap">
-                      {rec}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
+
+
 
 
         </div>
