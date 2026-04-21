@@ -45,6 +45,7 @@ const dashboardLinks: NavLinkItem[] = [
       }
     ]
   },
+  { name: "Scheduling", path: "/scheduling", id: "scheduling" },
 ];
 
 export function Navbar() {
