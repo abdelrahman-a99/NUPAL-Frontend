@@ -89,7 +89,7 @@ export default function BlocksExplorerTab({
             {blocksLoading ? (
                 <div className="flex items-center justify-center py-16 gap-3 text-slate-400">
                     <Loader2 size={20} className="animate-spin" />
-                    <span className="text-sm">Loading blocksâ€¦</span>
+                    <span className="text-sm">Loading blocks</span>
                 </div>
             ) : filteredBlocks.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-32 px-4 text-center">
