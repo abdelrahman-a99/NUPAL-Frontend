@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useMemo, useCallback, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
     CalendarDays, Layers, Sparkles, List, Calendar as CalendarIcon,
     ShoppingCart, Search, Check, ChevronLeft, ChevronRight,
@@ -23,7 +23,7 @@ import ScheduleAssistantTab from '@/components/scheduling/ScheduleAssistantTab';
 import SchedulePreviewModal from '@/components/scheduling/SchedulePreviewModal';
 
 // Helper for robust, general course name matching
-const normalizeCourseName = (s: string) => 
+const normalizeCourseName = (s: string) =>
     (s || '')
         .toLowerCase()
         .replace(/\b(and|&|of|the|in|with|to|concepts?|concept)\b/g, '') // Remove stopwords
@@ -71,12 +71,12 @@ COURSE_REGISTRY.push(...MANUAL_OVERRIDES);
  */
 const isSimilarCourse = (s1: string, s2: string) => {
     if (!s1 || !s2) return false;
-    
-    const getWords = (s: string) => 
+
+    const getWords = (s: string) =>
         s.toLowerCase()
-         .replace(/\b(and|&|of|the|in|with|to|concepts?|concept|computer|com)\b/g, ' ')
-         .split(/[^a-z0-9]/)
-         .filter(w => w.length >= 4 || /^(i|ii|iii|iv|v|vi|vii|viii|ix|x)$/i.test(w));
+            .replace(/\b(and|&|of|the|in|with|to|concepts?|concept|computer|com)\b/g, ' ')
+            .split(/[^a-z0-9]/)
+            .filter(w => w.length >= 4 || /^(i|ii|iii|iv|v|vi|vii|viii|ix|x)$/i.test(w));
 
     const words1 = getWords(s1);
     const words2 = getWords(s2);
@@ -89,7 +89,7 @@ const isSimilarCourse = (s1: string, s2: string) => {
 
     const [short, long] = words1.length <= words2.length ? [words1, words2] : [words2, words1];
     const matchCount = short.filter(w => long.includes(w)).length;
-    
+
     // Strict level check: If Roman numerals exist, they MUST match exactly
     const isRom = (w: string) => /^(i|ii|iii|iv|v|vi|vii|viii|ix|x)$/i.test(w);
     const r1 = words1.find(isRom);
@@ -105,10 +105,10 @@ const isSimilarCourse = (s1: string, s2: string) => {
  */
 function findBestCourseMatch(input: string, catalogue: string[] = []): string {
     if (!input) return input;
-    
+
     // 1. Search in Registry
-    const match = COURSE_REGISTRY.find(e => 
-        e.name.toLowerCase() === input.toLowerCase() || 
+    const match = COURSE_REGISTRY.find(e =>
+        e.name.toLowerCase() === input.toLowerCase() ||
         e.trackId.toLowerCase() === input.toLowerCase().replace(/[^a-z0-9]/g, '') ||
         isSimilarCourse(e.name, input)
     );
@@ -124,9 +124,9 @@ function findBestCourseMatch(input: string, catalogue: string[] = []): string {
  */
 function findBestCourseCode(name: string, fallback: string): string {
     if (!name && !fallback) return fallback;
-    
-    const match = COURSE_REGISTRY.find(e => 
-        (name && isSimilarCourse(e.name, name)) || 
+
+    const match = COURSE_REGISTRY.find(e =>
+        (name && isSimilarCourse(e.name, name)) ||
         (fallback && isSimilarCourse(e.name, fallback)) ||
         (fallback && e.trackId.toLowerCase() === fallback.toLowerCase().replace(/[^a-z0-9]/g, ''))
     );
@@ -134,12 +134,12 @@ function findBestCourseCode(name: string, fallback: string): string {
     return match ? match.code : fallback;
 }
 
-type Tab = 'my' | 'blocks' | 'smart';
+type Tab = 'my-schedule' | 'blocks-explorer' | 'assistant';
 
 const TABS: { id: Tab; label: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }> }[] = [
-    { id: 'my', label: 'My Schedule', icon: CalendarDays },
-    { id: 'smart', label: 'Schedule Assistant', icon: Sparkles },
-    { id: 'blocks', label: 'Blocks Explorer', icon: Layers },
+    { id: 'my-schedule', label: 'My Schedule', icon: CalendarDays },
+    { id: 'assistant', label: 'Schedule Assistant', icon: Sparkles },
+    { id: 'blocks-explorer', label: 'Blocks Explorer', icon: Layers },
 ];
 
 const DAYS: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Saturday'];
@@ -164,12 +164,48 @@ const DEFAULT_PREFS: SchedulePreferences = {
     scheduleType: 'balanced',
 };
 
-export default function SchedulingPage() {
+export function SchedulingPageInner() {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState<Tab>('my');
+    const searchParams = useSearchParams();
+
+    // Get tab from URL or default to 'my-schedule'
+    const currentTab = (searchParams.get('tab') as Tab) || 'my-schedule';
+    const [activeTab, setActiveTab] = useState<Tab>(currentTab);
+
+    // Sync with URL changes (e.g. browser back button)
+    useEffect(() => {
+        const tab = searchParams.get('tab') as Tab;
+        if (tab && tab !== activeTab) {
+            setActiveTab(tab);
+        }
+    }, [searchParams, activeTab]);
+
+    const handleTabChange = (tab: Tab) => {
+        setActiveTab(tab);
+        
+        // Prevent "No blocks found" flash when switching to blocks tab
+        if (tab === 'blocks-explorer' && availableBlocks.length === 0 && !hasAttemptedFetch) {
+            setBlocksLoading(true);
+        }
+
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('tab', tab);
+        window.history.pushState(null, '', `?${params.toString()}`);
+    };
+
+    // Ensure URL has tab param on initial load
+    useEffect(() => {
+        if (!searchParams.get('tab')) {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set('tab', 'my-schedule');
+            window.history.replaceState(null, '', `?${params.toString()}`);
+        }
+    }, [searchParams]);
+
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
     const [availableBlocks, setAvailableBlocks] = useState<Block[]>([]);
-    const [blocksLoading, setBlocksLoading] = useState(false);
+    const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
+    const [blocksLoading, setBlocksLoading] = useState(currentTab === 'blocks-explorer' && availableBlocks.length === 0);
     const [blockQuery, setBlockQuery] = useState('');
     const [blockLevelTab, setBlockLevelTab] = useState<'FR' | 'JR' | 'SO' | 'SR' | 'ALL'>('ALL');
     const [blockCurrentPage, setBlockCurrentPage] = useState(1);
@@ -211,7 +247,7 @@ export default function SchedulingPage() {
         setBlockCurrentPage(1);
     }, [blockLevelTab, blockQuery]);
 
-    
+
     const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
     const [useMyData, setUseMyData] = useState<boolean | null>(null);
     const [query, setQuery] = useState('');
@@ -283,7 +319,7 @@ export default function SchedulingPage() {
                             if (rlRaw.courses && Array.isArray(rlRaw.courses)) {
                                 // Translate from RL ID (which blocks don't possess) to Human Name (which Blocks do possess)
                                 // Using general fuzzy matcher to handle internal IDs like 'DESIGN_AND_A'
-                                const mappedCourses = rlRaw.courses.map((cId: string) => 
+                                const mappedCourses = rlRaw.courses.map((cId: string) =>
                                     findBestCourseMatch(cId, allCourseNames)
                                 );
 
@@ -310,10 +346,8 @@ export default function SchedulingPage() {
     }, []);
 
     // Load blocks when Blocks Explorer tab is opened
-    const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
-
     useEffect(() => {
-        if (activeTab === 'blocks' && availableBlocks.length === 0 && !blocksLoading && !hasAttemptedFetch) {
+        if (activeTab === 'blocks-explorer' && availableBlocks.length === 0 && !hasAttemptedFetch) {
             setBlocksLoading(true);
             setHasAttemptedFetch(true);
             schedulingApi.getBlocks()
@@ -541,14 +575,14 @@ export default function SchedulingPage() {
 
     return (
         <div className="min-h-screen bg-slate-50">
-            <SchedulingHeader activeTab={activeTab} setActiveTab={setActiveTab} TABS={TABS} />
+            <SchedulingHeader activeTab={activeTab} setActiveTab={handleTabChange} TABS={TABS} />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-                {activeTab === 'my' && (
+                {activeTab === 'my-schedule' && (
                     <MyScheduleTab viewMode={viewMode} setViewMode={setViewMode} />
                 )}
 
-                {activeTab === 'blocks' && (
+                {activeTab === 'blocks-explorer' && (
                     <BlocksExplorerTab
                         filteredBlocks={filteredBlocks}
                         paginatedBlocks={paginatedBlocks}
@@ -563,7 +597,7 @@ export default function SchedulingPage() {
                     />
                 )}
 
-                {activeTab === 'smart' && (
+                {activeTab === 'assistant' && (
                     <ScheduleAssistantTab
                         useMyData={useMyData}
                         setUseMyData={setUseMyData}
@@ -602,6 +636,50 @@ export default function SchedulingPage() {
                 />
             </div>
 
+        </div>
+    );
+}
+
+export default function SchedulingPage() {
+    return (
+        <Suspense fallback={<SchedulingSkeleton />}>
+            <SchedulingPageInner />
+        </Suspense>
+    );
+}
+
+function SchedulingSkeleton() {
+    return (
+        <div className="min-h-screen bg-slate-50">
+            {/* Header Skeleton */}
+            <div className="bg-white border-b border-slate-200 pt-8 pb-0">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                    <div className="flex flex-col items-center text-center mb-8 animate-pulse">
+                        <div className="w-12 h-12 bg-blue-100 rounded-2xl mb-4" />
+                        <div className="h-10 w-64 bg-slate-200 rounded-xl mb-3" />
+                        <div className="h-4 w-96 bg-slate-100 rounded-lg" />
+                    </div>
+                    <div className="flex justify-center gap-1 mb-0">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="h-12 w-40 bg-slate-50 border-t border-x border-slate-100 rounded-t-2xl" />
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Content Skeleton */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+                <div className="animate-pulse space-y-6">
+                    <div className="flex justify-between items-center">
+                        <div className="space-y-2">
+                            <div className="h-8 w-48 bg-slate-200 rounded-lg" />
+                            <div className="h-4 w-32 bg-slate-100 rounded-md" />
+                        </div>
+                        <div className="h-10 w-32 bg-white border border-slate-100 rounded-2xl" />
+                    </div>
+                    <div className="h-[500px] bg-white rounded-3xl border border-slate-100 shadow-sm" />
+                </div>
+            </div>
         </div>
     );
 }
