@@ -138,8 +138,8 @@ type Tab = 'my' | 'blocks' | 'smart';
 
 const TABS: { id: Tab; label: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }> }[] = [
     { id: 'my', label: 'My Schedule', icon: CalendarDays },
-    { id: 'blocks', label: 'Blocks Explorer', icon: Layers },
     { id: 'smart', label: 'Schedule Assistant', icon: Sparkles },
+    { id: 'blocks', label: 'Blocks Explorer', icon: Layers },
 ];
 
 const DAYS: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Saturday'];
