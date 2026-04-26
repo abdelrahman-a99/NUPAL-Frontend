@@ -1,4 +1,3 @@
-// ─── Scheduling Module Types ──────────────────────────────────────────────────
 
 export type DayOfWeek = 'Sunday' | 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';
 
@@ -23,6 +22,7 @@ export interface CourseSession {
     section?: string;
     session?: string;
     subtype?: string;
+    instructorType?: string;
     type?: string;
     duration?: string;
     credits?: number;
@@ -55,12 +55,13 @@ export interface SchedulePreferences {
     latestTime: string;
     preferredInstructors: string[];
     scheduleType: ScheduleType;
+    hideCompleted?: boolean;
 }
 
 
 export interface RecommendationResult {
     block: Block;
-    matchScore: number; // 0–100
+    matchScore: number; 
     reasons: string[];
     breakdown: {
         similarity: number;

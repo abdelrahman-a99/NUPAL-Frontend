@@ -34,9 +34,16 @@ export default function CourseDetailPanel({ course, visible, onClose }: Props) {
             {/* Header Section */}
             <div className="px-5 pt-5 pb-3 flex items-start justify-between">
                 <div>
-                    <span className="inline-block px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ backgroundColor: color + '15', color }}>
-                        Course Details
-                    </span>
+                    <div className="flex items-center gap-2 mb-1.5">
+                        <span className="inline-block px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-widest" style={{ backgroundColor: color + '15', color }}>
+                            Course Details
+                        </span>
+                        {course.subtype && (
+                            <span className={`inline-block px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-widest ${course.subtype.toLowerCase().includes('lecture') ? 'bg-indigo-50 text-indigo-500' : 'bg-amber-50 text-amber-500'}`}>
+                                {course.subtype}
+                            </span>
+                        )}
+                    </div>
                     <h3 className="text-xl font-black text-slate-900 leading-tight">{course.courseName}</h3>
                 </div>
                 <button

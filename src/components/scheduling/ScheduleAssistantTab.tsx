@@ -1,16 +1,8 @@
-import { useMemo } from 'react';
-import { ArrowRight, Calendar as CalendarIcon, CalendarDays, Check, Clock, Info, Loader2, Minus, Plus, RotateCcw, Search, Sparkles, Users, UserCheck, Eye, BookOpen } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { ArrowRight, Calendar as CalendarIcon, CalendarDays, Check, Clock, Info, Loader2, Minus, Plus, RotateCcw, Search, Sparkles, Users, UserCheck, Eye, BookOpen, Library } from 'lucide-react';
 import { CourseSession, DayOfWeek, RecommendationResult, SchedulePreferences } from '@/types/scheduling';
 
-const canonicalCourseKey = (s: string) => {
-    return s
-        .toLowerCase()
-        .replace(/[\u2010-\u2015]/g, '-') // normalize hyphens
-        .replace(/\b(and|&|of|the|in|with|to|concepts?|concept|computer|com)\b/g, ' ')
-        .split(/[^a-z0-9]/)
-        .filter(w => w.length >= 4 || /^(i|ii|iii|iv|v|vi|vii|viii|ix|x)$/i.test(w))
-        .join('');
-};
+const canonicalCourseKey = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
 
 export default function ScheduleAssistantTab({
     useMyData,
@@ -23,6 +15,7 @@ export default function ScheduleAssistantTab({
     instrQuery,
     setInstrQuery,
     displayCoursesByCategory,
+    completedCourseBlockNames,
     advisorSelectedNames,
     setAdvisorSelectedNames,
     manualSelectedNames,
@@ -51,12 +44,13 @@ export default function ScheduleAssistantTab({
     instrQuery: string;
     setInstrQuery: React.Dispatch<React.SetStateAction<string>>;
     displayCoursesByCategory: Record<string, string[]>;
+    completedCourseBlockNames: string[];
     advisorSelectedNames: string[];
     setAdvisorSelectedNames: React.Dispatch<React.SetStateAction<string[]>>;
     manualSelectedNames: string[];
     rlRecommendedNames: string[];
     toggleCourseName: (name: string) => void;
-    displayInstructors: string[];
+    displayInstructors: { doctors: string[], tas: string[] };
     toggleInstructor: (i: string) => void;
     toggleDay: (d: DayOfWeek) => void;
     DAYS: DayOfWeek[];
@@ -65,10 +59,11 @@ export default function ScheduleAssistantTab({
     appliedCourses: string[];
     isDirty: boolean;
     handleReset: () => void;
-    handleGetRecommendations: (matchCoursesOnly?: boolean) => void;
+    handleGetRecommendations: (matchCoursesOnly?: boolean, topN?: number) => void;
     setPreviewBlock: React.Dispatch<React.SetStateAction<CourseSession[] | null>>;
     prefsAreDefault: boolean;
 }) {
+    const [topN, setTopN] = useState<number>(5);
     const selectedCourses = useMyData ? advisorSelectedNames : manualSelectedNames;
 
     const filteredResults = useMemo(() => {
@@ -119,14 +114,14 @@ export default function ScheduleAssistantTab({
                 </div>
             </div>
 
-            
+
             {
                 <div className="space-y-6">
 
                     {/* Two-column form area */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-                    
+
                         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col h-full space-y-5">
 
                             {/* Data Source selector */}
@@ -207,6 +202,27 @@ export default function ScheduleAssistantTab({
                                         )}
                                     </div>
 
+                                    {/* Hide Completed Toggle */}
+                                    <div className="mb-4">
+                                        <button
+                                            onClick={() => setPrefs(p => ({ ...p, hideCompleted: !p.hideCompleted }))}
+                                            className={`w-full flex items-center justify-between p-2.5 rounded-xl border transition-all ${prefs.hideCompleted ? 'bg-indigo-50/50 border-indigo-200' : 'bg-white border-slate-200 hover:border-slate-300'}`}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${prefs.hideCompleted ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-500'}`}>
+                                                    <Library size={16} />
+                                                </div>
+                                                <div className="text-left">
+                                                    <p className="text-[11px] font-bold text-slate-700 leading-none">Hide Completed</p>
+                                                    <p className="text-[9px] text-slate-400 mt-0.5">Filter out courses you already passed</p>
+                                                </div>
+                                            </div>
+                                            <div className={`w-10 h-5 rounded-full relative transition-colors ${prefs.hideCompleted ? 'bg-indigo-500' : 'bg-slate-200'}`}>
+                                                <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all ${prefs.hideCompleted ? 'left-6' : 'left-1'}`} />
+                                            </div>
+                                        </button>
+                                    </div>
+
                                     <div className="flex items-center gap-2 border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 mb-3 focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
                                         <Search size={14} className="text-slate-400" />
                                         <input
@@ -216,7 +232,7 @@ export default function ScheduleAssistantTab({
                                             value={query}
                                             onChange={e => setQuery(e.target.value)}
                                         />
-                                        {query && <button onClick={() => setQuery('')} className="text-slate-400 hover:text-slate-600 text-xs">âœ•</button>}
+                                        {query && <button onClick={() => setQuery('')} className="text-slate-400 hover:text-slate-600 text-xs"></button>}
                                     </div>
 
                                     <div className={`${useMyData ? 'flex-1' : 'max-h-[310px]'} overflow-y-auto pr-1 scrollbar-hide space-y-3`}>
@@ -273,7 +289,7 @@ export default function ScheduleAssistantTab({
                             )}
                         </div>
 
-                    
+
                         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col h-full space-y-5">
 
                             {/* Instructors */}
@@ -286,18 +302,50 @@ export default function ScheduleAssistantTab({
                                 <div className="flex items-center gap-2 border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 mb-3 focus-within:border-blue-300 transition-all">
                                     <Search size={13} className="text-slate-400" />
                                     <input type="text" className="flex-1 text-xs bg-transparent outline-none text-slate-800 placeholder:text-slate-400" placeholder="Search instructors" value={instrQuery} onChange={e => setInstrQuery(e.target.value)} />
-                                    {instrQuery && <button onClick={() => setInstrQuery('')} className="text-slate-400 text-xs">âœ•</button>}
+                                    {instrQuery && <button onClick={() => setInstrQuery('')} className="text-slate-400 text-xs"></button>}
                                 </div>
-                                <div className="flex flex-wrap gap-1.5 max-h-[120px] overflow-auto">
-                                    {displayInstructors.slice(0, 40).map(instr => {
-                                        const on = prefs.preferredInstructors.includes(instr);
-                                        return (
-                                            <button key={instr} className={`px-2.5 py-1 rounded-xl border text-xs font-medium transition-all ${on ? 'border-[#2F80ED] bg-[#2F80ED] text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'}`} onClick={() => toggleInstructor(instr)}>
-                                                {instr}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
+                                {displayInstructors.doctors.length === 0 && displayInstructors.tas.length === 0 ? (
+                                    <div className="text-center py-6 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                                        <p className="text-[11px] font-bold text-slate-400">Select courses first to view their instructors.</p>
+                                    </div>
+                                ) : (
+                                    <div className="max-h-[160px] overflow-auto scrollbar-hide">
+                                        {displayInstructors.doctors.length > 0 && (
+                                            <div className="mb-4">
+                                                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-400"></div> Doctors
+                                                </h4>
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {displayInstructors.doctors.map((instr: string) => {
+                                                        const on = prefs.preferredInstructors.includes(instr);
+                                                        return (
+                                                            <button key={instr} className={`px-2.5 py-1 rounded-xl border text-xs font-medium transition-all ${on ? 'border-[#2F80ED] bg-[#2F80ED] text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'}`} onClick={() => toggleInstructor(instr)}>
+                                                                {instr}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {displayInstructors.tas.length > 0 && (
+                                            <div>
+                                                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-amber-400"></div> Teaching Assistants
+                                                </h4>
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {displayInstructors.tas.map((instr: string) => {
+                                                        const on = prefs.preferredInstructors.includes(instr);
+                                                        return (
+                                                            <button key={instr} className={`px-2.5 py-1 rounded-xl border text-xs font-medium transition-all ${on ? 'border-[#2F80ED] bg-[#2F80ED] text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'}`} onClick={() => toggleInstructor(instr)}>
+                                                                {instr}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Campus Days */}
@@ -462,7 +510,7 @@ export default function ScheduleAssistantTab({
                                     ? 'bg-slate-800 hover:bg-slate-900 shadow-slate-200/50'
                                     : 'bg-[#2F80ED] hover:bg-blue-600 shadow-blue-200/50'}`}
                             disabled={computing || useMyData === null || (useMyData ? advisorSelectedNames.length === 0 : manualSelectedNames.length === 0)}
-                            onClick={results.length > 0 && !isDirty ? handleReset : () => handleGetRecommendations(false)}
+                            onClick={results.length > 0 && !isDirty ? handleReset : () => handleGetRecommendations(false, topN)}
                         >
                             {computing ? (
                                 <><Loader2 size={16} className="animate-spin" /> Computing…</>
@@ -476,7 +524,7 @@ export default function ScheduleAssistantTab({
                         </button>
                     </div>
 
-                    
+
                     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm transition-all duration-500" style={{ minHeight: 440 }}>
                         {/* Section Header */}
                         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-50 bg-slate-50/40">
@@ -540,7 +588,7 @@ export default function ScheduleAssistantTab({
                                     <h3 className="text-xl font-bold text-[#00103e] mb-2">No Recommendations Yet</h3>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     {filteredResults.length === 0 ? (
                                         <div className="col-span-2 flex flex-col items-center justify-center py-16 text-center">
                                             <Search size={48} strokeWidth={1.5} className="text-slate-300 mb-4" />
@@ -560,105 +608,101 @@ export default function ScheduleAssistantTab({
                                                 ? Math.round((matchedCount / filterKeys.length) * 100)
                                                 : rec.matchScore;
 
+                                            // Generate combined AI Insight from actual reasons
+                                            const aiInsight = rec.reasons && rec.reasons.length > 0
+                                                ? rec.reasons.join(". ")
+                                                : "Balanced arrangement of courses with efficient gaps.";
+
                                             return (
-                                                <div key={rec.block.blockId} className="bg-white rounded-2xl border border-slate-100 p-3.5 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300">
-                                                    {/* Card Header matching BlockCard */}
-                                                    <div className="flex items-start justify-between mb-2.5">
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="flex items-center gap-2 mb-0.5">
-                                                                <span className="px-1.5 py-0.5 rounded-lg text-[10px] font-extrabold bg-slate-100 text-slate-500">#{idx + 1}</span>
-                                                                <h4 className="text-base font-bold text-slate-900 truncate">{rec.block.blockId}</h4>
-                                                                {/* Smart Explanation Tooltip moved next to Title */}
-                                                                <div className="group relative">
-                                                                    <div className="p-1 cursor-pointer text-slate-400 hover:text-[#2F80ED] transition-colors">
-                                                                        <Info size={14} strokeWidth={2.5} />
-                                                                    </div>
-                                                                    <div className="absolute left-0 bottom-full mb-2 w-80 p-4 bg-white text-slate-600 text-[11px] rounded-2xl shadow-2xl border border-slate-100 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 z-50 transform translate-y-2 group-hover:translate-y-0">
-                                                                        <div className="font-bold mb-2 text-[#2F80ED] flex items-center gap-1.5 border-b border-blue-50 pb-1.5">
-                                                                            <Sparkles size={12} /> AI Analysis
-                                                                        </div>
-                                                                        <p className="leading-relaxed font-medium">
-                                                                            {(() => {
-                                                                                const matched = selectedCourses.filter(n => blockKeys.includes(canonicalCourseKey(n)));
-                                                                                const count = matched.length;
-                                                                                let msg = `This schedule covers ${count} out of your ${selectedCourses.length} selected courses. `;
-                                                                                if (count > 0) msg += `Matched: ${matched.join(', ')}. `;
-                                                                                if (rec.breakdown.compactness > 0.8) msg += "Highly optimized with minimal gaps. ";
-                                                                                if (rec.breakdown.similarity > 0.6) msg += "Aligned with advisor track.";
-                                                                                return msg;
-                                                                            })()}
-                                                                        </p>
-                                                                        <div className="absolute top-full left-2 border-8 border-transparent border-t-white" />
-                                                                        <div className="absolute top-full left-2 border-8 border-transparent border-t-slate-100 -z-10 translate-y-[1px]" />
+                                                <div key={rec.block.blockId} className="group bg-white rounded-2xl border border-slate-200 p-4 shadow-sm transition-all duration-300">
+                                                    <div className="relative z-10 flex flex-col gap-3.5">
+                                                        {/* Header: All stats in one line */}
+                                                        <div className="flex items-center justify-between pb-3 border-b border-slate-50">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="flex flex-col items-center justify-center min-w-[40px] h-10 rounded-lg bg-blue-50/50 border border-blue-100/30">
+                                                                    <span className="text-[8px] font-bold text-slate-400 uppercase leading-none mb-0.5">Rank</span>
+                                                                    <span className="text-sm font-black text-blue-500 leading-none">#{idx + 1}</span>
+                                                                </div>
+                                                                <div className="w-[1px] h-6 bg-slate-200" />
+                                                                <div>
+                                                                    <h4 className="text-sm font-bold text-slate-800 leading-none mb-1">{rec.block.blockId}</h4>
+                                                                    <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase">
+                                                                        <span>{rec.block.totalCredits} Credits</span>
+                                                                        <span className="w-1 h-1 rounded-full bg-slate-300" />
+                                                                        <span>{uniqueDaysList.length} Days</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div className="flex items-center gap-2.5 text-[12px] text-slate-500">
-                                                                <span className="flex items-center gap-1 font-medium">
-                                                                    <BookOpen size={13} strokeWidth={2} />
-                                                                    {rec.block.totalCredits} credits
-                                                                </span>
-                                                                <span className="flex items-center gap-1 font-medium">
-                                                                    <CalendarIcon size={13} strokeWidth={2} />
-                                                                    {uniqueDaysList.length} days
-                                                                </span>
+                                                            <div className="text-right">
+                                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Match</p>
+                                                                <p className="text-2xl font-black text-blue-500 leading-none">{displayScore}%</p>
                                                             </div>
                                                         </div>
-                                                        <div className="flex flex-col items-end gap-1.5">
-                                                            <div className="px-2.5 py-1 rounded-xl text-[12px] font-bold shadow-sm bg-blue-50 text-[#2F80ED] border border-blue-100">
-                                                                {displayScore}% Match
+
+                                                        {/* Courses Section - More Compact */}
+                                                        <div>
+                                                            <div className="flex flex-wrap gap-1.5">
+                                                                {Array.from(new Set(rec.block.courses.map((c: CourseSession) => c.courseName)))
+                                                                    .map((courseName: string) => {
+                                                                        const isMatched = filterKeys.includes(canonicalCourseKey(courseName));
+                                                                        const isCompleted = prefs.hideCompleted && completedCourseBlockNames.some(cn => canonicalCourseKey(cn) === canonicalCourseKey(courseName));
+                                                                        return (
+                                                                            <div
+                                                                                key={courseName}
+                                                                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[10px] font-bold transition-all ${isCompleted
+                                                                                    ? 'bg-red-50/50 border-red-100 text-red-400 opacity-80'
+                                                                                    : isMatched
+                                                                                        ? 'bg-blue-50/50 border-blue-100 text-blue-500'
+                                                                                        : 'bg-slate-50 border-slate-200 text-slate-500'
+                                                                                    }`}
+                                                                            >
+                                                                                <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isCompleted ? 'bg-red-300' : isMatched ? 'bg-blue-400' : 'bg-slate-300'}`} />
+                                                                                <span className={isCompleted ? 'line-through' : ''}>{courseName}</span>
+                                                                                {isCompleted && (
+                                                                                    <span className="text-[8px] uppercase tracking-wider font-black text-red-300 ml-1 shrink-0">HIDDEN</span>
+                                                                                )}
+                                                                            </div>
+                                                                        );
+                                                                    })}
                                                             </div>
                                                         </div>
-                                                    </div>
 
-                                                    {/* Day Badges style from BlockCard */}
-                                                    <div className="flex flex-wrap gap-1 mb-4">
-                                                        {uniqueDaysList.map(d => (
-                                                            <span key={d} className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-50 text-slate-600 border border-slate-100">
-                                                                {d.slice(0, 3)}
-                                                            </span>
-                                                        ))}
-                                                    </div>
+                                                        {/* AI Analysis - Dynamic & Contextual */}
+                                                        <div className="bg-blue-50/30 rounded-xl p-2.5 flex items-center gap-2.5 border border-blue-100/20">
+                                                            <Sparkles size={14} className="text-blue-400 shrink-0" />
+                                                            <p className="text-[11px] text-slate-600 font-medium leading-tight">
+                                                                <span className="font-bold text-blue-500">Covers {matchedCount}/{filterKeys.length} courses.</span> {aiInsight}
+                                                            </p>
+                                                        </div>
 
-                                                    {/* Metrics Breakdown */}
-                                                    <div className="grid grid-cols-3 gap-2 mb-4">
-                                                        {[
-                                                            { label: 'Similar', value: rec.breakdown.similarity },
-                                                            { label: 'Cover', value: rec.breakdown.coverage },
-                                                            { label: 'Compact', value: rec.breakdown.compactness },
-                                                        ].map(b => {
-                                                            const pct = Math.round(b.value * 100);
-                                                            return (
-                                                                <div key={b.label} className="bg-slate-50/50 rounded-xl p-2 h-14 flex flex-col justify-between border border-slate-100/50">
-                                                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">{b.label}</p>
-                                                                    <div className="flex items-end justify-between gap-1.5">
-                                                                        <p className="text-xs font-bold text-slate-700 leading-none">{pct}%</p>
-                                                                        <div className="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden mb-1">
-                                                                            <div className="h-full rounded-full bg-[#2F80ED]" style={{ width: `${pct}%` }} />
+                                                        {/* Bottom Row: Days and Button on same line */}
+                                                        <div className="flex items-center justify-between mt-1">
+                                                            <div className="flex items-center gap-1">
+                                                                {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Saturday'].map((d: any) => {
+                                                                    const isActive = uniqueDaysList.includes(d);
+                                                                    return (
+                                                                        <div
+                                                                            key={d}
+                                                                            className={`w-6 h-6 rounded-md flex items-center justify-center text-[9px] font-bold transition-all border ${isActive
+                                                                                ? 'bg-slate-100 text-slate-700 border-slate-200'
+                                                                                : 'bg-white text-slate-200 border-slate-100'
+                                                                                }`}
+                                                                        >
+                                                                            {d.charAt(0)}
                                                                         </div>
-                                                                    </div>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
+                                                                    );
+                                                                })}
+                                                            </div>
 
-                                                    {/* Reasons */}
-                                                    <div className="flex flex-wrap gap-1.5 mb-4 opacity-80">
-                                                        {rec.reasons.slice(0, 3).map((r: string, i: number) => (
-                                                            <span key={i} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 text-[9px] text-slate-500 font-bold border border-slate-200/50 w-fit">
-                                                                <Check size={8} strokeWidth={3} className="text-[#2F80ED]" /> {r}
-                                                            </span>
-                                                        ))}
+                                                            <button
+                                                                className="flex items-center justify-center gap-1.5 px-5 py-2 rounded-xl bg-blue-400 hover:bg-blue-500 text-white text-[11px] font-bold transition-all shadow-md shadow-blue-400/20"
+                                                                onClick={() => setPreviewBlock(rec.block.courses)}
+                                                            >
+                                                                <Eye size={13} strokeWidth={2.5} />
+                                                                Preview Schedule
+                                                            </button>
+                                                        </div>
                                                     </div>
-
-                                                    {/* Recommendation Button Style matching BlockCard */}
-                                                    <button
-                                                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-blue-100 bg-blue-50/30 hover:bg-[#2F80ED] text-[#2F80ED] hover:text-white text-sm font-bold transition-all duration-300 shadow-sm"
-                                                        onClick={() => setPreviewBlock(rec.block.courses)}
-                                                    >
-                                                        <Eye size={15} strokeWidth={2.5} />
-                                                        Preview Schedule
-                                                    </button>
                                                 </div>
                                             );
                                         })
@@ -666,6 +710,35 @@ export default function ScheduleAssistantTab({
 
                                 </div>
 
+                            )}
+
+                            {/* Top N Selector */}
+                            {!computing && results.length > 0 && (
+                                <div className="mt-6 flex justify-end">
+                                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-1">
+                                        {[5, 10, 20].map(val => {
+                                            const isActive = topN === val;
+                                            return (
+                                                <button
+                                                    key={val}
+                                                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${isActive
+                                                        ? 'bg-white text-[#2F80ED] shadow-sm border border-slate-200'
+                                                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 border border-transparent'
+                                                        }`}
+                                                    onClick={() => {
+                                                        setTopN(val);
+                                                        // Automatically fetch new recommendations with the new topN if we already have results
+                                                        if (results.length > 0 && !isDirty) {
+                                                            handleGetRecommendations(false, val);
+                                                        }
+                                                    }}
+                                                >
+                                                    Top {val}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
                             )}
 
                         </div>

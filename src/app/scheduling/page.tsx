@@ -22,117 +22,7 @@ import BlocksExplorerTab from '@/components/scheduling/BlocksExplorerTab';
 import ScheduleAssistantTab from '@/components/scheduling/ScheduleAssistantTab';
 import SchedulePreviewModal from '@/components/scheduling/SchedulePreviewModal';
 
-// Helper for robust, general course name matching
-const normalizeCourseName = (s: string) =>
-    (s || '')
-        .toLowerCase()
-        .replace(/\b(and|&|of|the|in|with|to|concepts?|concept)\b/g, '') // Remove stopwords
-        .replace(/[^a-z0-9]/g, ''); // Remove all non-alphanumeric
-
-// Robust registry for all known courses from tracks
-interface CourseEntry {
-    name: string;   // Full human name (e.g. "Design & Analysis of Algorithms")
-    code: string;   // Academic code (e.g. "CSCI 208")
-    trackId: string; // Internal track ID (e.g. "CSCI208")
-}
-
-const COURSE_REGISTRY: CourseEntry[] = [];
-
-[...GENERAL_TRACK_COMPLETE.nodes, ...BIGDATA_TRACK_COMPLETE.nodes, ...MEDIA_TRACK_COMPLETE.nodes].forEach(n => {
-    if (n.id && n.label) {
-        const parts = n.label.split('\n');
-        if (parts.length > 1) {
-            COURSE_REGISTRY.push({
-                code: parts[0].trim(),
-                name: parts.slice(1).join(' ').trim(),
-                trackId: n.id
-            });
-        } else {
-            COURSE_REGISTRY.push({
-                code: n.id.match(/[A-Z]{2,4}\s?\d{3}/) ? n.id : '',
-                name: n.label,
-                trackId: n.id
-            });
-        }
-    }
-});
-
-// Manual overrides for courses with metadata inconsistencies
-const MANUAL_OVERRIDES: CourseEntry[] = [
-    { name: 'Data Mining and Analytics', code: 'CSCI 467', trackId: '' },
-    { name: 'Data Preparation and Visualization', code: 'CSCI 467', trackId: '' },
-    { name: 'Software Engineering', code: 'CSCI 313', trackId: '' },
-    { name: 'Machine Intelligence', code: 'CSCI 417', trackId: '' },
-];
-COURSE_REGISTRY.push(...MANUAL_OVERRIDES);
-
-/**
- * Shared similarity logic for course matching
- */
-const isSimilarCourse = (s1: string, s2: string) => {
-    if (!s1 || !s2) return false;
-
-    const getWords = (s: string) =>
-        s.toLowerCase()
-            .replace(/\b(and|&|of|the|in|with|to|concepts?|concept|computer|com)\b/g, ' ')
-            .split(/[^a-z0-9]/)
-            .filter(w => w.length >= 4 || /^(i|ii|iii|iv|v|vi|vii|viii|ix|x)$/i.test(w));
-
-    const words1 = getWords(s1);
-    const words2 = getWords(s2);
-
-    if (words1.length === 0 || words2.length === 0) {
-        const n1 = s1.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const n2 = s2.toLowerCase().replace(/[^a-z0-9]/g, '');
-        return n1.length > 2 && (n1.includes(n2) || n2.includes(n1));
-    }
-
-    const [short, long] = words1.length <= words2.length ? [words1, words2] : [words2, words1];
-    const matchCount = short.filter(w => long.includes(w)).length;
-
-    // Strict level check: If Roman numerals exist, they MUST match exactly
-    const isRom = (w: string) => /^(i|ii|iii|iv|v|vi|vii|viii|ix|x)$/i.test(w);
-    const r1 = words1.find(isRom);
-    const r2 = words2.find(isRom);
-    if (r1 !== r2) return false;
-
-    // Match if at least 2 significant words overlap, or all words overlap if less than 2
-    return matchCount >= Math.min(short.length, 2);
-};
-
-/**
- * General fuzzy matcher to find a course name from various input formats
- */
-function findBestCourseMatch(input: string, catalogue: string[] = []): string {
-    if (!input) return input;
-
-    // 1. Search in Registry
-    const match = COURSE_REGISTRY.find(e =>
-        e.name.toLowerCase() === input.toLowerCase() ||
-        e.trackId.toLowerCase() === input.toLowerCase().replace(/[^a-z0-9]/g, '') ||
-        isSimilarCourse(e.name, input)
-    );
-    if (match) return match.name;
-
-    // 2. Search in current semester catalogue
-    const catalogueMatch = catalogue.find(name => isSimilarCourse(name, input));
-    return catalogueMatch || input;
-}
-
-/**
- * General fuzzy matcher to find a course code from a course name or ID
- */
-function findBestCourseCode(name: string, fallback: string): string {
-    if (!name && !fallback) return fallback;
-
-    const match = COURSE_REGISTRY.find(e =>
-        (name && isSimilarCourse(e.name, name)) ||
-        (fallback && isSimilarCourse(e.name, fallback)) ||
-        (fallback && e.trackId.toLowerCase() === fallback.toLowerCase().replace(/[^a-z0-9]/g, ''))
-    );
-
-    return match ? match.code : fallback;
-}
+// Removed frontend mapping logic to rely on backend mapping
 
 type Tab = 'my-schedule' | 'blocks-explorer' | 'assistant';
 
@@ -162,6 +52,7 @@ const DEFAULT_PREFS: SchedulePreferences = {
     latestTime: '18:30',
     preferredInstructors: [],
     scheduleType: 'balanced',
+    hideCompleted: true,
 };
 
 export function SchedulingPageInner() {
@@ -182,7 +73,7 @@ export function SchedulingPageInner() {
 
     const handleTabChange = (tab: Tab) => {
         setActiveTab(tab);
-        
+
         // Prevent "No blocks found" flash when switching to blocks tab
         if (tab === 'blocks-explorer' && availableBlocks.length === 0 && !hasAttemptedFetch) {
             setBlocksLoading(true);
@@ -214,9 +105,6 @@ export function SchedulingPageInner() {
     const filteredBlocks = useMemo(() => {
         const q = blockQuery.toLowerCase().trim();
         let list = availableBlocks;
-
-        // Reset page when filters change
-        // (This is handled by a separate useEffect below to avoid side-effects in useMemo)
 
         // 1. Filter by Level Tab
         if (blockLevelTab !== 'ALL') {
@@ -256,6 +144,7 @@ export function SchedulingPageInner() {
     const [advisorSelectedNames, setAdvisorSelectedNames] = useState<string[]>([]);
     const [prefs, setPrefs] = useState<SchedulePreferences>(DEFAULT_PREFS);
     const [results, setResults] = useState<RecommendationResult[]>([]);
+    const [categorizedInstructors, setCategorizedInstructors] = useState<{ doctors: string[], tas: string[] }>({ doctors: [], tas: [] });
     const [computing, setComputing] = useState(false);
     const [previewBlock, setPreviewBlock] = useState<CourseSession[] | null>(null);
     const [previewCourse, setPreviewCourse] = useState<CourseSession | null>(null);
@@ -266,12 +155,21 @@ export function SchedulingPageInner() {
     const [studentData, setStudentData] = useState<any>(null);
     const [lastConfig, setLastConfig] = useState<string | null>(null);
     const [appliedCourses, setAppliedCourses] = useState<string[]>([]);
+    const [courseMappings, setCourseMappings] = useState<any[]>([]);
 
     const isDirty = useMemo(() => {
         if (!results.length || !lastConfig) return false;
         const current = JSON.stringify({ prefs, manualSelectedNames, advisorSelectedNames, useMyData });
         return lastConfig !== current;
     }, [results.length, lastConfig, prefs, manualSelectedNames, advisorSelectedNames, useMyData]);
+
+    // Prevent showing stale results when switching between Sync and Browse modes
+    useEffect(() => {
+        if (useMyData !== null) {
+            setResults([]);
+            setAppliedCourses([]);
+        }
+    }, [useMyData]);
 
     const prefsAreDefault = useMemo(
         () =>
@@ -290,14 +188,24 @@ export function SchedulingPageInner() {
 
     // Load Student Profile & RL Recommendation
     useEffect(() => {
-        const fetchStudentData = async () => {
+        const initializeData = async () => {
             try {
+                // Fetch course mappings first
+                let mappings: any[] = [];
+                try {
+                    mappings = await schedulingApi.getCourseMappings();
+                    setCourseMappings(mappings);
+                } catch (e) {
+                    console.warn('Failed to load course mappings:', e);
+                }
+
                 const token = getToken();
                 if (!token) return;
                 const user = parseJwt(token);
                 if (!user || !user.email) return;
                 const { getStudentByEmail } = await import('@/services/studentService');
                 const data = await getStudentByEmail(user.email);
+                
                 if (data) {
                     setStudentData(data);
 
@@ -316,18 +224,14 @@ export function SchedulingPageInner() {
                             const rlRaw = await res.json();
                             console.log('[DEBUG] RL Data Fetched:', rlRaw);
 
-                            if (rlRaw.courses && Array.isArray(rlRaw.courses)) {
-                                // Translate from RL ID (which blocks don't possess) to Human Name (which Blocks do possess)
-                                // Using general fuzzy matcher to handle internal IDs like 'DESIGN_AND_A'
-                                const mappedCourses = rlRaw.courses.map((cId: string) =>
-                                    findBestCourseMatch(cId, allCourseNames)
-                                );
-
-                                setRlRecommendedNames(mappedCourses);
-                                // Only auto-switch to "My Data" if we actually found courses
-                                if (mappedCourses.length > 0) {
-                                    setUseMyData(true);
-                                }
+                            if (rlRaw && rlRaw.courses && Array.isArray(rlRaw.courses)) {
+                                const recommendedList = Array.from(new Set(rlRaw.courses.map((c: any) => typeof c === 'string' ? c : c.id || c.name || c.courseId)));
+                                
+                                setRlRecommendedNames(recommendedList as string[]);
+                                setAdvisorSelectedNames(recommendedList as string[]);
+                            } else {
+                                setRlRecommendedNames([]);
+                                setAdvisorSelectedNames([]);
                             }
                         } else {
                             console.warn('[DEBUG] RL Fetch response not OK:', res.status, await res.text());
@@ -339,10 +243,11 @@ export function SchedulingPageInner() {
                     }
                 }
             } catch (err) {
-                console.error('Failed to load student data:', err);
+                console.error('Failed to initialize scheduling data:', err);
             }
         };
-        fetchStudentData();
+
+        initializeData();
     }, []);
 
     // Load blocks when Blocks Explorer tab is opened
@@ -352,31 +257,25 @@ export function SchedulingPageInner() {
             setHasAttemptedFetch(true);
             schedulingApi.getBlocks()
                 .then(blocks => {
-                    // Decorate blocks: Replace internal IDs with academic codes where possible
-                    const decoratedBlocks = blocks.map(b => ({
-                        ...b,
-                        courses: b.courses.map(c => ({
-                            ...c,
-                            courseId: findBestCourseCode(c.courseName, c.courseId)
-                        }))
-                    }));
-                    setAvailableBlocks(decoratedBlocks);
+                    setAvailableBlocks(blocks);
                 })
                 .catch(e => console.warn('Failed to load blocks:', e))
                 .finally(() => setBlocksLoading(false));
         }
     }, [activeTab]);
 
-    // Reload course names & instructors when level changes
+    // Reload course names, instructors & blocks when level changes
     useEffect(() => {
         const lvl = prefs.level || undefined;
         Promise.all([
             schedulingApi.getCourseNames(lvl),
             schedulingApi.getInstructors(lvl),
+            schedulingApi.getBlocks(lvl)
         ])
-            .then(([names, instructors]) => {
+            .then(([names, instructors, blocks]) => {
                 setAllCourseNames(names);
                 setAllInstructors(Array.from(new Set(instructors)));
+                setAvailableBlocks(blocks);
             })
             .catch(e => console.warn('Failed to load course metadata:', e));
     }, [prefs.level]);
@@ -430,12 +329,66 @@ export function SchedulingPageInner() {
             grouped[cat].push(item.courseName);
         }
         return grouped;
-    }, [useMyData, eligibleCourses, allCourseNames, query]);
+    }, [useMyData, eligibleCourses, allCourseNames, query, rlRecommendedNames]);
+
+    const completedCourseBlockNames = useMemo(() => {
+        if (!studentData?.education?.semesters) return [];
+        const passedCourses = studentData.education.semesters.flatMap((s: any) => s.courses);
+
+        const blockNames = new Set<string>();
+        passedCourses.forEach((c: any) => {
+            if (c.courseId) blockNames.add(c.courseId.toLowerCase().trim());
+            if (c.courseName) blockNames.add(c.courseName.toLowerCase().trim());
+
+            const mapping = courseMappings.find(m => 
+                m.courseCode?.toLowerCase().trim() === c.courseId?.toLowerCase().trim() ||
+                m.policyName?.toLowerCase().trim() === c.courseName?.toLowerCase().trim()
+            );
+
+            if (mapping) {
+                if (mapping.policyName) blockNames.add(mapping.policyName.toLowerCase().trim());
+                mapping.blockNames?.forEach((bn: string) => blockNames.add(bn.toLowerCase().trim()));
+                mapping.academicPlanNames?.forEach((an: string) => blockNames.add(an.toLowerCase().trim()));
+                mapping.trackNames?.forEach((tn: string) => blockNames.add(tn.toLowerCase().trim()));
+                if (mapping.courseCode) blockNames.add(mapping.courseCode.toLowerCase().trim());
+            }
+        });
+        return Array.from(blockNames);
+    }, [studentData, courseMappings, allCourseNames]);
+
+    const displayCoursesByCategoryFiltered = useMemo(() => {
+        if (!prefs.hideCompleted) return displayCoursesByCategory;
+
+        const filtered: Record<string, string[]> = {};
+        Object.entries(displayCoursesByCategory).forEach(([cat, names]) => {
+            const filteredNames = names.filter(n => !completedCourseBlockNames.includes(n.toLowerCase().trim()));
+            if (filteredNames.length > 0) {
+                filtered[cat] = filteredNames;
+            }
+        });
+        return filtered;
+    }, [displayCoursesByCategory, prefs.hideCompleted, completedCourseBlockNames]);
+    useEffect(() => {
+        const activeSelectedCourses = useMyData ? advisorSelectedNames : manualSelectedNames;
+        if (activeSelectedCourses.length === 0) {
+            setCategorizedInstructors({ doctors: [], tas: [] });
+            return;
+        }
+
+        const lvl = prefs.level || undefined;
+        schedulingApi.getCategorizedInstructors(activeSelectedCourses, lvl)
+            .then(res => setCategorizedInstructors(res))
+            .catch(e => console.warn('Failed to load categorized instructors:', e));
+    }, [useMyData, advisorSelectedNames, manualSelectedNames, prefs.level]);
+
     const displayInstructors = useMemo(() => {
         const q = instrQuery.toLowerCase().trim();
-        const base = Array.from(new Set(allInstructors));
-        return q ? base.filter((i: string) => i.toLowerCase().includes(q)) : base;
-    }, [allInstructors, instrQuery]);
+        const docs = Array.isArray(categorizedInstructors?.doctors) ? categorizedInstructors.doctors : [];
+        const teachingAssistants = Array.isArray(categorizedInstructors?.tas) ? categorizedInstructors.tas : (Array.isArray((categorizedInstructors as any)?.tAs) ? (categorizedInstructors as any).tAs : []);
+        const doctors = docs.filter((i: string) => !q || i.toLowerCase().includes(q));
+        const tas = teachingAssistants.filter((i: string) => !q || i.toLowerCase().includes(q));
+        return { doctors, tas };
+    }, [categorizedInstructors, instrQuery]);
 
 
     const toggleCourseName = (name: string) => {
@@ -460,63 +413,10 @@ export function SchedulingPageInner() {
                 : [...p.preferredInstructors, i],
         }));
 
-    const handleGetRecommendations = useCallback(async (matchCoursesOnly: boolean = false) => {
+    const handleGetRecommendations = useCallback(async (matchCoursesOnly: boolean = false, topN: number = 5) => {
         setComputing(true);
         try {
-            const coursesToUse = useMyData ? advisorSelectedNames : manualSelectedNames;
-            const canonicalKey = (s: string) =>
-                s
-                    .toLowerCase()
-                    .replace(/[\u2010-\u2015]/g, '-') // normalize hyphens
-                    .replace(/\s+and\s+/g, ' & ') // normalize 'and' to '&'
-                    .replace(/\s+/g, ' ')
-                    .trim()
-                    .replace(/^[a-z]{2,4}\s*\d{3}\s*[-:]\s*/i, '') // drop code prefix like "CSCI 313 - "
-                    .replace(/\s*\([^)]*\)\s*/g, ' ')
-                    .replace(/\s+/g, ' ')
-                    .split('-')[0]
-                    .trim();
-            const normalizeName = (s: string) =>
-                s
-                    .toLowerCase()
-                    .replace(/\s+/g, ' ')
-                    .replace(/[\u2010-\u2015]/g, '-') // normalize hyphens
-                    .trim();
-
-            // Map selected names (especially from Sync/MyData) to the backend's exact catalogue names.
-            // Using fuzzy matching to bridge the gap between track names and catalogue names.
-            const coursesAlignedToCatalogue = coursesToUse.map(n => {
-                const match = allCourseNames.find(catName => isSimilarCourse(catName, n));
-                return match || n;
-            });
-            const expandCourseNameVariants = (name: string) => {
-                const n = name.trim();
-                const baseNoParens = n.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
-                const baseNoDash = baseNoParens.split('-')[0].trim();
-                const swappedAnd = n.includes('&') ? n.replaceAll('&', 'and') : n;
-                const swappedAmp = n.toLowerCase().includes(' and ') ? n.replaceAll(' and ', ' & ') : n;
-
-                const variants = [
-                    n,
-                    baseNoParens,
-                    baseNoDash,
-                    swappedAnd,
-                    swappedAmp,
-                    normalizeName(n),
-                    normalizeName(baseNoParens),
-                    normalizeName(baseNoDash),
-                    normalizeName(swappedAnd),
-                    normalizeName(swappedAmp),
-                ];
-
-                const code = findBestCourseCode(n, '');
-                if (code && code !== n) {
-                    variants.push(code, normalizeName(code));
-                }
-
-                return Array.from(new Set(variants.filter(Boolean)));
-            };
-            const coursesToSend = Array.from(new Set(coursesAlignedToCatalogue.flatMap(expandCourseNameVariants)));
+            const coursesToSend = useMyData ? advisorSelectedNames : manualSelectedNames;
 
             // Auto-detect: if the user hasn't modified any preferences from defaults,
             // use matchCoursesOnly=true to focus purely on course content matching.
@@ -531,22 +431,10 @@ export function SchedulingPageInner() {
                 prefs.scheduleType === DEFAULT_PREFS.scheduleType;
 
             const shouldMatchCoursesOnly = matchCoursesOnly || prefsAreDefault;
-            const res = await schedulingApi.getRecommendations(prefs, coursesToSend, 5, shouldMatchCoursesOnly);
+            const res = await schedulingApi.getRecommendations(prefs, coursesToSend, topN, shouldMatchCoursesOnly);
 
-            // Decorate results: Replace internal IDs with academic codes where possible
-            const decoratedResults = res.map(r => ({
-                ...r,
-                block: {
-                    ...r.block,
-                    courses: r.block.courses.map(c => ({
-                        ...c,
-                        courseId: findBestCourseCode(c.courseName, c.courseId)
-                    }))
-                }
-            }));
-
-            setResults(decoratedResults);
-            setAppliedCourses(coursesAlignedToCatalogue);
+            setResults(res);
+            setAppliedCourses(coursesToSend);
             setLastConfig(JSON.stringify({ prefs, manualSelectedNames, advisorSelectedNames, useMyData }));
         } catch (e) {
             console.warn('Recommender error:', e);
@@ -608,7 +496,8 @@ export function SchedulingPageInner() {
                         setQuery={setQuery}
                         instrQuery={instrQuery}
                         setInstrQuery={setInstrQuery}
-                        displayCoursesByCategory={displayCoursesByCategory}
+                        displayCoursesByCategory={displayCoursesByCategoryFiltered}
+                        completedCourseBlockNames={completedCourseBlockNames}
                         advisorSelectedNames={advisorSelectedNames}
                         setAdvisorSelectedNames={setAdvisorSelectedNames}
                         manualSelectedNames={manualSelectedNames}
@@ -633,6 +522,8 @@ export function SchedulingPageInner() {
                     setPreviewBlock={setPreviewBlock}
                     previewCourse={previewCourse}
                     setPreviewCourse={setPreviewCourse}
+                    completedCourseBlockNames={completedCourseBlockNames}
+                    initialHideCompleted={prefs.hideCompleted}
                 />
             </div>
 

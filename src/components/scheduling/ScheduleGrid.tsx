@@ -125,9 +125,16 @@ export default function ScheduleGrid({ courses, onCoursePress }: Props) {
                                         <p className="text-[11px] font-bold text-slate-800 leading-tight mt-0.5 truncate group-hover:text-blue-600 transition-colors">
                                             {course.courseName}
                                         </p>
-                                        <p className="text-[9px] font-bold text-slate-500/80 truncate mt-0.5">
-                                            {course.section ? `Section ${course.section}` : course.room || ''}
-                                        </p>
+                                        <div className="flex items-center gap-1.5 mt-0.5">
+                                            <p className="text-[9px] font-bold text-slate-500/80 truncate">
+                                                {course.section ? `Sec ${course.section}` : course.room || ''}
+                                            </p>
+                                            {course.subtype && (
+                                                <span className={`text-[8px] font-bold px-1 rounded-sm uppercase ${course.subtype.toLowerCase().includes('lecture') ? 'bg-indigo-50 text-indigo-500' : 'bg-amber-50 text-amber-500'}`}>
+                                                    {course.subtype}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             );

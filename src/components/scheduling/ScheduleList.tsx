@@ -53,10 +53,9 @@ export default function ScheduleList({ courses, onCoursePress }: Props) {
                                         {course.subtype && ` | ${course.subtype}`}
                                     </p>
                                 )}
-                                {(course.type || course.duration) && (
+                                {course.duration && (
                                     <p>
-                                        {course.type && `Type: ${course.type}`}
-                                        {course.duration && ` | Duration: ${course.duration}`}
+                                        Duration: {course.duration}
                                     </p>
                                 )}
                                 {course.credits && (
