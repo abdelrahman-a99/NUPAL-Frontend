@@ -2,6 +2,28 @@ import { ChevronLeft, ChevronRight, Info, Layers, Loader2, Search } from 'lucide
 import { Block } from '@/types/scheduling';
 import BlockCard from '@/components/scheduling/BlockCard';
 
+function BlockSkeleton() {
+    return (
+        <div className="bg-white rounded-2xl border border-slate-100 p-3.5 mb-3 shadow-sm animate-pulse">
+            <div className="flex items-start mb-2.5">
+                <div className="flex-1">
+                    <div className="h-5 bg-slate-100 rounded-md w-1/3 mb-2" />
+                    <div className="flex items-center gap-2.5">
+                        <div className="h-3 bg-slate-100 rounded w-16" />
+                        <div className="h-3 bg-slate-100 rounded w-16" />
+                    </div>
+                </div>
+            </div>
+            <div className="flex flex-wrap gap-1 mb-3">
+                <div className="h-5 bg-slate-50 rounded-full w-10 border border-slate-100" />
+                <div className="h-5 bg-slate-50 rounded-full w-10 border border-slate-100" />
+                <div className="h-5 bg-slate-50 rounded-full w-10 border border-slate-100" />
+            </div>
+            <div className="h-10 bg-blue-50/50 rounded-xl w-full border border-blue-50" />
+        </div>
+    );
+}
+
 export default function BlocksExplorerTab({
     filteredBlocks,
     paginatedBlocks,
@@ -87,9 +109,10 @@ export default function BlocksExplorerTab({
             </div>
 
             {blocksLoading ? (
-                <div className="flex items-center justify-center py-16 gap-3 text-slate-400">
-                    <Loader2 size={20} className="animate-spin" />
-                    <span className="text-sm">Loading blocks</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[...Array(9)].map((_, i) => (
+                        <BlockSkeleton key={i} />
+                    ))}
                 </div>
             ) : filteredBlocks.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-32 px-4 text-center">

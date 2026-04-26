@@ -432,8 +432,18 @@ function CareerHubPageInner() {
 export default function CareerHubPage() {
     return (
         <Suspense fallback={
-            <div className="flex min-h-screen items-center justify-center bg-slate-50">
-                <p className="text-slate-500 font-medium">Loading Career Hub...</p>
+            <div className="min-h-screen bg-slate-50 py-12">
+                <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
+                    <div className="animate-pulse space-y-8">
+                        <div className="h-10 w-64 bg-slate-200 rounded-lg mb-8" />
+                        <div className="h-[400px] bg-white rounded-3xl border border-slate-100 shadow-sm" />
+                        <div className="flex gap-4">
+                            {[1, 2, 3, 4].map(i => (
+                                <div key={i} className="h-20 flex-1 bg-white rounded-xl border border-slate-100 shadow-sm" />
+                            ))}
+                        </div>
+                    </div>
+                </div>
             </div>
         }>
             <CareerHubPageInner />

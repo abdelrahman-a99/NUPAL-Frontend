@@ -1,6 +1,6 @@
 import { CalendarDays } from 'lucide-react';
 
-type Tab = 'my' | 'blocks' | 'smart';
+type Tab = 'my-schedule' | 'blocks-explorer' | 'assistant';
 
 export default function SchedulingHeader({
     activeTab,
@@ -19,7 +19,7 @@ export default function SchedulingHeader({
 
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
                 <div className="mb-6 flex flex-col items-center text-center">
-                    <h1 className="flex items-center justify-center gap-3 text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    <h1 className="flex items-center justify-center gap-3 text-4xl font-bold text-slate-900 tracking-tight leading-tight">
                         <CalendarDays className="h-9 w-9 text-[#2F80ED] drop-shadow-sm" strokeWidth={2.5} />
                         Build your perfect <span className="text-[#2F80ED]">schedule</span>
                     </h1>

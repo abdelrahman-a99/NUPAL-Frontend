@@ -32,28 +32,11 @@ async function apiFetch<T>(
 }
 
 // ── Types returned by backend (mirrors SchedulingDtos.cs) ─────────────────────
-export interface RawBlockCourse {
-    course_name: string;
-    section?: string;
-    type?: string;
-    instructor?: string;
-    day?: string;
-    start_time?: string;
-    end_time?: string;
-    room?: string;
-}
 
-export interface RawBlock {
-    block_id: string;
-    semester?: string;
-    major?: string;
-    level: string;
-    courses: RawBlockCourse[];
-}
 
 // ── Map backend CourseSessionDto → frontend CourseSession ─────────────────────
 // The backend already returns camelCase-friendly DTOs; we just alias them.
-type ApiCourseSession = Omit<CourseSession, 'courseId'> & { courseId: string; courseName: string; instructor: string; day: string; start: string; end: string; room?: string; section?: string; subtype?: string; color?: string };
+type ApiCourseSession = Omit<CourseSession, 'courseId'> & { courseId: string; courseName: string; instructor: string; day: string; start: string; end: string; room?: string; section?: string; subtype?: string; instructorType?: string; color?: string };
 type ApiBlock = { blockId: string; totalCredits: number; courses: ApiCourseSession[] };
 type ApiRecommendation = {
     block: ApiBlock;
@@ -98,59 +81,13 @@ function normaliseBlock(b: ApiBlock): Block {
             room: c.room,
             section: c.section,
             subtype: c.subtype,
+            instructorType: c.instructorType,
             color: c.color,
         })),
     };
 }
 
-function normaliseRawBlock(r: RawBlock): Block {
-    const convertedCourses = (r.courses || []).map((c, i) => ({
-        courseId: `${r.block_id}_c${i}`,
-        courseName: c.course_name,
-        instructor: c.instructor || 'TBA',
-        day: (c.day || 'Sunday') as CourseSession['day'],
-        start: c.start_time || '08:30',
-        end: c.end_time || '10:30',
-        room: c.room,
-        section: c.section,
-        subtype: c.type,
-        color: undefined,
-    })) as ApiCourseSession[];
 
-    const coloredCourses = assignColors(convertedCourses);
-
-    // Calculate accurate credits matching the backend logic: count unique base names only for Lectures
-    const lectureSessions = (r.courses || []).filter(c => 
-        c.type === 'L' || c.type?.toLowerCase().startsWith('l')
-    );
-    const uniqueBaseNames = new Set(
-        lectureSessions.map(c => c.course_name.split('-')[0].split('(')[0].trim())
-    );
-    
-    // Fallback if no explicit Lectures are found
-    let creditCount = uniqueBaseNames.size * 3;
-    if (creditCount === 0 && r.courses.length > 0) {
-        const fallbackNames = new Set(r.courses.map(c => c.course_name.split('-')[0].split('(')[0].trim()));
-        creditCount = fallbackNames.size * 3;
-    }
-
-    return {
-        blockId: r.block_id,
-        totalCredits: creditCount,
-        courses: coloredCourses.map(c => ({
-            courseId: c.courseId,
-            courseName: c.courseName,
-            instructor: c.instructor,
-            day: c.day as CourseSession['day'],
-            start: c.start,
-            end: c.end,
-            room: c.room,
-            section: c.section,
-            subtype: c.subtype,
-            color: c.color,
-        })),
-    };
-}
 
 function normaliseRecommendation(r: ApiRecommendation): RecommendationResult {
     return {
@@ -166,19 +103,28 @@ function normaliseRecommendation(r: ApiRecommendation): RecommendationResult {
     };
 }
 
+export interface CourseMapping {
+    id?: string;
+    courseCode: string;
+    policyName: string;
+    blockNames: string[];
+    trackNames: string[];
+    academicPlanNames: string[];
+}
+
 // ── API calls ─────────────────────────────────────────────────────────────────
 
 /** Returns all raw blocks (or filtered by level: JR | SO | SR). */
 export async function getBlocks(level?: string): Promise<Block[]> {
     const qs = level ? `?level=${encodeURIComponent(level)}` : '';
-    const raw = await apiFetch<RawBlock[]>(`/api/scheduling/blocks${qs}`);
-    return raw.map(normaliseRawBlock);
+    const raw = await apiFetch<ApiBlock[]>(`/api/scheduling/blocks${qs}`);
+    return raw.map(normaliseBlock);
 }
 
 /** Returns a single block by its ID (e.g. "CS-JR-1A"). */
 export async function getBlock(blockId: string): Promise<Block> {
-    const raw = await apiFetch<RawBlock>(`/api/scheduling/blocks/${encodeURIComponent(blockId)}`);
-    return normaliseRawBlock(raw);
+    const raw = await apiFetch<ApiBlock>(`/api/scheduling/blocks/${encodeURIComponent(blockId)}`);
+    return normaliseBlock(raw);
 }
 
 /** Returns all unique course names for the given level. */
@@ -191,6 +137,19 @@ export async function getCourseNames(level?: string): Promise<string[]> {
 export async function getInstructors(level?: string): Promise<string[]> {
     const qs = level ? `?level=${encodeURIComponent(level)}` : '';
     return apiFetch<string[]>(`/api/scheduling/instructors${qs}`);
+}
+
+/** Returns categorized instructors for selected courses. */
+export async function getCategorizedInstructors(
+    courseNames: string[],
+    level?: string
+): Promise<{ doctors: string[], tas: string[] }> {
+    const qs = level ? `?level=${encodeURIComponent(level)}` : '';
+    const raw = await apiFetch<{ doctors: string[], tas: string[] }>(`/api/scheduling/instructors/categorized${qs}`, {
+        method: 'POST',
+        body: JSON.stringify(courseNames)
+    });
+    return raw;
 }
 
 /** Runs the backend recommender and returns ranked blocks. */
@@ -225,10 +184,17 @@ export async function getRecommendations(
     return raw.map(normaliseRecommendation);
 }
 
+/** Returns all course name mappings from the DB. */
+export async function getCourseMappings(): Promise<CourseMapping[]> {
+    return apiFetch<CourseMapping[]>('/api/CourseMapping/all');
+}
+
 export const schedulingApi = {
     getBlocks,
     getBlock,
     getCourseNames,
     getInstructors,
+    getCategorizedInstructors,
     getRecommendations,
+    getCourseMappings,
 };

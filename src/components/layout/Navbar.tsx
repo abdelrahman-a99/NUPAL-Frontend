@@ -28,6 +28,7 @@ const navLinks: NavLinkItem[] = [
 const dashboardLinks: NavLinkItem[] = [
   { name: "Dashboard", path: "/dashboard", id: "dashboard" },
   { name: "Chatbot", path: "/chat", id: "chat" },
+  { name: "Scheduling", path: "/scheduling", id: "scheduling" },
   { 
     name: "Career Hub", 
     path: "/career-hub", 
@@ -45,7 +46,6 @@ const dashboardLinks: NavLinkItem[] = [
       }
     ]
   },
-  { name: "Scheduling", path: "/scheduling", id: "scheduling" },
 ];
 
 export function Navbar() {
@@ -152,7 +152,7 @@ export function Navbar() {
 
   const initial = (userName?.trim()?.charAt(0)?.toUpperCase() ?? '');
 
-  const links = (userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub') || pathname.startsWith('/interview')) ? dashboardLinks : navLinks;
+  const links = (userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub') || pathname.startsWith('/interview') || pathname.startsWith('/scheduling')) ? dashboardLinks : navLinks;
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string, id?: string) => {
     if (pathname === '/' && id) {
@@ -262,7 +262,7 @@ export function Navbar() {
             </button>
           </div>
 
-          {(userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub') || pathname.startsWith('/interview') || pathname === '/404') ? (
+          {(userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub') || pathname.startsWith('/interview') || pathname.startsWith('/scheduling') || pathname === '/404') ? (
             <div className="hidden lg:block relative" ref={menuRef}>
               <Button
                 variant="none"
@@ -275,7 +275,7 @@ export function Navbar() {
               </Button>
 
               {profileMenuOpen && (
-                <div role="menu" aria-label="Profile menu" className="absolute right-0 mt-2 w-64 rounded-xl border border-slate-200 bg-white/95 p-2 shadow-xl backdrop-blur-sm">
+                <div role="menu" aria-label="Profile menu" className="absolute left-1/2 -translate-x-1/2 mt-2 w-64 rounded-xl border border-slate-200 bg-white/95 p-2 shadow-xl backdrop-blur-sm">
                   <div className="flex items-center gap-3 rounded-lg bg-slate-50/70 px-3 py-3">
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-700">
                       <span className="text-sm font-semibold">{initial}</span>

@@ -707,8 +707,19 @@ export default function ResumeAnalyzerPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-slate-50/50">
-          <p className="text-slate-500">Loading Career Hub…</p>
+        <div className="min-h-screen bg-slate-50/50 py-12 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="animate-pulse space-y-8">
+               <div className="flex flex-col items-center gap-4 mb-12">
+                  <div className="h-10 w-64 bg-slate-200 rounded-lg" />
+                  <div className="h-4 w-96 bg-slate-100 rounded-md" />
+               </div>
+               <div className="flex gap-8">
+                  <div className="w-64 h-[400px] bg-white rounded-2xl border border-slate-100 shadow-sm shrink-0" />
+                  <div className="flex-1 h-[600px] bg-white rounded-3xl border border-slate-100 shadow-sm" />
+               </div>
+            </div>
+          </div>
         </div>
       }
     >
