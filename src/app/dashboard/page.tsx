@@ -54,6 +54,11 @@ export default function DashboardPage() {
                     return;
                 }
 
+                if (user.role === 'admin') {
+                    router.push('/admin');
+                    return;
+                }
+
                 // Fetch student data from API
                 const data = await getStudentByEmail(user.email);
                 if (!data) {
