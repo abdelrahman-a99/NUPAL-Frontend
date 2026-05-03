@@ -54,6 +54,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<'admin' | 'student' | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname() || '';
   const router = useRouter();
@@ -139,20 +140,29 @@ export function Navbar() {
   useEffect(() => {
     try {
       const token = getToken();
-      const name = token ? (parseJwt(token)?.name ?? null) : null;
-      setUserName(name);
+      if (token) {
+        const parsed = parseJwt(token);
+        setUserName(parsed?.name ?? null);
+        setUserRole(parsed?.role ?? null);
+      } else {
+        setUserName(null);
+        setUserRole(null);
+      }
     } catch {
       setUserName(null);
+      setUserRole(null);
     }
   }, []);
 
-  if (pathname === '/login') {
+  if (pathname === '/login' || pathname.startsWith('/admin')) {
     return null;
   }
 
   const initial = (userName?.trim()?.charAt(0)?.toUpperCase() ?? '');
 
-  const links = (userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub') || pathname.startsWith('/interview') || pathname.startsWith('/scheduling')) ? dashboardLinks : navLinks;
+  const links = (userName || pathname.startsWith('/dashboard') || pathname.startsWith('/chat') || pathname.startsWith('/career-hub') || pathname.startsWith('/interview') || pathname.startsWith('/scheduling')) 
+    ? (userRole === 'admin' ? navLinks : dashboardLinks) 
+    : navLinks;
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string, id?: string) => {
     if (pathname === '/' && id) {
@@ -289,7 +299,7 @@ export function Navbar() {
 
                   <div className="my-2 h-px bg-slate-200" />
                   <Button
-                    href="/dashboard"
+                    href={userRole === 'admin' ? "/admin" : "/dashboard"}
                     variant="none"
                     size="none"
                     className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-slate-700 transition-all duration-200 hover:bg-slate-50 justify-start"
@@ -299,7 +309,7 @@ export function Navbar() {
                     role="menuitem"
                   >
                     <User size={16} aria-hidden="true" />
-                    <span>Profile</span>
+                    <span>{userRole === 'admin' ? "Admin Dashboard" : "Profile"}</span>
                   </Button>
 
                   <Button
@@ -439,13 +449,13 @@ export function Navbar() {
                   {/* Action Buttons - Side by Side */}
                   <div className="grid grid-cols-2 gap-2">
                     <Button
-                      href="/dashboard"
+                      href={userRole === 'admin' ? "/admin" : "/dashboard"}
                       variant="none"
                       className="flex flex-col items-center justify-center gap-1.5 rounded-xl bg-white border border-slate-200 px-4 py-3 text-center transition-all duration-200 hover:bg-slate-50 hover:border-blue-300 active:scale-95 shadow-sm"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <User size={20} className="text-blue-500" />
-                      <span className="text-xs font-semibold text-slate-700">Profile</span>
+                      <span className="text-xs font-semibold text-slate-700">{userRole === 'admin' ? "Admin Dashboard" : "Profile"}</span>
                     </Button>
 
                     <Button

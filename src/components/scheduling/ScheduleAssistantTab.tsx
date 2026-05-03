@@ -33,6 +33,7 @@ export default function ScheduleAssistantTab({
     handleGetRecommendations,
     setPreviewBlock,
     prefsAreDefault,
+    activeSemester,
 }: {
     useMyData: boolean | null;
     setUseMyData: React.Dispatch<React.SetStateAction<boolean | null>>;
@@ -62,6 +63,7 @@ export default function ScheduleAssistantTab({
     handleGetRecommendations: (matchCoursesOnly?: boolean, topN?: number) => void;
     setPreviewBlock: React.Dispatch<React.SetStateAction<CourseSession[] | null>>;
     prefsAreDefault: boolean;
+    activeSemester: string | null;
 }) {
     const [topN, setTopN] = useState<number>(5);
     const selectedCourses = useMyData ? advisorSelectedNames : manualSelectedNames;
@@ -545,13 +547,25 @@ export default function ScheduleAssistantTab({
                                     {!computing && results.length > 0 ? (
                                         <div className="flex items-center gap-1.5 mt-0.5 text-[11px] font-medium text-slate-500">
                                             <span>{filteredResults.length} match{filteredResults.length !== 1 ? 'es' : ''} found</span>
+                                            {activeSemester && (
+                                                <>
+                                                    <span className="text-slate-300">•</span>
+                                                    <span className="text-blue-500 font-bold">{activeSemester}</span>
+                                                </>
+                                            )}
                                             <span className="text-slate-300">•</span>
                                             <span className="text-[#2F80ED] font-bold">Best {filteredResults[0]?.matchScore}% Match</span>
                                         </div>
                                     ) : (
-                                        <p className="text-[11px] font-medium text-slate-500 mt-0.5">
-                                            {computing ? 'AI is analyzing preferences...' : 'Results will appear here'}
-                                        </p>
+                                        <div className="flex items-center gap-1.5 mt-0.5 text-[11px] font-medium text-slate-500">
+                                            <span>{computing ? 'AI is analyzing preferences...' : 'Results will appear here'}</span>
+                                            {activeSemester && (
+                                                <>
+                                                    <span className="text-slate-300">•</span>
+                                                    <span className="text-blue-500 font-bold">{activeSemester}</span>
+                                                </>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -614,7 +628,7 @@ export default function ScheduleAssistantTab({
                                                 : "Balanced arrangement of courses with efficient gaps.";
 
                                             return (
-                                                <div key={rec.block.blockId} className="group bg-white rounded-2xl border border-slate-200 p-4 shadow-sm transition-all duration-300">
+                                                <div key={`${rec.block.blockId}-${rec.block.semester}`} className="group bg-white rounded-2xl border border-slate-200 p-4 shadow-sm transition-all duration-300">
                                                     <div className="relative z-10 flex flex-col gap-3.5">
                                                         {/* Header: All stats in one line */}
                                                         <div className="flex items-center justify-between pb-3 border-b border-slate-50">

@@ -100,6 +100,7 @@ export function SchedulingPageInner() {
     const [blockQuery, setBlockQuery] = useState('');
     const [blockLevelTab, setBlockLevelTab] = useState<'FR' | 'JR' | 'SO' | 'SR' | 'ALL'>('ALL');
     const [blockCurrentPage, setBlockCurrentPage] = useState(1);
+    const [activeSemester, setActiveSemester] = useState<string | null>(null);
     const BLOCKS_PER_PAGE = 9;
 
     const filteredBlocks = useMemo(() => {
@@ -205,14 +206,14 @@ export function SchedulingPageInner() {
                 if (!user || !user.email) return;
                 const { getStudentByEmail } = await import('@/services/studentService');
                 const data = await getStudentByEmail(user.email);
-                
+
                 if (data) {
                     setStudentData(data);
 
                     // Fetch RL recommendation
                     setRlLoading(true);
                     try {
-                        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5009';
+                        const baseUrl = process.env.NEXT_PUBLIC_API_URL;
                         const url = `${baseUrl}/api/students/${data.account.id}/rl-recommendation`;
                         console.log('[DEBUG] Fetching RL Recommendation from:', url);
 
@@ -226,7 +227,7 @@ export function SchedulingPageInner() {
 
                             if (rlRaw && rlRaw.courses && Array.isArray(rlRaw.courses)) {
                                 const recommendedList = Array.from(new Set(rlRaw.courses.map((c: any) => typeof c === 'string' ? c : c.id || c.name || c.courseId)));
-                                
+
                                 setRlRecommendedNames(recommendedList as string[]);
                                 setAdvisorSelectedNames(recommendedList as string[]);
                             } else {
@@ -255,12 +256,23 @@ export function SchedulingPageInner() {
         if (activeTab === 'blocks-explorer' && availableBlocks.length === 0 && !hasAttemptedFetch) {
             setBlocksLoading(true);
             setHasAttemptedFetch(true);
-            schedulingApi.getBlocks()
-                .then(blocks => {
+            
+            // Parallel fetch blocks and active semester
+            Promise.all([
+                schedulingApi.getBlocks(),
+                schedulingApi.getActiveSemester()
+            ])
+                .then(([blocks, semester]) => {
                     setAvailableBlocks(blocks);
+                    setActiveSemester(semester);
                 })
-                .catch(e => console.warn('Failed to load blocks:', e))
+                .catch(e => console.warn('Failed to load blocks or semester:', e))
                 .finally(() => setBlocksLoading(false));
+        } else if (!activeSemester) {
+            // Just fetch semester if not already fetched
+            schedulingApi.getActiveSemester()
+                .then(setActiveSemester)
+                .catch(e => console.warn('Failed to fetch active semester:', e));
         }
     }, [activeTab]);
 
@@ -280,11 +292,8 @@ export function SchedulingPageInner() {
             .catch(e => console.warn('Failed to load course metadata:', e));
     }, [prefs.level]);
 
-    // Auto-update Level if My Data is selected
     useEffect(() => {
         if (useMyData) {
-            // Unrestrict the level boundary to search all blocks globally 
-            // when Auto-Recommend is chosen.
             setPrefs(p => ({ ...p, level: 'ALL' }));
         }
     }, [useMyData]);
@@ -340,7 +349,7 @@ export function SchedulingPageInner() {
             if (c.courseId) blockNames.add(c.courseId.toLowerCase().trim());
             if (c.courseName) blockNames.add(c.courseName.toLowerCase().trim());
 
-            const mapping = courseMappings.find(m => 
+            const mapping = courseMappings.find(m =>
                 m.courseCode?.toLowerCase().trim() === c.courseId?.toLowerCase().trim() ||
                 m.policyName?.toLowerCase().trim() === c.courseName?.toLowerCase().trim()
             );
@@ -482,6 +491,7 @@ export function SchedulingPageInner() {
                         totalBlockPages={totalBlockPages}
                         blockCurrentPage={blockCurrentPage}
                         setBlockCurrentPage={setBlockCurrentPage}
+                        activeSemester={activeSemester}
                     />
                 )}
 
@@ -515,6 +525,7 @@ export function SchedulingPageInner() {
                         handleGetRecommendations={handleGetRecommendations}
                         setPreviewBlock={setPreviewBlock}
                         prefsAreDefault={prefsAreDefault}
+                        activeSemester={activeSemester}
                     />
                 )}
                 <SchedulePreviewModal

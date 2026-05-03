@@ -35,6 +35,7 @@ export default function BlocksExplorerTab({
     totalBlockPages,
     blockCurrentPage,
     setBlockCurrentPage,
+    activeSemester,
 }: {
     filteredBlocks: Block[];
     paginatedBlocks: Block[];
@@ -46,6 +47,7 @@ export default function BlocksExplorerTab({
     totalBlockPages: number;
     blockCurrentPage: number;
     setBlockCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+    activeSemester: string | null;
 }) {
     return (
         <div>
@@ -66,6 +68,12 @@ export default function BlocksExplorerTab({
                         </div>
                         <div className="flex items-center gap-1.5 mt-0.5 text-[13px] font-medium text-slate-500">
                             <span className="text-slate-700 font-semibold">{filteredBlocks.length} <span className="font-medium text-slate-500">block{filteredBlocks.length !== 1 ? 's' : ''} {blockLevelTab !== 'ALL' ? `for ${blockLevelTab}` : 'total'}</span></span>
+                            {activeSemester && (
+                                <>
+                                    <span className="text-slate-300">•</span>
+                                    <span className="text-blue-500 font-bold">{activeSemester}</span>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -126,7 +134,7 @@ export default function BlocksExplorerTab({
                     <div className="flex-1">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                             {paginatedBlocks.map(block => (
-                                <BlockCard key={block.blockId} block={block} />
+                                <BlockCard key={`${block.blockId}-${block.semester}`} block={block} />
                             ))}
                         </div>
                     </div>
