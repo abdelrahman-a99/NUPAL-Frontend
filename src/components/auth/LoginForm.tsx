@@ -46,12 +46,12 @@ export default function LoginForm() {
         setErr(data?.error || `Login failed with status ${res.status}`);
       } else {
         if (data?.token) {
-          // Dynamically import to avoid SSR issues with localStorage if needed, 
-          // but here we are in a 'use client' component so it is fine.
-          const { setToken } = await import('@/lib/auth');
+          const { setToken, parseJwt } = await import('@/lib/auth');
           setToken(data.token);
-          // Force a hard navigation or router push
-          window.location.href = '/dashboard';
+
+          // Route based on the role claim in the JWT
+          const user = parseJwt(data.token);
+          window.location.href = user?.role === 'admin' ? '/admin' : '/dashboard';
         } else {
           setErr('Login succeeded but no token returned.');
         }

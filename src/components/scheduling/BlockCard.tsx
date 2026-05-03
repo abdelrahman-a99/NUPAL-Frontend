@@ -34,7 +34,10 @@ export default function BlockCard({ block }: Props) {
                 {/* Card header */}
                 <div className="flex items-start mb-2.5">
                     <div className="flex-1">
-                        <h4 className="text-base font-bold text-slate-900 mb-0.5">{block.blockId}</h4>
+                        <h4 className="text-base font-bold text-slate-900 mb-0.5">
+                            {block.blockId}
+                            {block.semester && <span className="text-slate-400 font-normal text-xs ml-1.5">· {block.semester}</span>}
+                        </h4>
                         <div className="flex items-center gap-2.5 text-[12px] text-slate-500">
                             <span className="flex items-center gap-1 font-medium">
                                 <CreditCard size={13} strokeWidth={2} />
