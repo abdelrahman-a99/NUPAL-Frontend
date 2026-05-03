@@ -37,7 +37,7 @@ async function apiFetch<T>(
 // ── Map backend CourseSessionDto → frontend CourseSession ─────────────────────
 // The backend already returns camelCase-friendly DTOs; we just alias them.
 type ApiCourseSession = Omit<CourseSession, 'courseId'> & { courseId: string; courseName: string; instructor: string; day: string; start: string; end: string; room?: string; section?: string; subtype?: string; instructorType?: string; color?: string };
-type ApiBlock = { blockId: string; totalCredits: number; courses: ApiCourseSession[] };
+type ApiBlock = { blockId: string; semester?: string; totalCredits: number; courses: ApiCourseSession[] };
 type ApiRecommendation = {
     block: ApiBlock;
     matchScore: number;
@@ -70,6 +70,7 @@ function normaliseBlock(b: ApiBlock): Block {
     const coloredCourses = assignColors(b.courses || []);
     return {
         blockId: b.blockId,
+        semester: b.semester,
         totalCredits: b.totalCredits,
         courses: coloredCourses.map(c => ({
             courseId: c.courseId,
@@ -189,6 +190,12 @@ export async function getCourseMappings(): Promise<CourseMapping[]> {
     return apiFetch<CourseMapping[]>('/api/CourseMapping/all');
 }
 
+/** Returns the currently active semester from system settings. */
+export async function getActiveSemester(): Promise<string> {
+    const data = await apiFetch<{ semester: string }>('/api/scheduling/active-semester');
+    return data.semester;
+}
+
 export const schedulingApi = {
     getBlocks,
     getBlock,
@@ -197,4 +204,5 @@ export const schedulingApi = {
     getCategorizedInstructors,
     getRecommendations,
     getCourseMappings,
+    getActiveSemester,
 };

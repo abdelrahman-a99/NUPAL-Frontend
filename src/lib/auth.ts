@@ -4,6 +4,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  role: 'student' | 'admin';
 }
 
 // Helper function to set cookie
@@ -38,20 +39,15 @@ function deleteCookie(name: string) {
 
 export function setToken(token: string) {
   if (typeof window !== 'undefined') {
-    // Store in localStorage for client-side access
     localStorage.setItem(AUTH_TOKEN_KEY, token);
-    // Store in cookie for server-side middleware access
     setCookie('token', token, 7);
   }
 }
 
 export function getToken(): string | null {
   if (typeof window !== 'undefined') {
-    // Try localStorage first (primary source)
     const localToken = localStorage.getItem(AUTH_TOKEN_KEY);
     if (localToken) return localToken;
-
-    // Fallback to cookie if localStorage is empty
     return getCookie('token');
   }
   return null;
@@ -59,15 +55,13 @@ export function getToken(): string | null {
 
 export function removeToken() {
   if (typeof window !== 'undefined') {
-    // Remove from both localStorage and cookie
     localStorage.removeItem(AUTH_TOKEN_KEY);
     deleteCookie('token');
   }
 }
 
 export function isAuthenticated(): boolean {
-  const token = getToken();
-  return !!token;
+  return !!getToken();
 }
 
 export function parseJwt(token: string): User | null {
@@ -85,12 +79,22 @@ export function parseJwt(token: string): User | null {
     );
 
     const decoded = JSON.parse(jsonPayload);
+    // .NET's ClaimTypes.Role serialises as "role" in JWT
+    const role = decoded.role === 'admin' ? 'admin' : 'student';
     return {
       id: decoded.nameid || decoded.sub,
       email: decoded.email,
       name: decoded.unique_name || decoded.name,
+      role,
     };
   } catch (e) {
     return null;
   }
+}
+
+/** Shortcut: returns 'admin' | 'student' | null (null = not logged in) */
+export function getUserRole(): 'admin' | 'student' | null {
+  const token = getToken();
+  if (!token) return null;
+  return parseJwt(token)?.role ?? null;
 }

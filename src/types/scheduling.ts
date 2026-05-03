@@ -32,6 +32,7 @@ export interface CourseSession {
 
 export interface Block {
     blockId: string;
+    semester?: string;
     totalCredits: number;
     courses: CourseSession[];
 }
