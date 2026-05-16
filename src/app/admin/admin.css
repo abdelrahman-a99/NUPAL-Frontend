@@ -1279,3 +1279,68 @@
 .dark-mode .admin-login-card {
     box-shadow: 0 20px 70px rgba(0, 0, 0, 0.45);
 }
+
+/* ── Admin dark-mode consistency fixes ────────────────────────
+   Some admin pages still carry Tailwind dark utilities from the student UI.
+   Keep admin surfaces controlled by admin variables so tables/cards match. */
+.dark .admin-layout :where(.admin-card, .admin-card__toolbar),
+.dark-mode .admin-layout :where(.admin-card, .admin-card__toolbar) {
+    background: var(--adm-surface) !important;
+    border-color: var(--adm-border) !important;
+    color: var(--adm-text) !important;
+}
+
+.dark .admin-layout :where(.admin-table, .admin-table-wrapper),
+.dark-mode .admin-layout :where(.admin-table, .admin-table-wrapper) {
+    background: var(--adm-surface) !important;
+    color: var(--adm-text) !important;
+}
+
+.dark .admin-layout :where(thead tr, .admin-table__th),
+.dark-mode .admin-layout :where(thead tr, .admin-table__th) {
+    background: var(--adm-surface-2) !important;
+    color: var(--adm-text-muted) !important;
+    border-color: var(--adm-border) !important;
+}
+
+.dark .admin-layout :where(tbody, .admin-table__row, .admin-table__td),
+.dark-mode .admin-layout :where(tbody, .admin-table__row, .admin-table__td) {
+    background: transparent !important;
+    color: var(--adm-text) !important;
+    border-color: var(--adm-border) !important;
+}
+
+.dark .admin-layout :where(.admin-table__row:hover, tr:hover),
+.dark-mode .admin-layout :where(.admin-table__row:hover, tr:hover) {
+    background: rgba(74, 158, 255, 0.08) !important;
+}
+
+.dark .admin-layout :where(.bg-white, [class~="dark:bg-slate-900"], [class~="dark:bg-slate-900/70"], [class~="dark:bg-slate-900/50"]),
+.dark-mode .admin-layout :where(.bg-white, [class~="dark:bg-slate-900"], [class~="dark:bg-slate-900/70"], [class~="dark:bg-slate-900/50"]) {
+    background-color: var(--adm-surface) !important;
+}
+
+.dark .admin-layout :where(.bg-slate-50, .bg-slate-50\/50, [class~="dark:bg-slate-800"], [class~="dark:bg-slate-800/50"], [class~="dark:hover:bg-slate-800"]:hover, [class~="dark:hover:bg-slate-800/50"]:hover),
+.dark-mode .admin-layout :where(.bg-slate-50, .bg-slate-50\/50, [class~="dark:bg-slate-800"], [class~="dark:bg-slate-800/50"], [class~="dark:hover:bg-slate-800"]:hover, [class~="dark:hover:bg-slate-800/50"]:hover) {
+    background-color: var(--adm-surface-2) !important;
+}
+
+.dark .admin-layout :where(.border-slate-100, .border-slate-200, [class~="dark:border-slate-700"], [class~="dark:border-slate-800"]),
+.dark-mode .admin-layout :where(.border-slate-100, .border-slate-200, [class~="dark:border-slate-700"], [class~="dark:border-slate-800"]) {
+    border-color: var(--adm-border) !important;
+}
+
+.dark .admin-layout :where(.text-slate-900, .text-slate-800, .text-slate-700),
+.dark-mode .admin-layout :where(.text-slate-900, .text-slate-800, .text-slate-700) {
+    color: var(--adm-text) !important;
+}
+
+.dark .admin-layout :where(.text-slate-600, .text-slate-500, .text-slate-400),
+.dark-mode .admin-layout :where(.text-slate-600, .text-slate-500, .text-slate-400) {
+    color: var(--adm-text-muted) !important;
+}
+
+.dark .admin-layout :where(.divide-slate-100 > *, [class~="dark:divide-slate-800"] > *),
+.dark-mode .admin-layout :where(.divide-slate-100 > *, [class~="dark:divide-slate-800"] > *) {
+    border-color: var(--adm-border) !important;
+}
