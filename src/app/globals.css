@@ -3,11 +3,11 @@
 
 :root {
   --nupal-dark-bg: #0F172A;
-  --nupal-dark-surface: #111827;
-  --nupal-dark-surface-2: #1E293B;
-  --nupal-dark-surface-3: #334155;
-  --nupal-dark-border: #334155;
-  --nupal-dark-border-soft: rgba(148, 163, 184, 0.22);
+  --nupal-dark-surface: #111C34;
+  --nupal-dark-surface-2: #1E2F4D;
+  --nupal-dark-surface-3: #2B466D;
+  --nupal-dark-border: #355578;
+  --nupal-dark-border-soft: rgba(96, 165, 250, 0.22);
   --nupal-dark-text: #F8FAFC;
   --nupal-dark-text-muted: #CBD5E1;
   --nupal-dark-text-subtle: #94A3B8;
@@ -745,12 +745,12 @@
 
 /* Timetable Grid & Headers */
 .dark-mode div.bg-white.rounded-2xl.border.border-slate-100 {
-  background-color: #1A1A1A !important;
+  background-color: var(--nupal-dark-surface-2) !important;
   box-shadow: none !important;
 }
 
 .dark-mode div.bg-slate-50\/95.backdrop-blur-sm {
-  background-color: #222222 !important;
+  background-color: var(--nupal-dark-surface-3) !important;
   border-color: var(--nupal-dark-border) !important;
 }
 
@@ -790,21 +790,21 @@
 /* Input Fields & Search */
 .dark-mode input.bg-transparent,
 .dark-mode div.bg-slate-50 {
-  background-color: #1A1A1A !important;
+  background-color: var(--nupal-dark-surface-2) !important;
   border-color: var(--nupal-dark-border) !important;
   color: var(--nupal-dark-text) !important;
 }
 
 .dark-mode input[type="time"],
 .dark-mode select {
-  background-color: #1A1A1A !important;
+  background-color: var(--nupal-dark-surface-2) !important;
   border-color: var(--nupal-dark-border) !important;
   color-scheme: dark !important;
   color: var(--nupal-dark-text) !important;
 }
 
 .dark-mode option {
-  background-color: #1A1A1A !important;
+  background-color: var(--nupal-dark-surface-2) !important;
   color: var(--nupal-dark-text) !important;
 }
 
@@ -856,7 +856,7 @@
 .dark-mode [class*="bg-slate-50"],
 .dark-mode [class*="bg-slate-100"],
 .dark-mode [class*="bg-indigo-50"] {
-  background-color: #1A1A1A !important;
+  background-color: var(--nupal-dark-surface-2) !important;
   border-color: var(--nupal-dark-border) !important;
 }
 
@@ -911,7 +911,7 @@
 /* Hide Completed Toggle & Buttons */
 .dark-mode button[class*="bg-indigo-50"],
 .dark-mode button[class*="bg-slate-50"] {
-  background-color: #1A1A1A !important;
+  background-color: var(--nupal-dark-surface-2) !important;
   border-color: var(--nupal-dark-border) !important;
 }
 
@@ -1106,7 +1106,7 @@
 /* Timetable Header */
 .dark-mode div.bg-slate-50\/95,
 .dark-mode div.bg-slate-50\/30 {
-  background-color: #1A1A1A !important;
+  background-color: var(--nupal-dark-surface-2) !important;
 }
 
 /* Schedule Preview Modal Overrides */
@@ -1148,7 +1148,7 @@
 
 /* Time Range Box */
 .dark-mode div.bg-slate-50.border-slate-100.p-4\.rounded-2xl {
-  background-color: #1A1A1A !important;
+  background-color: var(--nupal-dark-surface-2) !important;
   border-color: var(--nupal-dark-border) !important;
 }
 
@@ -1310,6 +1310,300 @@
 }
 
 .dark-mode .bg-white.border-slate-200.rounded-3xl {
-  background-color: #222222 !important;
+  background-color: var(--nupal-dark-surface-3) !important;
+  border-color: var(--nupal-dark-border) !important;
+}
+
+/* ── Navy Palette Cleanup Pass ──────────────────────────────────
+   Final targeted overrides from the manual QA notes. These replace the
+   remaining black/charcoal-looking dark surfaces with the same blue-level
+   palette used by the admin panel. */
+.dark,
+.dark-mode {
+  scrollbar-color: var(--nupal-dark-border) var(--nupal-dark-surface-2);
+}
+
+.dark-mode *::-webkit-scrollbar-track,
+.dark *::-webkit-scrollbar-track {
+  background: var(--nupal-dark-surface-2) !important;
+}
+
+.dark-mode *::-webkit-scrollbar-thumb,
+.dark *::-webkit-scrollbar-thumb {
+  background: var(--nupal-dark-border) !important;
+  border: 2px solid var(--nupal-dark-surface-2) !important;
+  border-radius: 999px !important;
+}
+
+.dark-mode *::-webkit-scrollbar-thumb:hover,
+.dark *::-webkit-scrollbar-thumb:hover {
+  background: #4A9EFF !important;
+}
+
+.dark-mode :where(
+  [class~="dark:bg-slate-950"],
+  [class~="dark:bg-slate-950/95"],
+  [class~="dark:bg-slate-950/90"],
+  [class~="dark:bg-slate-950/80"],
+  [class~="dark:bg-slate-950/70"],
+  [class~="dark:bg-gray-950"],
+  [class~="dark:bg-zinc-950"],
+  [class~="dark:bg-neutral-950"],
+  [class~="dark:bg-black"]
+),
+.dark :where(
+  [class~="dark:bg-slate-950"],
+  [class~="dark:bg-slate-950/95"],
+  [class~="dark:bg-slate-950/90"],
+  [class~="dark:bg-slate-950/80"],
+  [class~="dark:bg-slate-950/70"],
+  [class~="dark:bg-gray-950"],
+  [class~="dark:bg-zinc-950"],
+  [class~="dark:bg-neutral-950"],
+  [class~="dark:bg-black"]
+) {
+  background-color: var(--nupal-dark-bg) !important;
+}
+
+.dark-mode :where(
+  [class~="dark:bg-slate-900"],
+  [class~="dark:bg-slate-900/95"],
+  [class~="dark:bg-slate-900/90"],
+  [class~="dark:bg-slate-900/80"],
+  [class~="dark:bg-slate-900/70"],
+  [class~="dark:bg-slate-900/60"],
+  [class~="dark:bg-slate-900/50"],
+  [class~="dark:bg-gray-900"],
+  [class~="dark:bg-zinc-900"],
+  [class~="dark:bg-neutral-900"]
+),
+.dark :where(
+  [class~="dark:bg-slate-900"],
+  [class~="dark:bg-slate-900/95"],
+  [class~="dark:bg-slate-900/90"],
+  [class~="dark:bg-slate-900/80"],
+  [class~="dark:bg-slate-900/70"],
+  [class~="dark:bg-slate-900/60"],
+  [class~="dark:bg-slate-900/50"],
+  [class~="dark:bg-gray-900"],
+  [class~="dark:bg-zinc-900"],
+  [class~="dark:bg-neutral-900"]
+) {
+  background-color: var(--nupal-dark-surface) !important;
+}
+
+.dark-mode :where(
+  [class~="dark:bg-slate-800"],
+  [class~="dark:bg-slate-800/90"],
+  [class~="dark:bg-slate-800/80"],
+  [class~="dark:bg-slate-800/70"],
+  [class~="dark:bg-slate-800/60"],
+  [class~="dark:bg-slate-800/50"],
+  [class~="dark:bg-gray-800"],
+  [class~="dark:bg-zinc-800"],
+  [class~="dark:bg-neutral-800"],
+  [class~="dark:hover:bg-slate-800"]:hover,
+  [class~="dark:hover:bg-slate-800/80"]:hover,
+  [class~="dark:hover:bg-slate-800/50"]:hover,
+  [class~="dark:hover:bg-gray-800"]:hover
+),
+.dark :where(
+  [class~="dark:bg-slate-800"],
+  [class~="dark:bg-slate-800/90"],
+  [class~="dark:bg-slate-800/80"],
+  [class~="dark:bg-slate-800/70"],
+  [class~="dark:bg-slate-800/60"],
+  [class~="dark:bg-slate-800/50"],
+  [class~="dark:bg-gray-800"],
+  [class~="dark:bg-zinc-800"],
+  [class~="dark:bg-neutral-800"],
+  [class~="dark:hover:bg-slate-800"]:hover,
+  [class~="dark:hover:bg-slate-800/80"]:hover,
+  [class~="dark:hover:bg-slate-800/50"]:hover,
+  [class~="dark:hover:bg-gray-800"]:hover
+) {
+  background-color: var(--nupal-dark-surface-2) !important;
+}
+
+.dark-mode :where(
+  [class~="dark:bg-slate-700"],
+  [class~="dark:bg-slate-700/80"],
+  [class~="dark:bg-gray-700"],
+  [class~="dark:hover:bg-slate-700"]:hover,
+  [class~="dark:hover:bg-gray-700"]:hover
+),
+.dark :where(
+  [class~="dark:bg-slate-700"],
+  [class~="dark:bg-slate-700/80"],
+  [class~="dark:bg-gray-700"],
+  [class~="dark:hover:bg-slate-700"]:hover,
+  [class~="dark:hover:bg-gray-700"]:hover
+) {
+  background-color: var(--nupal-dark-surface-3) !important;
+}
+
+/* Explicit hardcoded dark utilities that appeared in QA as black boxes. */
+.dark-mode :where(
+  [class~="dark:bg-[#0F0F0F]"],
+  [class~="dark:bg-[#1A1A1A]"],
+  [class~="dark:bg-[#1E1E1E]"],
+  [class~="dark:bg-[#222222]"],
+  [class~="dark:bg-[#262626]"]
+),
+.dark :where(
+  [class~="dark:bg-[#0F0F0F]"],
+  [class~="dark:bg-[#1A1A1A]"],
+  [class~="dark:bg-[#1E1E1E]"],
+  [class~="dark:bg-[#222222]"],
+  [class~="dark:bg-[#262626]"]
+) {
+  background-color: var(--nupal-dark-surface-2) !important;
+}
+
+/* Mobile navbar / burger menu / slide menu surfaces. */
+.dark-mode header button:where(.lg\:hidden),
+.dark header button:where(.lg\:hidden),
+.dark-mode .fixed.inset-0.z-\[9999\],
+.dark .fixed.inset-0.z-\[9999\],
+.dark-mode .fixed.inset-0.z-\[9999\] > div,
+.dark .fixed.inset-0.z-\[9999\] > div {
+  background-color: var(--nupal-dark-surface) !important;
+  color: var(--nupal-dark-text) !important;
+  border-color: var(--nupal-dark-border) !important;
+}
+
+.dark-mode .fixed.inset-0.z-\[9999\] :where([class*="bg-slate-50"], [class*="bg-slate-100"], [class*="dark:bg-slate-900"], [class*="dark:bg-slate-800"], .bg-white),
+.dark .fixed.inset-0.z-\[9999\] :where([class*="bg-slate-50"], [class*="bg-slate-100"], [class*="dark:bg-slate-900"], [class*="dark:bg-slate-800"], .bg-white) {
+  background-color: var(--nupal-dark-surface-2) !important;
+  border-color: var(--nupal-dark-border) !important;
+}
+
+/* Home page: platform features and about icon tiles should stay blue-navy, not charcoal. */
+.dark-mode #services :where(.bg-white, [class*="bg-slate-50"], [class*="dark:bg-slate-900"], [class*="dark:bg-slate-800"]),
+.dark #services :where(.bg-white, [class*="bg-slate-50"], [class*="dark:bg-slate-900"], [class*="dark:bg-slate-800"]),
+.dark-mode #about :where(.bg-white, [class*="bg-slate-50"], [class*="dark:bg-slate-900"], [class*="dark:bg-slate-800"]),
+.dark #about :where(.bg-white, [class*="bg-slate-50"], [class*="dark:bg-slate-900"], [class*="dark:bg-slate-800"]) {
+  background-color: var(--nupal-dark-surface) !important;
+  border-color: var(--nupal-dark-border) !important;
+}
+
+.dark-mode #about .grid :where(.rounded-full, .rounded-2xl),
+.dark #about .grid :where(.rounded-full, .rounded-2xl) {
+  background-color: rgba(74, 158, 255, 0.14) !important;
+  border-color: rgba(74, 158, 255, 0.25) !important;
+}
+
+/* Dashboard stat cards and mind-map controls/icons. */
+.dark-mode [class*="rounded-[2rem]"]:where(.bg-white, [class*="dark:bg-slate"]),
+.dark [class*="rounded-[2rem]"]:where(.bg-white, [class*="dark:bg-slate"]),
+.dark-mode [class*="rounded-[2.5rem]"]:where(.bg-white, [class*="dark:bg-slate"]),
+.dark [class*="rounded-[2.5rem]"]:where(.bg-white, [class*="dark:bg-slate"]) {
+  background-color: var(--nupal-dark-surface) !important;
+  border-color: var(--nupal-dark-border) !important;
+}
+
+.dark-mode .react-flow__node :where([class*="bg-slate-900"], [class*="dark:bg-slate-900"], [class*="dark:bg-slate-800"]),
+.dark .react-flow__node :where([class*="bg-slate-900"], [class*="dark:bg-slate-900"], [class*="dark:bg-slate-800"]),
+.dark-mode .react-flow__controls :where(button, div),
+.dark .react-flow__controls :where(button, div) {
+  background-color: var(--nupal-dark-surface-2) !important;
+  color: var(--nupal-dark-text) !important;
+  border-color: var(--nupal-dark-border) !important;
+}
+
+/* Chat conversations and sidebar cards. */
+.dark-mode :where([class*="ChatSidebar"], .flex.h-\[calc\(100dvh-64px\)\]) [class*="bg-slate-900"],
+.dark :where([class*="ChatSidebar"], .flex.h-\[calc\(100dvh-64px\)\]) [class*="bg-slate-900"],
+.dark-mode :where(button, a):has(span.truncate) {
+  background-color: var(--nupal-dark-surface-2) !important;
+  border-color: var(--nupal-dark-border) !important;
+}
+
+/* Scheduling: timetable headers, grid, toggles, preferred range boxes, weekday pills. */
+.dark-mode :where(.min-h-screen.bg-slate-50, [class*="bg-slate-50/"], [class*="bg-slate-100"], [class*="bg-indigo-50"]),
+.dark :where(.min-h-screen.bg-slate-50, [class*="bg-slate-50/"], [class*="bg-slate-100"], [class*="bg-indigo-50"]) {
+  background-color: var(--nupal-dark-surface-2) !important;
+  border-color: var(--nupal-dark-border) !important;
+}
+
+.dark-mode :where(input[type="time"], select, option),
+.dark :where(input[type="time"], select, option) {
+  background-color: var(--nupal-dark-surface-2) !important;
+  color: var(--nupal-dark-text) !important;
+  border-color: var(--nupal-dark-border) !important;
+}
+
+/* Career hub and resume analyzer main surfaces, cards, badges, reports, and history items. */
+.dark-mode :where(.career-hub-container, [id="jobs-section"], main) :where(
+  [class*="dark:bg-slate-900"],
+  [class*="dark:bg-slate-800"],
+  [class*="bg-slate-50"],
+  [class*="bg-slate-100"],
+  .bg-white
+),
+.dark :where(.career-hub-container, [id="jobs-section"], main) :where(
+  [class*="dark:bg-slate-900"],
+  [class*="dark:bg-slate-800"],
+  [class*="bg-slate-50"],
+  [class*="bg-slate-100"],
+  .bg-white
+) {
+  background-color: var(--nupal-dark-surface) !important;
+  border-color: var(--nupal-dark-border) !important;
+}
+
+.dark-mode .career-hub-container :where([class*="rounded-full"], [class*="rounded-lg"], [class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"]):where([class*="bg-slate"], [class*="dark:bg-slate"], .bg-white),
+.dark .career-hub-container :where([class*="rounded-full"], [class*="rounded-lg"], [class*="rounded-xl"], [class*="rounded-2xl"], [class*="rounded-3xl"]):where([class*="bg-slate"], [class*="dark:bg-slate"], .bg-white) {
+  background-color: var(--nupal-dark-surface-2) !important;
+  border-color: var(--nupal-dark-border) !important;
+}
+
+.dark-mode .career-hub-container :where([class*="bg-gray"], [class*="dark:bg-gray"], [class*="bg-neutral"], [class*="dark:bg-neutral"]),
+.dark .career-hub-container :where([class*="bg-gray"], [class*="dark:bg-gray"], [class*="bg-neutral"], [class*="dark:bg-neutral"]) {
+  background-color: var(--nupal-dark-surface-3) !important;
+  border-color: var(--nupal-dark-border) !important;
+}
+
+/* Profile cards, graduation progress track, pending badge, and account sidebar. */
+.dark-mode [class*="bg-red-950"],
+.dark [class*="bg-red-950"] {
+  background-color: rgba(251, 113, 133, 0.12) !important;
+  border-color: rgba(251, 113, 133, 0.25) !important;
+}
+
+.dark-mode [class*="bg-amber-950"],
+.dark [class*="bg-amber-950"] {
+  background-color: rgba(251, 191, 36, 0.12) !important;
+  border-color: rgba(251, 191, 36, 0.25) !important;
+}
+
+.dark-mode [class*="bg-slate-200"],
+.dark [class*="bg-slate-200"] {
+  background-color: var(--nupal-dark-surface-3) !important;
+}
+
+/* Keep semantic colored badges visible but not gray/black. */
+.dark-mode :where([class*="bg-blue-950"], [class*="bg-blue-900"]),
+.dark :where([class*="bg-blue-950"], [class*="bg-blue-900"]) {
+  background-color: rgba(74, 158, 255, 0.16) !important;
+  border-color: rgba(74, 158, 255, 0.28) !important;
+}
+
+.dark-mode :where([class*="bg-emerald-900"], [class*="bg-green-900"]),
+.dark :where([class*="bg-emerald-900"], [class*="bg-green-900"]) {
+  background-color: rgba(52, 211, 153, 0.14) !important;
+  border-color: rgba(52, 211, 153, 0.28) !important;
+}
+
+.dark-mode :where([class*="bg-amber-900"], [class*="bg-yellow-900"]),
+.dark :where([class*="bg-amber-900"], [class*="bg-yellow-900"]) {
+  background-color: rgba(251, 191, 36, 0.14) !important;
+  border-color: rgba(251, 191, 36, 0.28) !important;
+}
+
+/* Interview technical-prep panels and buttons should follow navy surfaces. */
+.dark-mode :where([class*="technical"], [class*="interview"], [class*="Interview"]) :where([class*="dark:bg-slate"], [class*="bg-slate"], .bg-white),
+.dark :where([class*="technical"], [class*="interview"], [class*="Interview"]) :where([class*="dark:bg-slate"], [class*="bg-slate"], .bg-white) {
+  background-color: var(--nupal-dark-surface-2) !important;
   border-color: var(--nupal-dark-border) !important;
 }

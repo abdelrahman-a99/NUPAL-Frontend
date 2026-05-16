@@ -40,7 +40,7 @@ function getRegistrationBadge(reg: any) {
     const status = reg.status?.toLowerCase();
     if (status === 'approved') return { label: 'Approved', icon: CheckCircle, color: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60' };
     if (status === 'rejected') return { label: 'Rejected', icon: XCircle, color: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800/60' };
-    return { label: 'Pending Review', icon: AlertCircle, color: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60' };
+    return { label: 'Pending Review', icon: AlertCircle, color: 'bg-amber-50 dark:bg-amber-400/10 text-amber-700 dark:text-amber-200 border-amber-200 dark:border-amber-300/25' };
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────

@@ -76,12 +76,12 @@ export function JobFitTab({
             </div>
           )}
 
-          <div className="bg-blue-50/30 border border-blue-100/50 rounded-2xl p-5">
+          <div className="bg-blue-50/30 border border-blue-100/50 rounded-2xl p-5 dark:bg-[#1E2F4D] dark:border-[#355578]">
             <div className="flex items-start gap-3">
-              <Info className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+              <Info className="w-5 h-5 text-blue-400 dark:text-[#60A5FA] shrink-0 mt-0.5" />
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-blue-900 uppercase tracking-wider">Analysis Info</h4>
-                <p className="text-[11px] font-semibold text-blue-700/70 leading-relaxed">
+                <h4 className="text-xs font-bold text-blue-900 dark:text-[#BFDBFE] uppercase tracking-wider">Analysis Info</h4>
+                <p className="text-[11px] font-semibold text-blue-700/70 dark:text-[#CBD5E1] leading-relaxed">
                   Our AI will analyze the requirements and compare them against your selected resume to provide a match score and personalized advice.
                 </p>
               </div>

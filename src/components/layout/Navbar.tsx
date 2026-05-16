@@ -305,9 +305,9 @@ function NavbarInner() {
               </Button>
 
               {profileMenuOpen && (
-                <div role="menu" aria-label="Profile menu" className="absolute left-1/2 -translate-x-1/2 mt-2 w-64 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 p-2 shadow-xl backdrop-blur-sm">
-                  <div className="flex items-center gap-3 rounded-lg bg-slate-50/70 dark:bg-slate-900/70 px-3 py-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+                <div role="menu" aria-label="Profile menu" className="absolute left-1/2 -translate-x-1/2 mt-2 w-64 rounded-xl border border-slate-200 dark:border-[#355578]/70 bg-white/95 dark:bg-[#0F172A]/95 p-2 shadow-xl backdrop-blur-sm">
+                  <div className="flex items-center gap-3 rounded-lg bg-slate-50/70 dark:bg-transparent px-3 py-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 dark:bg-[#1E2F4D] text-slate-700 dark:text-[#BFDBFE]">
                       <span className="text-sm font-semibold">{initial}</span>
                     </div>
 
@@ -317,12 +317,12 @@ function NavbarInner() {
                     </div>
                   </div>
 
-                  <div className="my-2 h-px bg-slate-200 dark:bg-slate-700" />
+                  <div className="my-2 h-px bg-slate-200 dark:bg-[#355578]/50" />
                   <Button
                     href={userRole === 'admin' ? "/admin" : undefined}
                     variant="none"
                     size="none"
-                    className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-800 justify-start"
+                    className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 transition-all duration-200 bg-transparent hover:bg-slate-50 dark:hover:bg-[#1E2F4D] justify-start"
                     onClick={() => userRole === 'admin' ? setProfileMenuOpen(false) : openModal('profile')}
                     role="menuitem"
                   >
@@ -333,7 +333,7 @@ function NavbarInner() {
                   <Button
                     variant="none"
                     size="none"
-                    className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-800 justify-start"
+                    className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 transition-all duration-200 bg-transparent hover:bg-slate-50 dark:hover:bg-[#1E2F4D] justify-start"
                     onClick={() => openModal('settings')}
                     role="menuitem"
                   >
@@ -346,7 +346,7 @@ function NavbarInner() {
                   <Button
                     variant="none"
                     size="none"
-                    className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium text-red-600 dark:text-red-300 transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-950/50 justify-start"
+                    className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium text-red-600 dark:text-red-300 transition-all duration-200 bg-transparent hover:bg-red-50 dark:hover:bg-rose-400/10 justify-start"
                     onClick={() => {
                       removeToken();
                       window.location.href = '/';

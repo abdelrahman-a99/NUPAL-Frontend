@@ -50,7 +50,7 @@ function getRegBadge(reg: any) {
   const s = reg?.status?.toLowerCase();
   if (s === 'approved') return { label: 'Approved', Icon: CheckCircle, color: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60' };
   if (s === 'rejected') return { label: 'Rejected', Icon: XCircle, color: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800/60' };
-  if (reg) return { label: 'Pending', Icon: AlertCircle, color: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60' };
+  if (reg) return { label: 'Pending', Icon: AlertCircle, color: 'bg-amber-50 dark:bg-amber-400/10 text-amber-700 dark:text-amber-200 border-amber-200 dark:border-amber-300/25' };
   return null;
 }
 function getGPAColor(gpa: number) {

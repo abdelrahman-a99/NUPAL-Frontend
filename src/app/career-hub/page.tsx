@@ -347,7 +347,11 @@ function CareerHubPageInner() {
                                     <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100">All Jobs</h2>
                                     <p className="mt-0.5 text-[10px] md:text-sm text-slate-600 dark:text-slate-300">Showing {filteredJobs.length} result{filteredJobs.length !== 1 ? 's' : ''}</p>
                                 </div>
-                                <Button onClick={() => setIsFilterOpen(true)} variant="none" className="md:hidden flex items-center gap-1.5 px-4 py-2 bg-blue-50/80 text-blue-600 dark:text-blue-300 rounded-full font-semibold text-xs shadow-sm hover:bg-blue-100 transition-all border border-blue-100/50">
+                                <Button
+                                    onClick={() => setIsFilterOpen(true)}
+                                    variant="none"
+                                    className="md:hidden flex items-center gap-1.5 px-4 py-2 bg-blue-50/80 text-blue-600 border border-blue-100/50 rounded-full font-semibold text-xs shadow-sm hover:bg-blue-100 transition-all dark:bg-[#1E2F4D] dark:text-[#BFDBFE] dark:border-[#355578] dark:hover:bg-[#2B466D] dark:shadow-none"
+                                >
                                     <SlidersHorizontal className="h-3.5 w-3.5" />
                                     <span>Filters</span>
                                 </Button>

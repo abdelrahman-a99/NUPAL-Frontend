@@ -1251,9 +1251,9 @@
 .dark .admin-layout,
 .dark-mode .admin-layout {
     --adm-bg: #0F172A;
-    --adm-surface: #111827;
-    --adm-surface-2: #1F2937;
-    --adm-border: #334155;
+    --adm-surface: #111C34;
+    --adm-surface-2: #1E2F4D;
+    --adm-border: #355578;
     --adm-text: #F8FAFC;
     --adm-text-muted: #CBD5E1;
     --adm-accent: #4A9EFF;
@@ -1342,5 +1342,92 @@
 
 .dark .admin-layout :where(.divide-slate-100 > *, [class~="dark:divide-slate-800"] > *),
 .dark-mode .admin-layout :where(.divide-slate-100 > *, [class~="dark:divide-slate-800"] > *) {
+    border-color: var(--adm-border) !important;
+}
+
+
+/* ── Admin QA cleanup: navy tables, controls, scrollbars ─────────
+   Keep all admin routes on the same blue-level palette, including
+   registration filters, table rows, horizontal scrollbars, and block buttons. */
+.dark .admin-layout,
+.dark-mode .admin-layout {
+    scrollbar-color: var(--adm-border) var(--adm-surface-2);
+}
+
+.dark .admin-layout *::-webkit-scrollbar,
+.dark-mode .admin-layout *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.dark .admin-layout *::-webkit-scrollbar-track,
+.dark-mode .admin-layout *::-webkit-scrollbar-track {
+    background: var(--adm-surface-2) !important;
+    border-radius: 999px;
+}
+
+.dark .admin-layout *::-webkit-scrollbar-thumb,
+.dark-mode .admin-layout *::-webkit-scrollbar-thumb {
+    background: var(--adm-border) !important;
+    border: 2px solid var(--adm-surface-2) !important;
+    border-radius: 999px;
+}
+
+.dark .admin-layout *::-webkit-scrollbar-thumb:hover,
+.dark-mode .admin-layout *::-webkit-scrollbar-thumb:hover {
+    background: var(--adm-accent) !important;
+}
+
+.dark .admin-layout :where(.admin-table-wrapper, .overflow-x-auto, .overflow-y-auto),
+.dark-mode .admin-layout :where(.admin-table-wrapper, .overflow-x-auto, .overflow-y-auto) {
+    background: var(--adm-surface) !important;
+    scrollbar-color: var(--adm-border) var(--adm-surface-2);
+}
+
+.dark .admin-layout :where(tbody tr, .admin-table__row, tr[class*="dark:hover:bg-slate-800"]),
+.dark-mode .admin-layout :where(tbody tr, .admin-table__row, tr[class*="dark:hover:bg-slate-800"]) {
+    background: var(--adm-surface) !important;
+    border-color: var(--adm-border) !important;
+}
+
+.dark .admin-layout :where(tbody tr:nth-child(even), .admin-table__row:nth-child(even)),
+.dark-mode .admin-layout :where(tbody tr:nth-child(even), .admin-table__row:nth-child(even)) {
+    background: rgba(30, 47, 77, 0.46) !important;
+}
+
+.dark .admin-layout :where(tbody tr:hover, .admin-table__row:hover),
+.dark-mode .admin-layout :where(tbody tr:hover, .admin-table__row:hover) {
+    background: rgba(74, 158, 255, 0.10) !important;
+}
+
+.dark .admin-layout :where(.admin-toggle-group, .admin-toggle-group__btn, .admin-custom-select__trigger, .admin-search__input, .admin-input, .admin-card__toolbar-actions, [class*="bg-slate-50"], [class*="dark:bg-slate-900"]),
+.dark-mode .admin-layout :where(.admin-toggle-group, .admin-toggle-group__btn, .admin-custom-select__trigger, .admin-search__input, .admin-input, .admin-card__toolbar-actions, [class*="bg-slate-50"], [class*="dark:bg-slate-900"]) {
+    background-color: var(--adm-surface-2) !important;
+    border-color: var(--adm-border) !important;
+}
+
+.dark .admin-layout :where(.admin-toggle-group__btn--active, .admin-btn--primary),
+.dark-mode .admin-layout :where(.admin-toggle-group__btn--active, .admin-btn--primary) {
+    background: var(--adm-accent) !important;
+    color: white !important;
+}
+
+.dark .admin-layout .admin-btn--block-view,
+.dark-mode .admin-layout .admin-btn--block-view {
+    background: rgba(74, 158, 255, 0.14) !important;
+    color: #93C5FD !important;
+    border: 1px solid rgba(74, 158, 255, 0.32) !important;
+    box-shadow: none !important;
+}
+
+.dark .admin-layout .admin-btn--block-view:hover,
+.dark-mode .admin-layout .admin-btn--block-view:hover {
+    background: var(--adm-accent) !important;
+    color: white !important;
+}
+
+.dark .admin-layout :where(.admin-card, .admin-stat-card, .admin-profile__header, .admin-profile__stat, .admin-modal, .admin-login-card),
+.dark-mode .admin-layout :where(.admin-card, .admin-stat-card, .admin-profile__header, .admin-profile__stat, .admin-modal, .admin-login-card) {
+    background: var(--adm-surface) !important;
     border-color: var(--adm-border) !important;
 }

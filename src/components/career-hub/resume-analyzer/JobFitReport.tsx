@@ -167,14 +167,14 @@ export function JobFitReport({ data, onBack, onDelete, onStartInterviewPrep }: J
               </div>
 
               {/* Matched Keywords Box */}
-              <div className="group bg-emerald-50/30 hover:bg-emerald-50/60 border border-emerald-100/50 hover:border-emerald-200 rounded-2xl p-6 transition-all duration-200">
+              <div className="group bg-emerald-50/30 hover:bg-emerald-50/60 border border-emerald-100/50 hover:border-emerald-200 rounded-2xl p-6 transition-all duration-200 dark:bg-emerald-400/10 dark:hover:bg-emerald-400/15 dark:border-emerald-400/25 dark:hover:border-emerald-400/35">
                 <div className="flex items-center gap-2 mb-5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                   <h4 className="text-xs font-bold text-emerald-600 dark:text-emerald-300 uppercase tracking-[0.15em]">Matched Keywords</h4>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {data.breakdown.matchedSkills.filter(s => s && typeof s === 'object' && s.skill).map((s, i) => (
-                    <span key={i} className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-emerald-100 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold rounded-xl shadow-sm hover:scale-105 transition-transform cursor-default">
+                    <span key={i} className="px-3 py-1.5 bg-white dark:bg-[#1E2F4D] border border-emerald-100 dark:border-emerald-400/25 text-emerald-700 dark:text-emerald-200 text-[11px] font-bold rounded-xl shadow-sm dark:shadow-none hover:scale-105 transition-transform cursor-default">
                       {s.skill}
                     </span>
                   ))}
@@ -183,14 +183,14 @@ export function JobFitReport({ data, onBack, onDelete, onStartInterviewPrep }: J
 
               {/* Missing Keywords Box */}
               {data.breakdown.missingSkills?.filter(s => s && typeof s === 'object' && s.skill).length > 0 && (
-                <div className="group bg-red-50/30 hover:bg-red-50/60 border border-red-100/50 hover:border-red-200 rounded-2xl p-6 transition-all duration-200">
+                <div className="group bg-red-50/30 hover:bg-red-50/60 border border-red-100/50 hover:border-red-200 rounded-2xl p-6 transition-all duration-200 dark:bg-rose-400/10 dark:hover:bg-rose-400/15 dark:border-rose-400/25 dark:hover:border-rose-400/35">
                   <div className="flex items-center gap-2 mb-5">
                     <AlertCircle className="w-4 h-4 text-red-400" />
                     <h4 className="text-xs font-bold text-red-500 uppercase tracking-[0.15em]">Missing Keywords</h4>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {data.breakdown.missingSkills.filter(s => s && typeof s === 'object' && s.skill).map((s, i) => (
-                      <span key={i} className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-red-100 dark:border-red-900/50 text-red-600 dark:text-red-300 text-[11px] font-bold rounded-xl shadow-sm hover:scale-105 transition-transform cursor-default">
+                      <span key={i} className="px-3 py-1.5 bg-white dark:bg-[#1E2F4D] border border-red-100 dark:border-rose-400/25 text-red-600 dark:text-rose-200 text-[11px] font-bold rounded-xl shadow-sm dark:shadow-none hover:scale-105 transition-transform cursor-default">
                         {s.skill}
                       </span>
                     ))}
